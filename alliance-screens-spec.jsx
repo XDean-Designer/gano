@@ -1,0 +1,1859 @@
+const { useState } = React;
+
+const ORANGE = "#FF6002";
+const CHIP = "#FFF1E8";
+const CHIP2 = "#FFD9C2";
+const INK = "#333333";
+const MUTED = "#929292";
+const LINE = "#EDEDED";
+const BORDER = "#D7D7D5";
+const PAGE = "#F7F7F7";
+const PAPER = "#FFFFFF";
+const OPEN = "#2BA471";
+const STATUS_H = 53;
+const NAV_H = 44;
+const SAFE_BOTTOM = 34;
+const TAB_H = 56;
+const BTN_H = 48;
+const CARD_R = 12;
+const CARD_SHADOW = "0 1px 4px rgba(0,0,0,0.04)";
+const COUPON_SHADOW = "0 2px 8px rgba(0,0,0,0.05)";
+const CARD_EDGE = "1px solid #F0F0F0";
+
+/** Keep shadow outside overflow:hidden clip (ticket notches). */
+function Lift({ kind = "card", style = {}, children }) {
+  const shadow = kind === "coupon" ? COUPON_SHADOW : CARD_SHADOW;
+  return <div style={{ borderRadius: CARD_R, boxShadow: shadow, ...style }}>{children}</div>;
+}
+
+const DESIGN_W = 390;
+const DESIGN_H = 844;
+const SCALE = 0.52;
+const UI_FONT = '"Noto Sans SC", "Source Han Sans SC", sans-serif';
+
+function Screen({ id }) {
+  if (id === "home") return <Home />;
+  if (id === "enter") return <Enter />;
+  if (id === "tiers") return <Tiers />;
+  if (id === "code") return <StaffCode />;
+  if (id === "codeV35") return <StaffCodeV35 />;
+  if (id === "wxScan") return <WxScan />;
+  if (id === "shop") return <ShopLanding />;
+  if (id === "claim") return <Claim />;
+  if (id === "claimV35") return <ClaimV35 />;
+  if (id === "ticket") return <TicketFresh />;
+  if (id === "ticketV35") return <TicketV35 />;
+  if (id === "show") return <TicketShow />;
+  if (id === "showQr") return <ShowQr />;
+  if (id === "camera") return <Camera />;
+  if (id === "redeemed") return <Redeemed />;
+  if (id === "customerRedeemed") return <CustomerRedeemed />;
+  if (id === "used") return <TicketUsed />;
+  if (id === "expired") return <ExpiredStaff />;
+  if (id === "staleTicket") return <TicketStale />;
+  if (id === "sessionExpired") return <SessionExpired />;
+  if (id === "alreadyClaimed") return <AlreadyClaimed />;
+  if (id === "review") return <Review />;
+  // 09-看回写已删；回写只读并入 13-订单明细
+  if (id === "feedback") return <OrderDetail />;
+  if (id === "stats") return <Stats />;
+  if (id === "logs") return <LogsRecord initialTab="日志" initialType="核销" />;
+  if (id === "logsBright") return <LogsRecord initialTab="日志" initialType="亮码" />;
+  if (id === "logsStore") return <LogsRecord initialTab="门店" initialType="核销" />;
+  if (id === "dayDetail") return <DayDetail />;
+  if (id === "orderDetail") return <OrderDetail />;
+  return <Manual />;
+}
+
+
+
+function StatusBar({ dark = false }) {
+  return <div style={{ height: STATUS_H, flexShrink: 0, background: dark ? "#2B2B2B" : PAPER }} />;
+}
+
+function SafeBottom() {
+  return <div style={{ height: SAFE_BOTTOM, flexShrink: 0, background: PAPER }} />;
+}
+
+function ChevronLeft({ size = 24, color = INK }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 18l-6-6 6-6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PageTitleBar({ title, right }) {
+  return (
+    <div style={{ height: NAV_H, flexShrink: 0, background: PAPER, display: "flex", alignItems: "center", position: "relative" }}>
+      <div style={{ width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <ChevronLeft />
+      </div>
+      <div style={{ position: "absolute", left: 72, right: 72, bottom: 10, textAlign: "center", fontSize: 18, fontWeight: 500, lineHeight: "24px", color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
+      {right ? <div style={{ marginLeft: "auto", paddingRight: 16, fontSize: 16, lineHeight: "22px", color: INK, alignSelf: "flex-end", paddingBottom: 10 }}>{right}</div> : <div style={{ width: 44, flexShrink: 0 }} />}
+    </div>
+  );
+}
+
+function ImgPlaceholder({ size = 96, radius = 8 }) {
+  return (
+    <div style={{ width: size, height: size, borderRadius: radius, background: LINE, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width={Math.round(size * 0.34)} height={Math.round(size * 0.34)} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2" stroke="#FFFFFF" strokeWidth="2" />
+        <circle cx="9" cy="10" r="1.6" stroke="#FFFFFF" strokeWidth="2" />
+        <path d="M3 16l5-4 4 3 3-2 6 4" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
+function PrimaryBtn({ children, height = BTN_H, radius = 22, bg = ORANGE, color = "#FFFFFF", border, style = {} }) {
+  return (
+    <div style={{ height, borderRadius: radius, background: bg, color, border: border || "none", fontSize: 16, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: 370, width: "100%", ...style }}>{children}</div>
+  );
+}
+
+
+function StarIcon({ size = 12, color = ORANGE, filled = true }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ display: "block", flexShrink: 0 }}>
+      <path
+        d="M12 2.8l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.62 6.19 20.68l1.11-6.47-4.7-4.58 6.5-.95L12 2.8z"
+        fill={filled ? color : "none"}
+        stroke={color}
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Stars({ score = 5, size = 12, gap = 2 }) {
+  const full = Math.floor(score);
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap }}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <StarIcon key={i} size={size} filled={i < full} />
+      ))}
+    </span>
+  );
+}
+
+function RatingRow({ score = 4.8, reviews, price, category, compact = false }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: compact ? 4 : 6, marginTop: compact ? 6 : 8 }}>
+      <span style={{ color: ORANGE, fontSize: compact ? 13 : 14, fontWeight: 600, lineHeight: "18px" }}>{score}</span>
+      <Stars score={score} size={compact ? 11 : 12} />
+      {reviews ? <span style={{ fontSize: 12, color: MUTED, lineHeight: "18px" }}>{reviews}</span> : null}
+      {category ? <span style={{ fontSize: 12, color: MUTED, lineHeight: "18px" }}>· {category}</span> : null}
+      {price ? <span style={{ marginLeft: "auto", fontSize: 12, color: MUTED, lineHeight: "18px" }}>{price}</span> : null}
+    </div>
+  );
+}
+
+function HelpIcon({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke={MUTED} strokeWidth="1.6" />
+      <path d="M9.6 9.4a2.4 2.4 0 1 1 3.5 2.14c-.7.4-1.1.8-1.1 1.66V14" stroke={MUTED} strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="12" cy="17" r="1" fill={MUTED} />
+    </svg>
+  );
+}
+
+function ChevronRight({ size = 14, color = "#CCCCCC" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ display: "block", flexShrink: 0 }}>
+      <path d="M9 6l6 6-6 6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function RuleList({ items }) {
+  return (
+    <div>
+      {items.map((rule, idx) => (
+        <div key={rule} style={{ display: "flex", alignItems: "flex-start", paddingTop: idx ? 10 : 0, marginTop: idx ? 10 : 0, borderTop: idx ? "0.5px solid #EDEDED" : "none" }}>
+          <span style={{ width: 16, fontSize: 12, color: MUTED, lineHeight: "20px", flexShrink: 0 }}>{idx + 1}.</span>
+          <span style={{ flex: 1, fontSize: 13, color: INK, lineHeight: "20px" }}>{rule}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** True side punch (mask = boolean subtract of half-circles). */
+function punchSideMask(y = "50%", r = 6) {
+  const hole = (pos) => `radial-gradient(circle ${r}px at ${pos} ${y}, #0000 ${r - 0.5}px, #000 ${r}px)`;
+  return {
+    WebkitMaskImage: `${hole("0%")}, ${hole("100%")}`,
+    WebkitMaskComposite: "source-in",
+    maskImage: `${hole("0%")}, ${hole("100%")}`,
+    maskComposite: "intersect",
+  };
+}
+
+/** True vertical punch (DealCoupon left/right column divider). */
+function punchVerticalMask(x = 86, r = 6) {
+  const hole = (pos) => `radial-gradient(circle ${r}px at ${x}px ${pos}, #0000 ${r - 0.5}px, #000 ${r}px)`;
+  return {
+    WebkitMaskImage: `${hole("0%")}, ${hole("100%")}`,
+    WebkitMaskComposite: "source-in",
+    maskImage: `${hole("0%")}, ${hole("100%")}`,
+    maskComposite: "intersect",
+  };
+}
+
+/** Keep dashed line only — notches come from parent mask. */
+function TicketPerforation({ inset = 16, color = "#E0E0E0" }) {
+  return (
+    <div style={{ position: "relative", height: 14, flexShrink: 0 }}>
+      <div style={{ position: "absolute", left: inset, right: inset, top: 7, borderTop: `1px dashed ${color}` }} />
+    </div>
+  );
+}
+
+function ShopHeroStrip({ height = 120 }) {
+  return (
+    <div style={{ height, background: LINE, display: "flex", gap: 2, overflow: "hidden" }}>
+      {[0, 1, 2].map((i) => (
+        <div key={i} style={{ flex: 1, background: i === 1 ? "#E8E8E8" : LINE, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#FFFFFF" strokeWidth="2" />
+            <circle cx="9" cy="10" r="1.6" stroke="#FFFFFF" strokeWidth="2" />
+            <path d="M3 16l5-4 4 3 3-2 6 4" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Dianping-style service summary hero (09). bare=true 去掉顶部背景图（订单明细）。 */
+function ServiceHero({ title = "日本玫丽盼全球化护理一次", price = "480", shop = "凯德晶萃店", tag, bare = false }) {
+  const card = (
+    <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 14, display: "flex", gap: 12 }}>
+      <ImgPlaceholder size={72} radius={8} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: INK, lineHeight: "22px" }}>{title}</div>
+        <div style={{ marginTop: 6, display: "flex", alignItems: "baseline" }}>
+          <span style={{ color: ORANGE, fontSize: 12 }}>¥</span>
+          <span style={{ color: ORANGE, fontSize: 20, fontWeight: 700, marginLeft: 2 }}>{price}</span>
+          <span style={{ marginLeft: 8, fontSize: 12, color: MUTED }}>{shop}</span>
+        </div>
+        {tag ? <div style={{ marginTop: 8 }}><span style={{ background: CHIP, color: ORANGE, fontSize: 11, padding: "2px 8px", borderRadius: 4 }}>{tag}</span></div> : null}
+      </div>
+    </div>
+  );
+  if (bare) {
+    return <Lift style={{ margin: "12px 16px 0" }}>{card}</Lift>;
+  }
+  return (
+    <div style={{ position: "relative" }}>
+      <ShopHeroStrip height={132} />
+      <Lift style={{ margin: "-28px 16px 0" }}>{card}</Lift>
+    </div>
+  );
+}
+
+/** Dianping-style stats hero (10). */
+function StatsHero() {
+  return (
+    <div style={{ marginBottom: 4 }}>
+      <div style={{ borderRadius: CARD_R, overflow: "hidden", background: "linear-gradient(135deg, #FFF1E8 0%, #FFE4D2 55%, #F7F7F7 100%)", border: CARD_EDGE, padding: "18px 16px 16px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontSize: 12, color: "#B86A3C" }}>联盟两边账</div>
+            <div style={{ marginTop: 4, fontSize: 20, fontWeight: 600, color: INK, lineHeight: "28px" }}>西岸中环店</div>
+          </div>
+          <HelpIcon size={18} />
+        </div>
+        <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
+          {[
+            ["本店发出", "9"],
+            ["已核销", "4"],
+            ["对方发来", "4"],
+          ].map(([label, num]) => (
+            <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: ORANGE, lineHeight: "24px" }}>{num}</div>
+              <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Shell({ children, tab, bg = PAGE, statusDark = false, hideStatus = false, tabKind = "staff" }) {
+  return (
+    <div style={{ height: "100%", background: bg, display: "flex", flexDirection: "column", color: INK, fontFamily: UI_FONT }}>
+      {hideStatus ? null : <StatusBar dark={statusDark} />}
+      <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>{children}</div>
+      {tab ? <TabBar active={tab} kind={tabKind} /> : <SafeBottom />}
+    </div>
+  );
+}
+
+function TabIcon({ name, active, color }) {
+  const common = { width: 22, height: 22, viewBox: "0 0 24 24", "aria-hidden": "true", style: { display: "block" } };
+  if (name === "首页") {
+    return active ? (
+      <svg {...common}><path d="M3.5 10.2L12 3.5l8.5 6.7V20a1.5 1.5 0 0 1-1.5 1.5h-4.2v-6.2h-5.6V21.5H5A1.5 1.5 0 0 1 3.5 20V10.2z" fill={color} /></svg>
+    ) : (
+      <svg {...common} fill="none"><path d="M4 10.2L12 4l8 6.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1V10.2z" stroke={color} strokeWidth="1.8" strokeLinejoin="round" /></svg>
+    );
+  }
+  if (name === "获客") {
+    return (
+      <svg {...common} fill="none">
+        <circle cx="9" cy="8" r="3" stroke={color} strokeWidth="1.8" fill={active ? color : "none"} />
+        <circle cx="16.2" cy="9" r="2.4" stroke={color} strokeWidth="1.8" fill={active ? color : "none"} />
+        <path d="M3.2 18.5c.5-2.8 2.7-4.5 5.8-4.5s5.3 1.7 5.8 4.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M13.6 18.5c.4-2 1.8-3.3 3.8-3.3 1.9 0 3.2 1.1 3.6 2.9" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "我的") {
+    return active ? (
+      <svg {...common}><circle cx="12" cy="8" r="3.4" fill={color} /><path d="M4.2 19.2c.6-3.6 3.4-5.6 7.8-5.6s7.2 2 7.8 5.6" fill={color} /></svg>
+    ) : (
+      <svg {...common} fill="none"><circle cx="12" cy="8" r="3.2" stroke={color} strokeWidth="1.8" /><path d="M4.5 19c.7-3.2 3.3-5 7.5-5s6.8 1.8 7.5 5" stroke={color} strokeWidth="1.8" strokeLinecap="round" /></svg>
+    );
+  }
+  // staff: 联盟 / 扫码核销 / 数据统计 — simple dots matching Figma capsule labels
+  return (
+    <svg {...common} fill="none">
+      <circle cx="12" cy="12" r="7" stroke={color} strokeWidth="1.8" fill={active ? color : "none"} />
+    </svg>
+  );
+}
+
+function TabBar({ active, kind = "staff" }) {
+  // C 端顾问可见：首页 | 我的 | 获客；非顾问仅前两项（本稿展示顾问态三 Tab）
+  const items = kind === "home" ? ["首页", "我的", "获客"] : ["联盟", "扫码核销", "数据统计"];
+  return (
+    <div style={{ flexShrink: 0 }}>
+      <div style={{ height: TAB_H, background: PAPER, boxShadow: "0 -0.5px 4px 0 rgba(0,0,0,0.08)", display: "flex" }}>
+        {items.map((item) => {
+          const on = item === active;
+          const color = on ? ORANGE : MUTED;
+          return (
+            <div key={item} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, color, paddingTop: 4 }}>
+              <TabIcon name={item} active={on} color={color} />
+              <span style={{ fontSize: 10, fontWeight: on ? 600 : 500, lineHeight: "14px" }}>{item}</span>
+            </div>
+          );
+        })}
+      </div>
+      <SafeBottom />
+    </div>
+  );
+}
+
+
+function Home() {
+  return (
+    <Shell tab="首页" tabKind="home" bg={PAGE} hideStatus>
+      <div style={{ height: "100%", background: PAGE, overflowY: "auto", fontFamily: UI_FONT }}>
+        <div style={{ height: STATUS_H, background: PAPER }} />
+        <div style={{ padding: "8px 16px 0", background: PAPER }}>
+          <div style={{ fontSize: 17, fontWeight: 600, textAlign: "center", color: INK }}>剑琅美遇</div>
+          <div style={{ marginTop: 10, height: 36, borderRadius: 18, background: PAGE, display: "flex", alignItems: "center", padding: "0 12px", gap: 8 }}>
+            <span style={{ fontSize: 13, color: INK, flexShrink: 0 }}>全国 ▾</span>
+            <span style={{ flex: 1, fontSize: 13, color: MUTED }}>搜门店名称或地址</span>
+            <span style={{ fontSize: 13, color: ORANGE, fontWeight: 600 }}>| 搜索</span>
+          </div>
+        </div>
+        <div style={{ padding: "14px 16px 8px", fontSize: 15, fontWeight: 600, color: INK }}>精选活动 · 热销推荐</div>
+        <div style={{ display: "flex", gap: 10, padding: "0 16px", overflowX: "auto" }}>
+          {[9, 8, 7.5].map((zhe, i) => (
+            <div key={zhe} style={{ width: 140, flexShrink: 0, background: PAPER, borderRadius: 10, border: CARD_EDGE, overflow: "hidden" }}>
+              <div style={{ height: 90, background: "#E8E8E8", position: "relative" }}>
+                <span style={{ position: "absolute", left: 0, top: 0, background: ORANGE, color: "#fff", fontSize: 11, padding: "2px 6px", borderRadius: "0 0 8px 0" }}>{zhe}折</span>
+              </div>
+              <div style={{ padding: 8 }}>
+                <div style={{ fontSize: 12, color: INK, lineHeight: "16px" }}>90分钟面部清洁...</div>
+                <div style={{ marginTop: 6, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ color: ORANGE, fontSize: 14, fontWeight: 700 }}>¥{(699 - i * 100).toFixed(0)}</span>
+                  <span style={{ background: ORANGE, color: "#fff", fontSize: 11, padding: "2px 8px", borderRadius: 10 }}>抢购</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 8, padding: "14px 16px", overflowX: "auto" }}>
+          {["全部", "美发", "美容", "美甲美睫", "我的门店"].map((t, i) => (
+            <span key={t} style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 14, fontSize: 12, display: "flex", alignItems: "center", background: i === 0 ? ORANGE : PAPER, color: i === 0 ? "#fff" : INK, border: i === 0 ? "none" : CARD_EDGE }}>{t}</span>
+          ))}
+        </div>
+        <div style={{ padding: "0 16px 16px" }}>
+          {["北森美发（静安大悦城店）", "北森美发（K11店）"].map((name) => (
+            <Lift key={name} style={{ marginBottom: 10 }}>
+              <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 12, display: "flex", gap: 10 }}>
+                <ImgPlaceholder size={72} radius={8} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>{name}</div>
+                  <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>4.6 · 300条评价 · 距您0.8km</div>
+                  <div style={{ marginTop: 4, fontSize: 11, color: OPEN }}>营业中 10:00 - 21:00</div>
+                </div>
+              </div>
+            </Lift>
+          ))}
+          <div style={{ marginTop: 8, fontSize: 11, color: MUTED, textAlign: "center" }}>顾问账号显示「获客」Tab → 进入联盟获客；非顾问无此 Tab</div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function Enter() {
+  return (
+    <Shell tab="联盟" bg={PAGE}>
+      <div style={{ height: "100%", background: PAGE, overflowY: "auto" }}>
+        <div style={{ padding: "12px 16px 0" }}>
+          <div style={{ fontSize: 12, lineHeight: "18px", color: MUTED }}>获客</div>
+          <div style={{ marginTop: 4, fontSize: 20, fontWeight: 600, lineHeight: "28px", color: INK }}>这次合作</div>
+          <div style={{ marginTop: 2, fontSize: 12, lineHeight: "18px", color: MUTED }}>林夏 · 西岸中环店</div>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <ShopHeroStrip height={140} />
+          <Lift style={{ margin: "-24px 16px 0" }}>
+            <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16 }}>
+              <div style={{ display: "flex" }}>
+                <ImgPlaceholder size={72} radius={8} />
+                <div style={{ marginLeft: 12, flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 17, fontWeight: 600, lineHeight: "24px", color: INK }}>GANO HAIR</div>
+                  <RatingRow score={4.8} reviews="128条" category="美发" compact />
+                  <div style={{ marginTop: 8, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <span style={{ background: CHIP, color: ORANGE, fontSize: 11, lineHeight: "18px", padding: "2px 6px", borderRadius: 4 }}>9 家适用</span>
+                    <span style={{ background: CHIP, color: ORANGE, fontSize: 11, lineHeight: "18px", padding: "2px 6px", borderRadius: 4 }}>上海 · 苏州</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Lift>
+        </div>
+        <div style={{ padding: "8px 16px 16px" }}>
+          <Lift>
+            <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "14px 16px", display: "flex", alignItems: "center" }}>
+              <ImgPlaceholder size={56} radius={8} />
+              <div style={{ marginLeft: 10, flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: INK, lineHeight: "20px" }}>玫丽盼护理体验</div>
+                <div style={{ marginTop: 4, display: "flex", alignItems: "baseline" }}>
+                  <span style={{ color: ORANGE, fontSize: 12 }}>¥</span>
+                  <span style={{ color: ORANGE, fontSize: 18, fontWeight: 700, marginLeft: 2 }}>480</span>
+                  <span style={{ marginLeft: 4, fontSize: 12, color: MUTED }}>起</span>
+                </div>
+              </div>
+              <span style={{ fontSize: 13, color: ORANGE, fontWeight: 500, flexShrink: 0 }}>去发券</span>
+            </div>
+          </Lift>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function TierCoupon({ title, chip, lines, note, left, total }) {
+  const pct = Math.round((left / total) * 100);
+  return (
+    <Lift kind="coupon" style={{ marginTop: 12 }}>
+    <div style={{ position: "relative", background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("58%") }}>
+      <div style={{ padding: "14px 16px 12px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>{title}</span>
+          {chip ? <span style={{ background: CHIP, color: ORANGE, fontSize: 11, padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>{chip}</span> : null}
+        </div>
+        {lines.map(([price, name], idx) => (
+          <div key={name} style={{ display: "flex", alignItems: "baseline", marginTop: idx ? 10 : 12 }}>
+            <span style={{ color: ORANGE, flexShrink: 0, display: "flex", alignItems: "baseline" }}>
+              <span style={{ fontSize: 12, marginRight: 2 }}>¥</span>
+              <span style={{ fontSize: 24, fontWeight: 700, lineHeight: "28px" }}>{price}</span>
+            </span>
+            <span style={{ marginLeft: 10, fontSize: 13, color: INK, lineHeight: "20px" }}>{name}</span>
+          </div>
+        ))}
+        {note ? <div style={{ fontSize: 12, color: MUTED, marginTop: 10, lineHeight: "18px" }}>{note}</div> : null}
+      </div>
+      <TicketPerforation />
+      <div style={{ display: "flex", alignItems: "center", padding: "8px 16px 14px", gap: 10 }}>
+        <div style={{ flex: 1, height: 8, borderRadius: 4, background: LINE, overflow: "hidden" }}>
+          <div style={{ width: pct + "%", height: "100%", background: left === 0 ? MUTED : ORANGE, borderRadius: 4 }} />
+        </div>
+        <span style={{ fontSize: 11, color: left === 0 ? MUTED : ORANGE, flexShrink: 0, fontWeight: 500 }}>剩余 {left}/{total}</span>
+      </div>
+    </div>
+    </Lift>
+  );
+}
+
+function Tiers() {
+  return (
+    <Shell tab="联盟" bg={PAGE}>
+      <div style={{ height: "100%", background: PAGE, overflowY: "auto" }}>
+        <PageTitleBar title="GANO HAIR" />
+        <div style={{ padding: "12px 16px 16px" }}>
+        <div style={{ fontSize: 12, lineHeight: "18px", color: MUTED }}>请依据顾客当前的丽妍雅集会员等级选择档位</div>
+        <TierCoupon
+          title="丽妍雅集 V3–V5"
+          chip="二选一"
+          lines={[["198", "首席设计师洗剪吹"], ["218", "法式头皮减压洗"]]}
+          note="两项择一，到店时由顾客确认"
+          left={60}
+          total={100}
+        />
+        <TierCoupon
+          title="丽妍雅集 V6–V10"
+          lines={[["480", "日本玫丽盼全球化护理"]]}
+          left={88}
+          total={100}
+        />
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function StaffCode() {
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", color: INK }}>
+      <StatusBar />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin", padding: "12px 16px" }}>
+        <Lift kind="coupon">
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("38%") }}>
+          <div style={{ background: "#F3E4D6", padding: "20px 16px 16px" }}>
+            <div style={{ fontSize: 11, letterSpacing: 1, color: "#8A6A52" }}>GANO HAIR · 联盟礼遇</div>
+            <div style={{ marginTop: 8, fontSize: 20, fontWeight: 600, color: "#3A2A22", lineHeight: "28px" }}>丽妍雅集会员专属</div>
+            <div style={{ marginTop: 6, fontSize: 12, lineHeight: "18px", color: "#6B5344" }}>一次护理体验 · 到店凭券核销</div>
+          </div>
+          <TicketPerforation />
+          <div style={{ padding: "4px 16px 20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "baseline", color: ORANGE }}>
+              <span style={{ fontSize: 14, marginRight: 4 }}>¥</span>
+              <span style={{ fontSize: 36, fontWeight: 700, lineHeight: "40px" }}>480</span>
+            </div>
+            <div style={{ marginTop: 6, fontSize: 15, fontWeight: 600, textAlign: "center", color: INK }}>日本玫丽盼全球化护理一次</div>
+            <div style={{ marginTop: 4, fontSize: 12, color: MUTED }}>会员礼遇 · 一次用完 · 9店通用</div>
+            <div style={{ marginTop: 16, padding: 10, background: PAGE, borderRadius: 8 }}>
+              <FakeQr size={168} />
+            </div>
+            <div style={{ marginTop: 12, fontSize: 14, fontWeight: 500, color: INK }}>请顾客用微信扫码领取</div>
+          </div>
+        </div>
+        </Lift>
+      </div>
+      <div style={{ flexShrink: 0, padding: "8px 16px 0", paddingBottom: SAFE_BOTTOM }}>
+        <div style={{ height: BTN_H, borderRadius: 22, background: LINE, color: MUTED, fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          仅限现场扫码 · 请勿转发
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StaffCodeV35() {
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", color: INK }}>
+      <StatusBar />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin", padding: "12px 16px" }}>
+        <Lift kind="coupon">
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("42%") }}>
+          <div style={{ background: "#F3E4D6", padding: "20px 16px 16px" }}>
+            <div style={{ fontSize: 11, letterSpacing: 1, color: "#8A6A52" }}>GANO HAIR · 联盟礼遇</div>
+            <div style={{ marginTop: 8, fontSize: 20, fontWeight: 600, color: "#3A2A22", lineHeight: "28px" }}>丽妍雅集会员专属</div>
+            <div style={{ marginTop: 6, fontSize: 12, lineHeight: "18px", color: "#6B5344" }}>两项择一 · 到店凭券核销</div>
+          </div>
+          <TicketPerforation />
+          <div style={{ padding: "8px 16px 20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ width: "100%" }}>
+              <div style={{ display: "flex", alignItems: "baseline" }}>
+                <span style={{ color: ORANGE, fontSize: 13, marginRight: 2 }}>¥</span>
+                <span style={{ color: ORANGE, fontSize: 24, fontWeight: 700, lineHeight: "28px" }}>198</span>
+                <span style={{ marginLeft: 10, fontSize: 14, color: INK, lineHeight: "20px" }}>首席设计师洗剪吹</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", marginTop: 10 }}>
+                <span style={{ color: ORANGE, fontSize: 13, marginRight: 2 }}>¥</span>
+                <span style={{ color: ORANGE, fontSize: 24, fontWeight: 700, lineHeight: "28px" }}>218</span>
+                <span style={{ marginLeft: 10, fontSize: 14, color: INK, lineHeight: "20px" }}>法式头皮减压洗</span>
+              </div>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 12, color: MUTED }}>会员礼遇 · 到店口头选一项 · 9店通用</div>
+            <div style={{ marginTop: 16, padding: 10, background: PAGE, borderRadius: 8 }}>
+              <FakeQr size={168} />
+            </div>
+            <div style={{ marginTop: 12, fontSize: 14, fontWeight: 500, color: INK }}>请顾客用微信扫码领取</div>
+          </div>
+        </div>
+        </Lift>
+      </div>
+      <div style={{ flexShrink: 0, padding: "8px 16px 0", paddingBottom: SAFE_BOTTOM }}>
+        <div style={{ height: BTN_H, borderRadius: 22, background: LINE, color: MUTED, fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          仅限现场扫码 · 请勿转发
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Poster({ title = "玫丽盼护理体验" }) {
+  return (
+    <div style={{ width: "100%", height: 120, borderRadius: 8, background: "#F3E4D6", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 14, boxSizing: "border-box", overflow: "hidden" }}>
+      <div style={{ fontSize: 11, letterSpacing: 1, color: "#8A6A52" }}>GANO HAIR</div>
+      <div style={{ marginTop: 4, fontSize: 16, fontWeight: 600, color: "#3A2A22" }}>{title}</div>
+    </div>
+  );
+}
+
+function ShopLanding() {
+  return (
+    <div style={{ height: "100%", background: PAGE, color: INK, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: STATUS_H, flexShrink: 0, background: "#2B2B2B" }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <ShopHeroStrip />
+        <Lift style={{ margin: "-16px 16px 0" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, position: "relative", padding: "14px 16px 12px", overflow: "hidden" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, lineHeight: "24px" }}>GANO HAIR</div>
+          <RatingRow score={4.8} reviews="128条" price="¥328/人" />
+          <div style={{ marginTop: 6, fontSize: 12, color: MUTED }}>美发</div>
+          <div style={{ marginTop: 12, height: 0.5, background: LINE }} />
+          <div style={{ marginTop: 10, display: "flex", alignItems: "center", fontSize: 12 }}>
+            <span style={{ color: OPEN, fontWeight: 600 }}>营业中</span>
+            <span style={{ marginLeft: 8, color: INK }}>10:00-22:00</span>
+          </div>
+          <div style={{ marginTop: 10, height: 0.5, background: LINE }} />
+          <div style={{ marginTop: 10, display: "flex", alignItems: "center" }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, color: INK }}>凯德晶萃广场</div>
+              <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>距你 1.2km</div>
+            </div>
+            <span style={{ fontSize: 12, color: MUTED }}>电话</span>
+            <ChevronRight />
+          </div>
+        </div>
+        </Lift>
+        <Lift style={{ margin: "8px 16px 16px" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "12px 16px 16px", overflow: "hidden" }}>
+          <ShopTabs active="联盟优惠" />
+          <AllianceDrop />
+        </div>
+        </Lift>
+      </div>
+    </div>
+  );
+}
+
+function WxScan() {
+  return (
+    <div style={{ height: "100%", background: "#111111", color: "#FFFFFF", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 48, paddingTop: 18, boxSizing: "border-box", position: "relative", display: "flex", alignItems: "center", flexShrink: 0 }}>
+        <span style={{ fontSize: 18, paddingLeft: 16 }}>×</span>
+        <span style={{ position: "absolute", left: 0, right: 0, top: 18, height: 30, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 600 }}>扫一扫</span>
+        <span style={{ marginLeft: "auto", fontSize: 13, paddingRight: 16 }}>相册</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 220, height: 220, position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: 22, height: 22, borderTop: "3px solid #FFFFFF", borderLeft: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: 22, height: 22, borderTop: "3px solid #FFFFFF", borderRight: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 22, height: 22, borderBottom: "3px solid #FFFFFF", borderLeft: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 22, height: 22, borderBottom: "3px solid #FFFFFF", borderRight: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+        </div>
+        <span style={{ marginTop: 16, fontSize: 13, opacity: 0.7 }}>对准顾问手机上的领取码</span>
+      </div>
+      <div style={{ height: 64, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-evenly", fontSize: 14 }}>
+        <span>我的二维码</span>
+        <span>识别相册</span>
+      </div>
+    </div>
+  );
+}
+
+function Claim() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: PAGE, color: INK, display: "flex", flexDirection: "column" }}>
+      <StatusBar />
+      <PageTitleBar title="领取详情" />
+      <div style={{ flex: 1, minHeight: 0, overflow: "auto", paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 16px" }}><Poster /></div>
+        <Lift style={{ margin: "8px 16px 0" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 14 }}>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ color: ORANGE, fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: ORANGE, fontSize: 28, fontWeight: 600 }}>480</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 17, fontWeight: 600 }}>日本玫丽盼全球化护理一次</div>
+        </div>
+        </Lift>
+        <Lift style={{ margin: "8px 16px 0" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 14 }}>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>仅限尚未成为GANO会员的女性顾客使用</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>每人限享 1 次，须一次使用完毕</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>请至少提前 3 天致电门店预约</div>
+          <div style={{ height: 0.5, background: LINE, margin: "12px 0" }} />
+          <div style={{ fontSize: 13 }}><span style={{ fontSize: 12, color: MUTED }}>有效期：</span>领券之日起三个月</div>
+          <div style={{ marginTop: 6, fontSize: 13 }}><span style={{ fontSize: 12, color: MUTED }}>适用：</span>GANO上海、苏州门店</div>
+        </div>
+        </Lift>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: PAPER, boxShadow: "0 -0.5px 4px 0 rgba(0,0,0,0.08)", padding: "8px 16px 0", paddingBottom: SAFE_BOTTOM }}>
+        <div style={{ height: BTN_H, borderRadius: 22, background: ORANGE, color: "#FFFFFF", textAlign: "center", lineHeight: "48px", fontSize: 16, fontWeight: 500 }}>领取</div>
+      </div>
+    </div>
+  );
+}
+
+function ClaimV35() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: PAGE, color: INK }}>
+      <div style={{ height: "100%", overflow: "auto", paddingTop: STATUS_H, paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 16px" }}><Poster title="两项择一护理礼遇" /></div>
+        <Lift style={{ margin: "8px 16px 0" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: ORANGE }}>两项择一 · 会员礼遇</div>
+          <div style={{ display: "flex", alignItems: "baseline", marginTop: 12 }}>
+            <span style={{ color: ORANGE, fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: ORANGE, fontSize: 24, fontWeight: 700 }}>198</span>
+            <span style={{ marginLeft: 8, fontSize: 14, color: INK }}>首席设计师洗剪吹</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", marginTop: 10 }}>
+            <span style={{ color: ORANGE, fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: ORANGE, fontSize: 24, fontWeight: 700 }}>218</span>
+            <span style={{ marginLeft: 8, fontSize: 14, color: INK }}>法式头皮减压洗</span>
+          </div>
+          <div style={{ marginTop: 10, fontSize: 12, color: MUTED }}>到店时口头确认体验哪一项</div>
+        </div>
+        </Lift>
+        <Lift style={{ margin: "8px 16px 0" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 14 }}>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>仅限尚未成为GANO会员的女性顾客使用</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>每人限享 1 次，须一次使用完毕</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>请至少提前 3 天致电门店预约</div>
+          <div style={{ height: 0.5, background: LINE, margin: "12px 0" }} />
+          <div style={{ fontSize: 13 }}><span style={{ fontSize: 12, color: MUTED }}>有效期：</span>领券之日起三个月</div>
+          <div style={{ marginTop: 6, fontSize: 13 }}><span style={{ fontSize: 12, color: MUTED }}>适用：</span>GANO上海、苏州门店</div>
+        </div>
+        </Lift>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: PAPER, boxShadow: "0 -0.5px 4px 0 rgba(0,0,0,0.08)", padding: "8px 16px 0", paddingBottom: SAFE_BOTTOM }}>
+        <div style={{ height: BTN_H, borderRadius: 22, background: ORANGE, color: "#FFFFFF", textAlign: "center", lineHeight: "48px", fontSize: 16, fontWeight: 500 }}>领取</div>
+      </div>
+    </div>
+  );
+}
+
+function CouponSheet({ success }) {
+  const [zoom, setZoom] = useState(false);
+  const shops = [
+    ["凯德晶萃店", "上海市静安区凯德晶萃"],
+    ["北外滩来福士店", "上海市虹口区东大名路"],
+    ["虹桥天地店", "上海市闵行区申长路"],
+    ["凯德虹口商业中心店", "上海市虹口区四川北路"],
+    ["人广来福士店", "上海市黄浦区西藏中路"],
+    ["长宁来福士店", "上海市长宁区长宁路"],
+    ["荟聚店", "上海市闵行区七莘路"],
+    ["苏州中心店", "苏州市工业园区星港街"],
+    ["仁恒仓街店", "苏州市姑苏区平江路仓街"],
+  ];
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", position: "relative" }}>
+      <StatusBar />
+      {success ? <PageTitleBar title="领取成功" /> : null}
+      <div style={{ flex: 1, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        {!success ? <div style={{ height: 8 }} /> : null}
+        <Lift kind="coupon" style={{ margin: 16 }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("52%") }}>
+          <Poster />
+          <div style={{ padding: "14px 16px 16px" }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: INK, lineHeight: "22px" }}>日本玫丽盼全球化护理一次</div>
+            <div style={{ marginTop: 8, display: "flex", alignItems: "baseline" }}>
+              <span style={{ fontSize: 13, color: ORANGE, marginRight: 4 }}>¥</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: ORANGE, lineHeight: "32px" }}>480</span>
+              <span style={{ marginLeft: 8, fontSize: 12, color: MUTED }}>会员礼遇</span>
+            </div>
+            <div style={{ marginTop: 6, fontSize: 12, color: MUTED }}>9店通用 · 有效期至 2027-02-02</div>
+            <div style={{ margin: "12px -16px 0" }}>
+              <TicketPerforation />
+            </div>
+            <div
+              onClick={(event) => { event.stopPropagation(); setZoom(true); }}
+              style={{ marginTop: 12, display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}
+            >
+              <div style={{ padding: 8, background: PAGE, borderRadius: 8 }}>
+                <FakeQr size={148} />
+              </div>
+              <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>券号 A8K29 · 点击放大</div>
+            </div>
+          </div>
+        </div>
+        </Lift>
+        <Lift style={{ margin: "0 16px 16px" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16, overflow: "hidden" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: INK, marginBottom: 4 }}>使用说明</div>
+          <RuleList items={["仅限尚未成为GANO会员的女性顾客使用", "每人限享 1 次，须一次使用完毕", "请至少提前 3 天致电门店预约"]} />
+        </div>
+        </Lift>
+        <Lift style={{ margin: "0 16px 24px" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "4px 16px 8px", overflow: "hidden" }}>
+          <div style={{ padding: "12px 0 6px", fontSize: 14, fontWeight: 600, color: INK }}>适用门店</div>
+          {shops.map(([name, address]) => (
+            <div key={name} style={{ display: "flex", alignItems: "center", padding: "12px 0", borderTop: "0.5px solid #EDEDED" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{name}</div>
+                <div style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 2 }}>
+                  <span style={{ fontSize: 11, color: MUTED, lineHeight: "16px" }}>{address}</span>
+                  <ChevronRight size={12} />
+                </div>
+              </div>
+              <div style={{ width: 40, marginLeft: 8, textAlign: "center", flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, margin: "0 auto", borderRadius: 8, background: CHIP, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinejoin="round">
+                    <path d="M7 3h3l1.5 4-2.2 1.3a12 12 0 0 0 5.4 5.4L16 11.5 20 13v3a2 2 0 0 1-2 2A15 15 0 0 1 5 5a2 2 0 0 1 2-2z" />
+                  </svg>
+                </div>
+                <div style={{ marginTop: 2, fontSize: 10, color: MUTED }}>预约</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        </Lift>
+      </div>
+      {zoom ? (
+        <div onClick={(event) => { event.stopPropagation(); setZoom(false); }} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: PAPER, padding: 16, borderRadius: 12 }}>
+            <FakeQr size={260} />
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TicketFresh() {
+  return <CouponSheet success />;
+}
+
+function TicketV35() {
+  const [zoom, setZoom] = useState(false);
+  const shops = [
+    ["凯德晶萃店", "上海市静安区凯德晶萃"],
+    ["北外滩来福士店", "上海市虹口区东大名路"],
+    ["虹桥天地店", "上海市闵行区申长路"],
+    ["凯德虹口商业中心店", "上海市虹口区四川北路"],
+    ["人广来福士店", "上海市黄浦区西藏中路"],
+    ["长宁来福士店", "上海市长宁区长宁路"],
+    ["荟聚店", "上海市闵行区七莘路"],
+    ["苏州中心店", "苏州市工业园区星港街"],
+    ["仁恒仓街店", "苏州市姑苏区平江路仓街"],
+  ];
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", position: "relative" }}>
+      <StatusBar />
+      <PageTitleBar title="领取成功" />
+      <div style={{ flex: 1, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <Lift kind="coupon" style={{ margin: 16 }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("48%") }}>
+          <Poster title="两项择一护理礼遇" />
+          <div style={{ padding: "14px 16px 16px" }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: ORANGE }}>两项择一 · 会员礼遇</div>
+            <div style={{ marginTop: 10, fontSize: 15, fontWeight: 600, color: INK, lineHeight: "22px" }}>¥198 首席设计师洗剪吹</div>
+            <div style={{ marginTop: 6, fontSize: 15, fontWeight: 600, color: INK, lineHeight: "22px" }}>¥218 法式头皮减压洗</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>到店口头选一项 · 9店通用 · 有效期至 2027-02-02</div>
+            <div style={{ margin: "12px -16px 0" }}>
+              <TicketPerforation />
+            </div>
+            <div
+              onClick={(event) => { event.stopPropagation(); setZoom(true); }}
+              style={{ marginTop: 12, display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}
+            >
+              <div style={{ padding: 8, background: PAGE, borderRadius: 8 }}>
+                <FakeQr size={148} />
+              </div>
+              <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>券号 B3M17 · 点击放大</div>
+            </div>
+          </div>
+        </div>
+        </Lift>
+        <Lift style={{ margin: "0 16px 16px" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16, overflow: "hidden" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: INK, marginBottom: 4 }}>使用说明</div>
+          <RuleList items={["仅限尚未成为GANO会员的女性顾客使用", "每人限享 1 次，须一次使用完毕", "请至少提前 3 天致电门店预约", "到店时口头确认体验哪一项"]} />
+        </div>
+        </Lift>
+        <Lift style={{ margin: "0 16px 24px" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "4px 16px 8px", overflow: "hidden" }}>
+          <div style={{ padding: "12px 0 6px", fontSize: 14, fontWeight: 600, color: INK }}>适用门店</div>
+          {shops.map(([name, address]) => (
+            <div key={name} style={{ display: "flex", alignItems: "center", padding: "12px 0", borderTop: "0.5px solid #EDEDED" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>{name}</div>
+                <div style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 2 }}>
+                  <span style={{ fontSize: 11, color: MUTED, lineHeight: "16px" }}>{address}</span>
+                  <ChevronRight size={12} />
+                </div>
+              </div>
+              <div style={{ width: 40, marginLeft: 8, textAlign: "center", flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, margin: "0 auto", borderRadius: 8, background: CHIP, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinejoin="round">
+                    <path d="M7 3h3l1.5 4-2.2 1.3a12 12 0 0 0 5.4 5.4L16 11.5 20 13v3a2 2 0 0 1-2 2A15 15 0 0 1 5 5a2 2 0 0 1 2-2z" />
+                  </svg>
+                </div>
+                <div style={{ marginTop: 2, fontSize: 10, color: MUTED }}>预约</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        </Lift>
+      </div>
+      {zoom ? (
+        <div onClick={(event) => { event.stopPropagation(); setZoom(false); }} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: PAPER, padding: 16, borderRadius: 12 }}>
+            <FakeQr size={260} />
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TicketShow() {
+  return (
+    <div style={{ height: "100%", background: PAGE, color: INK, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: STATUS_H, flexShrink: 0, background: "#2B2B2B" }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <ShopHeroStrip />
+        <Lift style={{ margin: "-16px 16px 0" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "14px 16px 12px", overflow: "hidden" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, lineHeight: "24px" }}>GANO HAIR</div>
+          <RatingRow score={4.8} reviews="128条" price="¥328/人" />
+          <div style={{ marginTop: 6, fontSize: 12, color: MUTED }}>美发 · 凯德晶萃广场</div>
+        </div>
+        </Lift>
+        <Lift style={{ margin: "8px 16px 16px" }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "12px 16px 16px", overflow: "hidden" }}>
+          <div style={{ display: "flex", fontSize: 14, gap: 20 }}>
+            <span style={{ color: INK, fontWeight: 600, borderBottom: `2px solid ${ORANGE}`, paddingBottom: 6 }}>热销</span>
+          </div>
+          <DealCoupon
+            title="日本玫丽盼全球化护理一次"
+            price="480"
+            meta={["9店通用", "有效期至 2027-02-02"]}
+            action="立即使用"
+          />
+          {GANO_MENU.map(([name, price]) => (
+            <SaleRow key={name} name={name} price={price} />
+          ))}
+        </div>
+        </Lift>
+      </div>
+    </div>
+  );
+}
+
+function ShopTabs({ active }) {
+  return (
+    <div style={{ display: "flex", gap: 20, fontSize: 14 }}>
+      {(["联盟优惠", "热销"]).map((name) => (
+        <span key={name} style={{ color: name === active ? INK : MUTED, fontWeight: name === active ? 600 : 400, borderBottom: name === active ? `2px solid ${ORANGE}` : "2px solid transparent", paddingBottom: 6 }}>{name}</span>
+      ))}
+    </div>
+  );
+}
+
+function AllianceDrop() {
+  return (
+    <Lift kind="coupon" style={{ marginTop: 12 }}>
+    <div style={{ position: "relative", background: CHIP, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("62%") }}>
+      <AllianceMark />
+      <div style={{ padding: "22px 16px 0", textAlign: "center" }}>
+        <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: 0.5, color: ORANGE }}>丽妍雅集会员专属礼遇</div>
+        <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", justifyContent: "center", color: ORANGE }}>
+          <span style={{ fontSize: 14, fontWeight: 500, marginRight: 4 }}>¥</span>
+          <span style={{ fontSize: 40, fontWeight: 700, lineHeight: "44px" }}>480</span>
+        </div>
+        <div style={{ marginTop: 4, fontSize: 15, fontWeight: 600, color: INK }}>日本玫丽盼全球化护理一次</div>
+        <div style={{ marginTop: 4, fontSize: 12, color: MUTED }}>9店通用 · 到店核销</div>
+      </div>
+      <div style={{ marginTop: 12 }}>
+        <TicketPerforation color="rgba(255,96,2,0.28)" />
+      </div>
+      <div style={{ padding: "10px 16px 16px" }}>
+        <div style={{ height: 40, borderRadius: 20, background: ORANGE, color: "#FFFFFF", fontSize: 15, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>立即领取</div>
+        <div style={{ marginTop: 8, fontSize: 11, color: MUTED, textAlign: "center" }}>点按钮直接领到券 · 点券面其他区域进领取详情</div>
+      </div>
+    </div>
+    </Lift>
+  );
+}
+
+const GANO_MENU = [
+  ["首席设计师洗剪吹", "298"],
+  ["法式头皮减压洗", "268"],
+  ["日本玫丽盼全球化护理", "680"],
+];
+
+function SaleRow({ name, price }) {
+  return (
+    <div style={{ marginTop: 14, display: "flex" }}>
+      <ImgPlaceholder size={72} radius={8} />
+      <div style={{ marginLeft: 10, flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ fontSize: 14, fontWeight: 500, lineHeight: "20px", color: INK }}>{name}</div>
+        <div style={{ marginTop: "auto", display: "flex", alignItems: "flex-end" }}>
+          <span style={{ color: ORANGE, display: "flex", alignItems: "baseline" }}>
+            <span style={{ fontSize: 11, marginRight: 2 }}>¥</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>{price}</span>
+          </span>
+          <span style={{ marginLeft: "auto", minWidth: 52, height: 26, padding: "0 10px", borderRadius: 13, background: ORANGE, color: "#FFFFFF", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>抢购</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Camera() {
+  return (
+    <div style={{ height: "100%", background: "#111111", color: "#FFFFFF", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 52, paddingTop: 20, boxSizing: "border-box", display: "flex", alignItems: "center", position: "relative" }}>
+        <span style={{ fontSize: 14, paddingLeft: 16 }}>关闭</span>
+        <span style={{ position: "absolute", left: 0, right: 0, textAlign: "center", fontSize: 17, fontWeight: 600 }}>扫码核销</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 220, height: 220, position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: 28, height: 3, background: ORANGE }} />
+          <div style={{ position: "absolute", top: 0, left: 0, width: 3, height: 28, background: ORANGE }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: 28, height: 3, background: ORANGE }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: 3, height: 28, background: ORANGE }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 28, height: 3, background: ORANGE }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 3, height: 28, background: ORANGE }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 3, background: ORANGE }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 3, height: 28, background: ORANGE }} />
+        </div>
+        <span style={{ fontSize: 13, marginTop: 16 }}>对准顾客券上的二维码</span>
+      </div>
+      <div style={{ height: 72, background: "#1A1A1A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 160, height: 40, borderRadius: 22, border: "1px solid rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>从相册选择</div>
+      </div>
+    </div>
+  );
+}
+
+function DealCoupon({ title, price, meta = [], action = "立即使用", disabled = false }) {
+  return (
+    <Lift kind="coupon" style={{ marginTop: 12 }}>
+    <div style={{ position: "relative", background: disabled ? LINE : CHIP, borderRadius: CARD_R, border: CARD_EDGE, ...punchVerticalMask(86, 6) }}>
+      <AllianceMark muted={disabled} />
+      <div style={{ display: "flex", alignItems: "center", minHeight: 100, paddingTop: 6 }}>
+        <div style={{ width: 92, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "18px 6px 16px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", color: disabled ? MUTED : ORANGE }}>
+            <span style={{ fontSize: 12, marginRight: 2 }}>¥</span>
+            <span style={{ fontSize: 28, fontWeight: 700, lineHeight: "32px" }}>{price}</span>
+          </div>
+          <div style={{ marginTop: 2, fontSize: 11, color: disabled ? MUTED : ORANGE }}>会员礼遇</div>
+        </div>
+        <div style={{ position: "relative", alignSelf: "stretch", width: 0, margin: "10px 0" }}>
+          <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, borderLeft: "1px dashed rgba(0,0,0,0.12)" }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0, padding: "18px 12px 16px 14px", display: "flex", alignItems: "center" }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: disabled ? MUTED : INK, lineHeight: "20px" }}>{title}</div>
+            {meta.map((line) => (
+              <div key={line} style={{ marginTop: 4, fontSize: 11, color: MUTED, lineHeight: "16px" }}>{line}</div>
+            ))}
+          </div>
+          {action ? (
+            <span style={{ marginLeft: 8, flexShrink: 0, height: 28, padding: "0 10px", borderRadius: 14, background: disabled ? MUTED : ORANGE, color: "#FFFFFF", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center" }}>{action}</span>
+          ) : null}
+        </div>
+      </div>
+    </div>
+    </Lift>
+  );
+}
+
+function AllianceMark({ muted = false }) {
+  return (
+    <span style={{ position: "absolute", top: 0, left: 0, zIndex: 3, height: 18, padding: "0 8px 0 6px", background: muted ? MUTED : ORANGE, color: "#FFFFFF", fontSize: 11, fontWeight: 500, lineHeight: "18px", borderRadius: "0 0 8px 0" }}>
+      联盟券
+    </span>
+  );
+}
+
+function MqCoupon({ disabled, expire, foot, reason }) {
+  return (
+    <Lift kind="coupon" style={{ margin: "0 16px 12px" }}>
+    <div style={{ position: "relative", background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, ...punchSideMask("55%") }}>
+      <AllianceMark muted={!!disabled} />
+      <div style={{ display: "flex", padding: "22px 12px 10px 0" }}>
+        <div style={{ width: 92, flexShrink: 0, textAlign: "center" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", color: disabled ? MUTED : ORANGE }}>
+            <span style={{ fontSize: 13, marginRight: 2 }}>¥</span>
+            <span style={{ fontSize: 30, fontWeight: 700, lineHeight: "36px" }}>480</span>
+          </div>
+          <div style={{ fontSize: 11, color: disabled ? MUTED : ORANGE }}>会员礼遇</div>
+        </div>
+        <div style={{ flex: 1, minWidth: 0, paddingTop: 4, paddingRight: 12, borderLeft: "1px dashed rgba(0,0,0,0.12)", paddingLeft: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, lineHeight: "20px", color: disabled ? MUTED : INK }}>日本玫丽盼全球化护理一次</div>
+          <div style={{ marginTop: 6, fontSize: 12, lineHeight: "18px", color: disabled ? MUTED : ORANGE }}>{expire}</div>
+        </div>
+      </div>
+      <TicketPerforation inset={12} color="rgba(0,0,0,0.12)" />
+      {reason ? (
+        <div style={{ padding: "4px 16px 14px" }}>
+          <div style={{ fontSize: 12, lineHeight: "16px", color: ORANGE, marginBottom: 4 }}>不可用原因</div>
+          <div style={{ fontSize: 12, lineHeight: "16px", color: INK }}>{reason}</div>
+        </div>
+      ) : (
+        <div style={{ padding: "4px 16px 14px", fontSize: 12, lineHeight: "16px", color: MUTED }}>{foot}</div>
+      )}
+    </div>
+    </Lift>
+  );
+}
+
+function ResultSheet({ title, children }) {
+  return (
+    <div style={{ height: "100%", background: PAGE, color: INK, display: "flex", flexDirection: "column" }}>
+      <StatusBar />
+      <PageTitleBar title={title} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin", paddingTop: 8 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Redeemed() {
+  return (
+    <ResultSheet title="核销成功">
+      <div style={{ margin: "0 16px 8px", fontSize: 14, fontWeight: 600, color: INK }}>已核销的券</div>
+      <MqCoupon expire="有效期至 2027-02-02" foot="9店通用。仅限尚未成为GANO会员的女性顾客使用，须一次使用完毕。" />
+      <Lift style={{ margin: "4px 16px 16px" }}>
+      <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: INK }}>顾客档案</div>
+        <div style={{ marginTop: 10, display: "flex", alignItems: "center" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 18, background: CHIP, color: ORANGE, fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>顾</div>
+          <div style={{ marginLeft: 10 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: INK }}>138****6621</div>
+            <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>券号 A8K29</div>
+          </div>
+        </div>
+        {[
+          ["丽妍雅集档位", "V6–V10"],
+          ["领券时间", "2026-11-02 11:20"],
+          ["核销时间", "2026-11-02 14:06"],
+        ].map(([label, value]) => (
+          <div key={label} style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "0.5px solid #EDEDED" }}>
+            <span style={{ fontSize: 12, color: MUTED }}>{label}</span>
+            <span style={{ fontSize: 13, color: INK }}>{value}</span>
+          </div>
+        ))}
+        <div style={{ marginTop: 12, fontSize: 12, color: MUTED }}>备注</div>
+        <div style={{ marginTop: 6, minHeight: 64, background: PAGE, borderRadius: 8, padding: 10, fontSize: 13, color: MUTED }}>填写本次备注</div>
+      </div>
+      </Lift>
+    </ResultSheet>
+  );
+}
+
+function TicketUsed() {
+  return (
+    <ResultSheet title="联盟券">
+      <div style={{ margin: "0 16px 8px", fontSize: 14, fontWeight: 600, color: INK }}>已核销的券</div>
+      <MqCoupon disabled expire="有效期至 2027-02-02" foot="9店通用。仅限尚未成为GANO会员的女性顾客使用，须一次使用完毕。" />
+    </ResultSheet>
+  );
+}
+
+/** 顾客端：店员刚扫码核销成功后的反馈页（非店员档案页） */
+function CustomerRedeemed() {
+  return (
+    <div style={{ height: "100%", background: PAGE, color: INK, display: "flex", flexDirection: "column", fontFamily: UI_FONT }}>
+      <StatusBar />
+      <PageTitleBar title="核销成功" />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+        <div style={{ padding: "20px 16px 8px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ width: 56, height: 56, borderRadius: 28, background: "#E8F8EF", color: OPEN, fontSize: 28, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✓</div>
+          <div style={{ marginTop: 12, fontSize: 20, fontWeight: 600, color: INK }}>核销成功</div>
+          <div style={{ marginTop: 6, fontSize: 13, color: MUTED, textAlign: "center", lineHeight: "20px" }}>权益已使用完毕，祝你体验愉快</div>
+        </div>
+        <div style={{ margin: "0 16px 8px", fontSize: 14, fontWeight: 600, color: INK }}>已核销的券</div>
+        <MqCoupon disabled expire="有效期至 2027-02-02" foot="9店通用。仅限尚未成为GANO会员的女性顾客使用，须一次使用完毕。" />
+        <Lift style={{ margin: "4px 16px 16px" }}>
+          <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>核销信息</div>
+            {[
+              ["券号", "A8K29"],
+              ["项目", "日本玫丽盼全球化护理一次"],
+              ["核销门店", "凯德晶萃店"],
+              ["核销时间", "2026-11-02 14:06"],
+            ].map(([label, value]) => (
+              <div key={label} style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "0.5px solid #EDEDED", gap: 12 }}>
+                <span style={{ fontSize: 12, color: MUTED, flexShrink: 0 }}>{label}</span>
+                <span style={{ fontSize: 13, color: INK, textAlign: "right" }}>{value}</span>
+              </div>
+            ))}
+          </div>
+        </Lift>
+      </div>
+      <div style={{ flexShrink: 0, padding: "8px 16px 0", paddingBottom: SAFE_BOTTOM, background: PAPER, boxShadow: "0 -0.5px 4px 0 rgba(0,0,0,0.08)" }}>
+        <div style={{ height: BTN_H, borderRadius: 22, background: ORANGE, color: "#FFFFFF", fontSize: 16, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>完成</div>
+        <div style={{ marginTop: 8, textAlign: "center", fontSize: 12, color: MUTED }}>返回店铺 / 首页</div>
+      </div>
+    </div>
+  );
+}
+
+function ShowQr() {
+  return (
+    <div style={{ height: "100%", background: "#111111", color: "#FFFFFF", display: "flex", flexDirection: "column", fontFamily: UI_FONT }}>
+      <div style={{ height: 52, paddingTop: 20, boxSizing: "border-box", display: "flex", alignItems: "center", position: "relative", flexShrink: 0 }}>
+        <span style={{ fontSize: 14, paddingLeft: 16 }}>关闭</span>
+        <span style={{ position: "absolute", left: 0, right: 0, textAlign: "center", fontSize: 17, fontWeight: 600 }}>出示核销码</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <div style={{ background: PAPER, borderRadius: 12, padding: 20, width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <FakeQr size={220} />
+          <div style={{ marginTop: 16, fontSize: 16, fontWeight: 600, color: INK, textAlign: "center" }}>日本玫丽盼全球化护理一次</div>
+          <div style={{ marginTop: 6, fontSize: 13, color: MUTED }}>券号 A8K29 · 有效期至 2027-02-02</div>
+        </div>
+        <div style={{ marginTop: 16, fontSize: 13, opacity: 0.75 }}>请出示给门店店员扫码核销</div>
+      </div>
+      <div style={{ height: SAFE_BOTTOM, flexShrink: 0 }} />
+    </div>
+  );
+}
+
+function SessionExpired() {
+  return (
+    <div style={{ height: "100%", background: PAGE, color: INK, display: "flex", flexDirection: "column", fontFamily: UI_FONT }}>
+      <StatusBar />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32 }}>
+        <div style={{ width: 56, height: 56, borderRadius: 28, background: LINE, color: MUTED, fontSize: 28, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>!</div>
+        <div style={{ marginTop: 16, fontSize: 18, fontWeight: 600 }}>领取码已失效</div>
+        <div style={{ marginTop: 8, fontSize: 13, lineHeight: "20px", color: MUTED, textAlign: "center" }}>该码已过期、已轮换或无效。请让顾问重新亮码后再扫。</div>
+        <div style={{ marginTop: 24, height: BTN_H, width: "100%", maxWidth: 320, borderRadius: 22, background: PAPER, border: CARD_EDGE, color: INK, fontSize: 15, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>我知道了</div>
+      </div>
+      <SafeBottom />
+    </div>
+  );
+}
+
+function AlreadyClaimed() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: PAGE, color: INK, fontFamily: UI_FONT }}>
+      <div style={{ height: "100%", overflow: "auto", paddingTop: STATUS_H, paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 16px" }}><Poster /></div>
+        <Lift style={{ margin: "8px 16px 0" }}>
+          <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 14 }}>
+            <div style={{ display: "flex", alignItems: "baseline" }}>
+              <span style={{ color: ORANGE, fontSize: 14, fontWeight: 600 }}>¥</span>
+              <span style={{ color: ORANGE, fontSize: 28, fontWeight: 700 }}>480</span>
+            </div>
+            <div style={{ marginTop: 8, fontSize: 17, fontWeight: 600 }}>日本玫丽盼全球化护理一次</div>
+          </div>
+        </Lift>
+      </div>
+      <div className="mask show" style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, background: "rgba(0,0,0,0.45)" }} />
+      <div className="dialog show" style={{ position: "absolute", left: 24, right: 24, top: "32%", background: PAPER, borderRadius: 12, padding: "24px 20px 20px" }}>
+        <div style={{ fontSize: 17, fontWeight: 600, textAlign: "center" }}>你已领取过</div>
+        <div style={{ marginTop: 8, fontSize: 13, lineHeight: "20px", color: MUTED, textAlign: "center" }}>本活动每人限享 1 次。可到线上「我的券」查看已领的券。</div>
+        <div style={{ marginTop: 20, height: BTN_H, borderRadius: 22, background: ORANGE, color: "#FFFFFF", textAlign: "center", lineHeight: "48px", fontSize: 16, fontWeight: 500 }}>完成</div>
+      </div>
+    </div>
+  );
+}
+
+function ExpiredStaff() {
+  return (
+    <ResultSheet title="核销结果">
+      <div style={{ margin: "0 16px 8px", fontSize: 14, fontWeight: 600, color: INK }}>不可用的券</div>
+      <MqCoupon disabled expire="2026-08-01 已过期" foot="" reason="该优惠券已过期，无法正常使用" />
+    </ResultSheet>
+  );
+}
+
+function TicketStale() {
+  return (
+    <ResultSheet title="联盟券">
+      <div style={{ margin: "0 16px 8px", fontSize: 14, fontWeight: 600, color: INK }}>不可用的券</div>
+      <MqCoupon disabled expire="2026-08-01 已过期" foot="" reason="该优惠券已过期，无法正常使用" />
+    </ResultSheet>
+  );
+}
+
+function Review() {
+  return (
+    <Shell tab="联盟" bg={PAGE}>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+          <ServiceHero tag="待评价" />
+          <Lift style={{ margin: "12px 16px 16px" }}>
+          <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16 }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: INK }}>这次服务</div>
+            <div style={{ marginTop: 6, fontSize: 13, color: MUTED }}>填写备注与评价，回写到丽妍雅集</div>
+            <div style={{ marginTop: 16, fontSize: 13, color: "#333333" }}>备注</div>
+            <div style={{ marginTop: 8, minHeight: 88, boxSizing: "border-box", background: PAGE, borderRadius: CARD_R, padding: 16, fontSize: 13, color: INK }}>头皮敏感，手法放轻了</div>
+            <div style={{ marginTop: 16, fontSize: 13, color: "#333333" }}>评价</div>
+            <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+              <span style={{ flex: 1, height: 32, borderRadius: 16, background: CHIP, color: ORANGE, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>满意</span>
+              <span style={{ flex: 1, height: 32, borderRadius: 16, background: "#FFFFFF", color: "#333333", border: `1px solid ${BORDER}`, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>一般</span>
+              <span style={{ flex: 1, height: 32, borderRadius: 16, background: "#FFFFFF", color: "#333333", border: `1px solid ${BORDER}`, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>不满意</span>
+            </div>
+          </div>
+          </Lift>
+        </div>
+        <div style={{ flexShrink: 0, padding: "12px 16px 0", paddingBottom: SAFE_BOTTOM, background: PAPER, boxShadow: "0 -0.5px 4px 0 rgba(0,0,0,0.08)" }}>
+          <div style={{ height: BTN_H, borderRadius: 22, background: ORANGE, color: "#FFFFFF", fontSize: 16, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", maxWidth: 370, margin: "0 auto" }}>保存</div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+/** @deprecated 09-看回写已删；Screen('feedback') 改指 OrderDetail */
+function Feedback() {
+  return <OrderDetail />;
+}
+
+function Manual() {
+  return (
+    <Shell tab="联盟" bg={PAGE}>
+      <div style={{ height: "100%", overflowY: "auto", background: PAGE }}>
+        <div style={{ padding: "12px 16px 0" }}>
+          <div style={{ fontSize: 20, fontWeight: 600, color: INK }}>未进系统</div>
+          <div style={{ marginTop: 8, fontSize: 13, lineHeight: "20px", color: MUTED }}>过期券不核销。若仍接待，只记在店里。</div>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <ServiceHero tag="系统未核销" />
+        </div>
+        <div style={{ padding: "12px 16px 16px" }}>
+        <Lift>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: "14px 12px" }}>
+          <div style={{ display: "flex" }}>
+            <span style={{ width: 56, fontSize: 12, color: MUTED }}>券号</span>
+            <span style={{ flex: 1, fontSize: 13, color: INK }}>A8K29</span>
+          </div>
+          <div style={{ display: "flex", marginTop: 10 }}>
+            <span style={{ width: 56, fontSize: 12, color: MUTED }}>项目</span>
+            <span style={{ flex: 1, fontSize: 13, color: INK }}>日本玫丽盼全球化护理一次</span>
+          </div>
+          <div style={{ display: "flex", marginTop: 10 }}>
+            <span style={{ width: 56, fontSize: 12, color: MUTED }}>状态</span>
+            <span style={{ flex: 1, fontSize: 13, color: ORANGE }}>系统未核销</span>
+          </div>
+        </div>
+        </Lift>
+        <div style={{ marginTop: 12, fontSize: 12, color: MUTED }}>丽妍雅集收不到这条。</div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function ChevronDown({ size = 12, color = MUTED }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M3 4.5L6 7.5L9 4.5" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const LOG_TYPES = ["亮码", "扫码", "领取", "核销"];
+
+const LOG_DAY_DATA = {
+  亮码: [
+    { date: "11月03日", total: 6, amount: "0", rows: [["凯德晶萃店", 3, "0"], ["来福士店", 2, "0"], ["西岸中环店", 1, "0"]] },
+    { date: "11月02日", total: 7, amount: "0", rows: [["凯德晶萃店", 4, "0"], ["来福士店", 2, "0"], ["静安嘉里店", 1, "0"]] },
+    { date: "11月01日", total: 5, amount: "0", rows: [["凯德晶萃店", 3, "0"], ["来福士店", 2, "0"]] },
+  ],
+  扫码: [
+    { date: "11月03日", total: 4, amount: "0", rows: [["凯德晶萃店", 2, "0"], ["来福士店", 2, "0"]] },
+    { date: "11月02日", total: 4, amount: "0", rows: [["凯德晶萃店", 3, "0"], ["来福士店", 1, "0"]] },
+    { date: "11月01日", total: 3, amount: "0", rows: [["凯德晶萃店", 2, "0"], ["静安嘉里店", 1, "0"]] },
+  ],
+  领取: [
+    { date: "11月03日", total: 3, amount: "0", rows: [["凯德晶萃店", 2, "0"], ["来福士店", 1, "0"]] },
+    { date: "11月02日", total: 4, amount: "0", rows: [["凯德晶萃店", 2, "0"], ["来福士店", 1, "0"], ["西岸中环店", 1, "0"]] },
+    { date: "11月01日", total: 2, amount: "0", rows: [["凯德晶萃店", 2, "0"]] },
+  ],
+  核销: [
+    { date: "11月03日", total: 2, amount: "960", rows: [["凯德晶萃店", 1, "480"], ["来福士店", 1, "480"]] },
+    { date: "11月02日", total: 1, amount: "480", rows: [["凯德晶萃店", 1, "480"]] },
+    { date: "11月01日", total: 1, amount: "480", rows: [["静安嘉里店", 1, "480"]] },
+  ],
+};
+
+const STORE_TAB_DATES = ["11月03日", "11月02日", "11月01日", "10月31日"];
+
+const STORE_TAB_CARDS = [
+  {
+    shop: "凯德晶萃店",
+    people: 3,
+    amount: "1440",
+    rows: [
+      ["138****6621", "西岸中环店", "11/02", "480"],
+      ["139****8810", "徐汇店", "11/02", "480"],
+      ["186****2209", "西岸中环店", "11/01", "480"],
+    ],
+  },
+  {
+    shop: "来福士店",
+    people: 2,
+    amount: "960",
+    rows: [
+      ["137****4412", "西岸中环店", "11/03", "480"],
+      ["159****7733", "静安店", "11/02", "480"],
+    ],
+  },
+  {
+    shop: "静安嘉里店",
+    people: 1,
+    amount: "480",
+    rows: [["150****9090", "西岸中环店", "11/01", "480"]],
+  },
+];
+
+function FilterChip({ label, active, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        appearance: "none",
+        border: active ? `1px solid ${ORANGE}` : `1px solid ${LINE}`,
+        background: active ? CHIP : PAPER,
+        color: active ? ORANGE : INK,
+        borderRadius: 16,
+        height: 30,
+        padding: "0 12px",
+        fontSize: 13,
+        fontFamily: UI_FONT,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        flexShrink: 0,
+        cursor: "pointer",
+      }}
+    >
+      <span>{label}</span>
+      <ChevronDown color={active ? ORANGE : MUTED} />
+    </button>
+  );
+}
+
+function LogsSubTabs({ tab, onChange }) {
+  return (
+    <div style={{ display: "flex", gap: 24, padding: "0 16px", background: PAPER, borderBottom: `0.5px solid ${LINE}` }}>
+      {["日志", "门店"].map((name) => {
+        const on = tab === name;
+        return (
+          <button
+            key={name}
+            type="button"
+            onClick={() => onChange(name)}
+            style={{
+              appearance: "none",
+              border: "none",
+              background: "transparent",
+              padding: "10px 0 12px",
+              fontSize: 15,
+              fontWeight: on ? 600 : 400,
+              color: on ? ORANGE : MUTED,
+              borderBottom: on ? `2px solid ${ORANGE}` : "2px solid transparent",
+              fontFamily: UI_FONT,
+              cursor: "pointer",
+            }}
+          >
+            {name}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function LogsDayCard({ day, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <Lift style={{ marginBottom: 10 }}>
+      <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, overflow: "hidden" }}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          style={{
+            appearance: "none",
+            border: "none",
+            background: "transparent",
+            width: "100%",
+            display: "flex",
+            alignItems: "flex-end",
+            padding: "14px 16px",
+            fontFamily: UI_FONT,
+            cursor: "pointer",
+            textAlign: "left",
+          }}
+        >
+          <div style={{ flex: 1, fontSize: 15, fontWeight: 600, color: INK, lineHeight: "22px" }}>{day.date}</div>
+          <div style={{ width: 72, textAlign: "right", fontSize: 15, fontWeight: 700, color: ORANGE, lineHeight: "22px" }}>{day.total}人</div>
+          <div style={{ width: 88, textAlign: "right", fontSize: 15, fontWeight: 700, color: INK, lineHeight: "22px" }}>¥{day.amount}</div>
+          <span style={{ marginLeft: 8, display: "inline-flex", transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}>
+            <ChevronDown color={MUTED} />
+          </span>
+        </button>
+        {open ? (
+          <>
+            <div style={{ height: 0.5, background: LINE, margin: "0 16px" }} />
+            {day.rows.map(([shop, n, amt], i) => (
+              <div
+                key={shop + i}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  padding: "12px 16px",
+                  borderTop: i === 0 ? "none" : `0.5px solid ${LINE}`,
+                }}
+              >
+                <div style={{ flex: 1, fontSize: 13, color: INK, lineHeight: "20px" }}>{shop}</div>
+                <div style={{ width: 72, textAlign: "right", fontSize: 13, color: INK, lineHeight: "20px" }}>{n}人</div>
+                <div style={{ width: 88, textAlign: "right", fontSize: 13, color: INK, lineHeight: "20px" }}>¥{amt}</div>
+              </div>
+            ))}
+          </>
+        ) : null}
+      </div>
+    </Lift>
+  );
+}
+
+function LogsStoreCard({ card, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <Lift style={{ marginBottom: 10 }}>
+      <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, overflow: "hidden" }}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          style={{
+            appearance: "none",
+            border: "none",
+            background: "transparent",
+            width: "100%",
+            display: "flex",
+            alignItems: "flex-end",
+            padding: "14px 16px",
+            fontFamily: UI_FONT,
+            cursor: "pointer",
+            textAlign: "left",
+          }}
+        >
+          <div style={{ flex: 1, fontSize: 15, fontWeight: 600, color: INK, lineHeight: "22px" }}>{card.shop}</div>
+          <div style={{ width: 64, textAlign: "right", fontSize: 15, fontWeight: 700, color: ORANGE, lineHeight: "22px" }}>{card.people}人</div>
+          <div style={{ width: 88, textAlign: "right", fontSize: 15, fontWeight: 700, color: INK, lineHeight: "22px" }}>¥{card.amount}</div>
+          <span style={{ marginLeft: 8, display: "inline-flex", transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}>
+            <ChevronDown color={MUTED} />
+          </span>
+        </button>
+        {open ? (
+          <>
+            <div style={{ height: 0.5, background: LINE, margin: "0 16px" }} />
+            {card.rows.map((row, i) => (
+              <div
+                key={row[0] + i}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  padding: "12px 16px",
+                  borderTop: i === 0 ? "none" : `0.5px solid ${LINE}`,
+                  color: INK,
+                }}
+              >
+                <div style={{ flex: 1.2, fontSize: 12, lineHeight: "18px" }}>{row[0]}</div>
+                <div style={{ flex: 1.1, fontSize: 12, color: MUTED, lineHeight: "18px" }}>{row[1]}</div>
+                <div style={{ width: 48, textAlign: "right", fontSize: 12, color: MUTED, lineHeight: "18px" }}>{row[2]}</div>
+                <div style={{ width: 56, textAlign: "right", fontSize: 12, fontWeight: 600, lineHeight: "18px" }}>¥{row[3]}</div>
+              </div>
+            ))}
+          </>
+        ) : null}
+      </div>
+    </Lift>
+  );
+}
+
+function LogsRecord({ initialTab = "日志", initialType = "核销" }) {
+  const [tab, setTab] = useState(initialTab);
+  const [type, setType] = useState(initialType);
+  const [storeFilter] = useState("全部门店");
+  const [dateRange] = useState("近7天");
+  const [storeDate, setStoreDate] = useState(STORE_TAB_DATES[0]);
+  const [dateSheetOpen, setDateSheetOpen] = useState(false);
+  const days = LOG_DAY_DATA[type] || LOG_DAY_DATA["核销"];
+
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", color: INK, fontFamily: UI_FONT, position: "relative" }}>
+      <StatusBar />
+      <PageTitleBar title="日志记录" />
+      <LogsSubTabs tab={tab} onChange={setTab} />
+      {tab === "日志" ? (
+        <>
+          <div style={{ display: "flex", gap: 8, padding: "10px 16px", overflowX: "auto", background: PAGE, flexShrink: 0 }}>
+            <FilterChip label={dateRange} />
+            <FilterChip
+              label={type}
+              active
+              onClick={() => {
+                const i = LOG_TYPES.indexOf(type);
+                setType(LOG_TYPES[(i + 1) % LOG_TYPES.length]);
+              }}
+            />
+            <FilterChip label={storeFilter} />
+          </div>
+          <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 16px" }}>
+            {days.map((day, i) => (
+              <LogsDayCard key={type + "-" + day.date} day={day} defaultOpen={i === 0} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div style={{ display: "flex", gap: 8, padding: "10px 16px", background: PAGE, flexShrink: 0 }}>
+            <FilterChip label={storeDate} active onClick={() => setDateSheetOpen(true)} />
+          </div>
+          <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 16px" }}>
+            {STORE_TAB_CARDS.map((card, i) => (
+              <LogsStoreCard key={card.shop + "-" + storeDate} card={card} defaultOpen={i === 0} />
+            ))}
+          </div>
+          {dateSheetOpen ? (
+            <>
+              <div
+                onClick={() => setDateSheetOpen(false)}
+                style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 20 }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 21,
+                  background: PAPER,
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                  padding: "16px 16px 0",
+                  paddingBottom: SAFE_BOTTOM,
+                  boxShadow: "0 -4px 16px rgba(0,0,0,0.08)",
+                }}
+              >
+                <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center", color: INK }}>选择日期</div>
+                <div style={{ marginTop: 4, fontSize: 12, color: MUTED, textAlign: "center" }}>查看该日各门店数据</div>
+                <div style={{ marginTop: 12, maxHeight: 280, overflowY: "auto" }}>
+                  {STORE_TAB_DATES.map((d) => {
+                    const on = storeDate === d;
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => {
+                          setStoreDate(d);
+                          setDateSheetOpen(false);
+                        }}
+                        style={{
+                          appearance: "none",
+                          border: "none",
+                          borderTop: `0.5px solid ${LINE}`,
+                          background: "transparent",
+                          width: "100%",
+                          height: 48,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "0 4px",
+                          fontSize: 15,
+                          fontFamily: UI_FONT,
+                          color: on ? ORANGE : INK,
+                          fontWeight: on ? 600 : 400,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span>{d}</span>
+                        {on ? <span style={{ fontSize: 13, color: ORANGE }}>已选</span> : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          ) : null}
+        </>
+      )}
+      <SafeBottom />
+    </div>
+  );
+}
+
+function DayDetail() {
+  const rows = [
+    ["138****6621", "凯德晶萃店", "日本玫丽盼全球化护理一次"],
+    ["139****8810", "来福士店", "日本玫丽盼全球化护理一次"],
+    ["186****2209", "凯德晶萃店", "紫镜嘭弹护理一次"],
+    ["137****4412", "静安嘉里店", "日本玫丽盼全球化护理一次"],
+  ];
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", color: INK, fontFamily: UI_FONT }}>
+      <StatusBar />
+      <div style={{ height: NAV_H, flexShrink: 0, background: PAPER, display: "flex", alignItems: "center", position: "relative" }}>
+        <div style={{ width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <ChevronLeft />
+        </div>
+        <div style={{ position: "absolute", left: 72, right: 100, bottom: 10, textAlign: "center", fontSize: 18, fontWeight: 500, lineHeight: "24px", color: INK }}>11月02日</div>
+        <div style={{ marginLeft: "auto", paddingRight: 16, fontSize: 12, lineHeight: "18px", color: MUTED, alignSelf: "flex-end", paddingBottom: 12 }}>西岸中环店</div>
+      </div>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <Lift>
+          <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, overflow: "hidden" }}>
+            {rows.map((row, i) => (
+              <div
+                key={row[0]}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  padding: "14px 16px",
+                  borderTop: i === 0 ? "none" : `0.5px solid ${LINE}`,
+                  gap: 8,
+                }}
+              >
+                <div style={{ flex: 1.1, fontSize: 13, color: INK, lineHeight: "18px" }}>{row[0]}</div>
+                <div style={{ flex: 1, fontSize: 12, color: MUTED, lineHeight: "18px" }}>{row[1]}</div>
+                <div style={{ flex: 1.4, fontSize: 12, color: INK, textAlign: "right", lineHeight: "18px" }}>{row[2]}</div>
+              </div>
+            ))}
+          </div>
+        </Lift>
+      </div>
+      <SafeBottom />
+    </div>
+  );
+}
+
+function OrderDetail() {
+  return (
+    <div style={{ height: "100%", background: PAGE, display: "flex", flexDirection: "column", color: INK, fontFamily: UI_FONT }}>
+      <StatusBar />
+      <PageTitleBar title="订单明细" />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", background: PAGE }}>
+        <ServiceHero tag="满意" bare />
+        <div style={{ padding: "12px 16px 16px" }}>
+          <Lift style={{ marginBottom: 10 }}>
+            <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: INK, fontSize: 14, fontWeight: 600 }}>服务备注</span>
+                <span style={{ background: CHIP, color: ORANGE, fontSize: 11, padding: "2px 8px", borderRadius: 4 }}>满意</span>
+              </div>
+              <div style={{ color: INK, fontSize: 13, lineHeight: "20px", marginTop: 10 }}>头皮敏感，手法放轻了</div>
+              <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>凯德晶萃店 · 刚做完</div>
+            </div>
+          </Lift>
+          <Lift>
+            <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>订单信息</div>
+              <div style={{ marginTop: 12, display: "flex", alignItems: "center" }}>
+                <div style={{ width: 36, height: 36, borderRadius: 18, background: CHIP, color: ORANGE, fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>顾</div>
+                <div style={{ marginLeft: 10 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: INK }}>138****6621</div>
+                  <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>券号 A8K29</div>
+                </div>
+              </div>
+              {[
+                ["来源门店", "凯德晶萃店"],
+                ["核销门店", "凯德晶萃店"],
+                ["项目", "日本玫丽盼全球化护理一次"],
+                ["金额", "¥480"],
+                ["领券时间", "2026-11-02 11:20"],
+                ["核销时间", "2026-11-02 14:06"],
+                ["丽妍雅集档位", "V6–V10"],
+              ].map(([label, value]) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "0.5px solid #EDEDED" }}>
+                  <span style={{ fontSize: 12, color: MUTED }}>{label}</span>
+                  <span style={{ fontSize: 13, color: label === "金额" ? ORANGE : INK, fontWeight: label === "金额" ? 600 : 400 }}>{value}</span>
+                </div>
+              ))}
+            </div>
+          </Lift>
+        </div>
+      </div>
+      <SafeBottom />
+    </div>
+  );
+}
+
+
+function Stats() {
+  const funnel = (items) =>
+    items.map((item) => (
+      <div key={item[0]} style={{ marginTop: 12 }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, color: INK }}>{item[0]}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: INK }}>{item[1]}</span>
+        </div>
+        <div style={{ marginTop: 6, height: 6, borderRadius: 3, background: LINE }}>
+          <div style={{ width: (item[1] / items[0][1]) * 100 + "%", height: 6, borderRadius: 3, background: ORANGE }} />
+        </div>
+      </div>
+    ));
+  const review = (title, line) => (
+    <div style={{ marginTop: 12, display: "flex", alignItems: "flex-start", justifyContent: "space-between", paddingTop: 12, borderTop: "0.5px solid #EDEDED" }}>
+      <div style={{ minWidth: 0, paddingRight: 8 }}>
+        <div style={{ fontSize: 13, color: INK }}>{title}</div>
+        <div style={{ marginTop: 4, fontSize: 13, color: MUTED }}>{line}</div>
+      </div>
+      <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 4, background: CHIP, fontSize: 12, color: ORANGE }}>满意</span>
+    </div>
+  );
+  return (
+    <Shell tab="联盟" bg={PAGE}>
+      <div style={{ height: "100%", overflowY: "scroll", scrollbarWidth: "thin", padding: 16, boxSizing: "border-box" }}>
+        <div style={{ fontSize: 20, fontWeight: 600, color: INK }}>数据</div>
+        <div style={{ marginTop: 12 }}><StatsHero /></div>
+        <Lift style={{ marginTop: 12 }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16, overflow: "hidden" }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: INK }}>本店发出</div>
+          <div style={{ marginTop: 12, display: "flex" }}>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>9</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>发出</div></div>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>4</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>到GANO核销</div></div>
+          </div>
+          {funnel([["亮码", 18], ["扫码", 11], ["领取", 9], ["核销", 4]])}
+          {review("138****6621 · 日本玫丽盼", "GANO：头皮敏感，手法放轻了")}
+        </div>
+        </Lift>
+        <Lift style={{ marginTop: 8 }}>
+        <div style={{ background: PAPER, borderRadius: CARD_R, border: CARD_EDGE, padding: 16, overflow: "hidden" }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: INK }}>对方发来</div>
+          <div style={{ marginTop: 12, display: "flex" }}>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>4</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>发出</div></div>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>2</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>到本店核销</div></div>
+          </div>
+          {funnel([["亮码", 7], ["扫码", 5], ["领取", 4], ["核销", 2]])}
+          {review("紫镜嘭弾护理一次", "本店：肩颈放松了")}
+        </div>
+        </Lift>
+      </div>
+    </Shell>
+  );
+}
+
+const OPEN_QR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAagAAAGoAQMAAAApfOODAAAABlBMVEURERH////YdsArAAAC3ElEQVR42u1cwa4bQQiz+v//7KrJgk3e4VWvleDgJIqS2Z0LFmA8sOBPXsiu7Mquv9uF9+vPDz7v94f243Vr3/kLP3ll17/vQgHdaLxhev3j8++51ncGr128Cgv3qwLwhZC87309NryA1wMPOINfgcbgdc2/2suU1cCPmBm8DuWvzlhvT8NzrfFM/jqAlzzpu3f44QG8mtr7Kio+GmHUrbHhMl6KhZWu0EuoUMmmI7HhJl7lRBz8neZmLAryUJLYcB2vKrEekAwrE0Ie9wteu3xDVJ6lYoAzVHYOC5/fz18wTCrkVQxs73NVKjbcrZcpTVeilPsa5WGJhxfq5fYwfaZGNRJabLiMl3TDT59D67xUrIwNd+sv1Vv9LuHQzr96MXjt840iGaDph6qeU38d4vNWiYlf6KiSzQ2L48eGu/VXa1CG1YyFHGfMseGuf1mok0952YxmjIg+v69HjY6dKo+hjKaKOXrvBb5hZ2CerFyiSv66pG8UK5zh0BUPCYyJhxfwss7DFqEsp82V2HCbz4tbSDIch8y2Erxu5K/2Jo6mX8jxEL5xIR56y6EYvXVx1Hr0wyP5SxFwNCQ6dGrMDl7b+oa1AMC7N+gksZhj/OsA31DjKO2UsgFynSN4rftXcQpo1qELZz+zrO/YcN+/fMrLBajus2m1Knht40XHBBhNUs35O1IGrwv6hqaG8HE8CeONwetC/eUNHO5JnsXs3Dl4rfON2REK5S+M88rwjTP6xlQwNANBk3wLvthwES+qPFa3jQ81w2aZg9cBvAw1dUiRX6fQkXmHG3x+qFFTn+dHVkv9te1f1r6hFVc0aKpi4uERfcOf66B0BushTT/2nfrLJsr5RTGcZ9CJh+v6BnyyfHid61VA5vUO4TX6NDgacay3N/51Bi/SmrNBf0AKbeoy+etG/qI9J4re12FP/kr9dYcf+gyYPTyFmlHpojk2PFB/5emd2ZVd/3nXb5H87F/9DdWeAAAAAElFTkSuQmCC";
+
+function FakeQr({ size }) {
+  return (
+    <img
+      alt=""
+      src={OPEN_QR}
+      width={size}
+      height={size}
+      style={{ width: size, height: size, display: "block", imageRendering: "pixelated" }}
+    />
+  );
+}
+
+
+window.AllianceScreens = { Screen, DESIGN_W, DESIGN_H, SCALE, ORANGE };

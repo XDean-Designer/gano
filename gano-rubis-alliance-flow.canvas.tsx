@@ -1,0 +1,1854 @@
+import { H2, H3, Stack, Text, useCanvasState, useHostTheme, useState } from "cursor/canvas";
+
+const ORANGE = "#FF6633";
+const CHIP = "#FFF4EE";
+const INK = "#222222";
+const MUTED = "#888888";
+const LINE = "#EEEEEE";
+const PAGE = "#F6F6F6";
+const PAPER = "#FFFFFF";
+const OPEN = "#2BA471";
+
+const DESIGN_W = 390;
+const DESIGN_H = 844;
+const SCALE = 0.52;
+const UI_FONT = '"Noto Sans SC", "Source Han Sans SC", sans-serif';
+
+type Col = {
+  title: string;
+  advisor?: string;
+  customer?: string;
+  customerOk?: string;
+  customerExpired?: string;
+  gano?: string;
+  ganoOk?: string;
+  ganoExpired?: string;
+  boss?: string;
+};
+
+const COLUMNS: Col[] = [
+  { title: "进入获客", advisor: "enter" },
+  { title: "按档点选", advisor: "tiers" },
+  { title: "亮码", advisor: "code", customer: "wxScan" },
+  { title: "GANO店铺", customer: "shop" },
+  { title: "领取", customer: "claim" },
+  { title: "领到券", customer: "ticket" },
+  { title: "到店对码", customer: "show", gano: "camera" },
+  { title: "核销结果", customerOk: "used", customerExpired: "staleTicket", ganoOk: "redeemed", ganoExpired: "expired" },
+  { title: "做完之后", advisor: "feedback", ganoOk: "review", ganoExpired: "manual" },
+  { title: "两边账", boss: "stats" },
+];
+
+type Note = {
+  no: string;
+  role: string;
+  title: string;
+  say: string;
+  points: string[];
+  next: string;
+  isNew?: boolean;
+};
+
+type Supplement = {
+  id: string;
+  title: string;
+  role: string;
+};
+
+const NOTES: Record<string, Note> = {
+  enter: {
+    no: "01",
+    role: "丽妍雅集顾问",
+    title: "打开就被认出",
+    say: "林夏用已登记的手机号打开剑琅美遇，系统认出她是西岸中环店的顾问，直接停在获客。",
+    points: [
+      "搜索小程序、点卡片、扫小程序码，进来都是这一页。",
+      "页上是这次和GANO的合作，下面按大众点评的店卡列出GANO。",
+      "当前给她的事就是发GANO的体验券。",
+    ],
+    next: "点进GANO，按顾客的丽妍雅集等级选档。",
+  },
+  tiers: {
+    no: "02",
+    role: "丽妍雅集顾问",
+    title: "按等级选档",
+    say: "服务做完，林夏口头确认这位顾客还不是GANO会员，再按她的丽妍雅集等级选档。这一屏顾客看不到。",
+    points: [
+      "两张都是券，没有选中态。点哪张就发哪张。血条里面是剩余张数，条的尽头是总量。",
+      "V3–V5 为两项择一，到店时由顾客确认，系统不记录选项。总量用完后须由老板调高总量方可继续发放。",
+      "是不是对方会员只口头确认，系统不判断、也不纠正。",
+    ],
+    next: "亮出这一档的码。码上不写 V6。",
+  },
+  code: {
+    no: "03",
+    role: "丽妍雅集顾问",
+    title: "只亮这一档",
+    say: "码和海报只讲这一档权益。顾客看不到另一档，也看不到 V3、V6 这类等级字。",
+    points: [
+      "海报和文字都是这一档事先配好的。店里觉得不合适，可以换成自己的图。",
+      "¥480 日本玫丽盼全球化护理一次。会员礼遇，不补差价。",
+      "价格、项目和二维码收在一张券里，券下是这一档的海报长图。底栏没有导航，只写「仅限现场扫码 · 请勿转发」。",
+    ],
+    next: "同一时刻，顾客用微信扫一扫对准这张码。",
+  },
+  shop: {
+    no: "04",
+    role: "顾客",
+    title: "落到GANO的店铺页",
+    say: "扫开后先到GANO的店铺首页。第一个页签是联盟优惠，券在这个页签下面。第二个页签才是热销。",
+    points: [
+      "头图、店名、评分、人均、营业时间和地址，都按门店主页排。",
+      "联盟优惠是一张铺满卡片宽度的橙色券，两侧有半圆缺口。文案是丽妍雅集会员专属礼遇，底部居中「立即领取」。店铺页必须带有效亮码会话才展示这张券；公开进入不展示、不可领。",
+      "热销里是GANO正在卖的项目。点领取可直接领成功（仅限有效亮码会话内），点券本身进入券详情。",
+    ],
+    next: "直接领则到领取成功；点项目则先看券详情。",
+  },
+  wxScan: {
+    no: "03",
+    role: "顾客",
+    title: "微信扫顾问的码",
+    say: "顾客听完介绍，只知道自己能领一项GANO体验。她用微信扫林夏手机上的码。",
+    points: [
+      "这是微信自己的扫一扫。",
+      "扫到的是这一档的领取码，不是门店列表。",
+    ],
+    next: "落到GANO的店铺页。券在第一个页签「联盟优惠」下面。",
+  },
+  claim: {
+    no: "05",
+    role: "顾客",
+    title: "券详情里领取",
+    say: "从店铺页点进这一档的详情。点领取时授权手机号，然后领成功。",
+    points: [
+      "页上只有 ¥480 这一项，没有另一档，也没有等级字。",
+      "授权弹窗盖在这一页上，不另开一步。",
+      "允许用微信绑定的号码。",
+    ],
+    next: "授权之后领成功，看到核销码。在店铺页直接点领取的人，不经过这一列。",
+  },
+  ticket: {
+    no: "06",
+    role: "顾客",
+    title: "领到的券",
+    say: "领取成功。这一档的文字和海报已经同步到GANO，到店核销看的就是现在这张券。",
+    points: [
+      "有效期默认领券之日起三个月，今天领，到 2027-02-02。",
+      "核销码在使用说明上面。说明是正式条款：仅限尚未成为GANO会员的女性顾客使用；每人限享 1 次，须一次使用完毕；请至少提前 3 天致电门店预约。",
+      "下面列出全部 9 家可核销门店。右侧只留电话图标的预约。地址右侧有箭头，点它打开微信导航。",
+    ],
+    next: "顾客自己预约，再到GANO门店亮这张码。",
+  },
+  show: {
+    no: "07",
+    role: "顾客",
+    title: "到店亮出核销码",
+    say: "人已经在GANO。这一页只有热销，没有联盟优惠。热销最上面是她已经领到的联盟券。",
+    points: [
+      "左上角是切角的「联盟券」色块，和结账里的联盟券标一样。",
+      "热销里是GANO正在卖的项目。点立即使用再出示核销码。",
+    ],
+    next: "同一时刻，GANO店员扫这张码。",
+  },
+  camera: {
+    no: "07",
+    role: "GANO店员",
+    title: "扫顾客的券",
+    say: "手机号已标成GANO店员的人来核销。可以用微信直接扫，也可以在获客底栏点扫一扫。",
+    points: [
+      "这一屏是剑琅美遇里的扫一扫，镜头对准顾客的券。",
+      "也可以从相册选一张码的照片。",
+      "券在有效期内才核销。",
+    ],
+    next: "有效则核销成功；过期则停住，系统不核销。",
+  },
+  redeemed: {
+    no: "08",
+    role: "GANO店员",
+    title: "看清要做什么",
+    say: "核销完成后，券下面是这位顾客的档案：档位、领券时间、核销时间，并可以直接写备注。",
+    points: [
+      "券仍是优惠券卡片，说明这次要提供的服务。",
+      "档案里写明丽妍雅集档位 V6–V10，只出现在店员这一屏。",
+      "备注就在档案底部，当场填写。",
+    ],
+    next: "顾客接着做服务。做完后GANO写备注和评价。",
+  },
+  used: {
+    no: "08",
+    role: "顾客",
+    title: "券变成已核销",
+    say: "同一时刻，顾客这张券变成已核销。她看不到丽妍雅集的等级档位。",
+    points: [
+      "整页是券列表。这张联盟券按优惠券卡片排，没有二维码，也没有右侧勾选。",
+      "左侧是金额，右侧是项目和有效期，撕边下面是使用范围。",
+    ],
+    next: "接受这一次护理。",
+  },
+  expired: {
+    no: "08",
+    role: "GANO店员",
+    title: "过期，系统不核销",
+    say: "券已过期。页面明确告诉店员不能在系统里核销。",
+    points: [
+      "券卡是灰色的不可用样式，没有二维码，也没有勾选框。",
+      "撕边下面写明不可用原因：该优惠券已过期，无法正常使用。",
+      "店长若仍想接待，只能在店里手工记下。",
+    ],
+    next: "不进入核销成功，也不把评价回写到丽妍雅集。",
+  },
+  staleTicket: {
+    no: "08",
+    role: "顾客",
+    title: "过期的券仍能亮",
+    say: "顾客看到的也是同一张优惠券卡片，状态是不可用，没有二维码。",
+    points: [
+      "金额和项目变灰。",
+      "不可用原因是该优惠券已过期，无法正常使用。",
+      "系统没有把这张券核掉。",
+    ],
+    next: "若店里仍接待，不走系统核销。",
+  },
+  review: {
+    no: "09",
+    role: "GANO店员",
+    title: "写下这次服务",
+    say: "服务做完，GANO顾问给这次推荐写备注和评价，内容回到丽妍雅集。",
+    points: [
+      "备注写实际感受，评价选一个结果。",
+      "保存后同步到发券的那一边。",
+    ],
+    next: "老板在两边的账里看到这条评价，并看到整条漏斗。",
+  },
+  feedback: {
+    no: "13",
+    role: "丽妍雅集顾问 / 店长",
+    title: "订单明细（含评价回写）",
+    say: "原独立「看回写」已删；顾客评价与订单信息在订单明细一并只读查看。",
+    points: [
+      "服务备注与满意度来自顾客核销成功页提交。",
+      "同页可见券号、门店、项目、金额与时间。",
+      "过期未核销的券不会出现在这里。",
+    ],
+    next: "老板打开两边的账，本店发出和对方发来放在同一页。",
+  },
+  manual: {
+    no: "09",
+    role: "GANO店员",
+    title: "店里手记",
+    say: "过期的券没有核销成功。店长若仍接待，只在店里记下，不进系统。",
+    points: [
+      "记下券号和接待事实。",
+      "丽妍雅集那边收不到这条。",
+    ],
+    next: "过期手记不进核销，也不会出现在老板的漏斗里。",
+  },
+  stats: {
+    no: "10",
+    role: "丽妍雅集老板",
+    title: "两边的发券和核销",
+    say: "西岸中环店的老板在同一页看两个方向：本店发出去的GANO券，以及GANO发来、到本店核销的丽妍雅集券。",
+    points: [
+      "每一边都按同一条漏斗计数：顾问亮码、顾客扫码、领取成功、到店核销。",
+      "本店发出 9 张，其中 4 人到GANO核销。下面是GANO写的备注和评价。",
+      "GANO发出 4 张丽妍雅集券，其中 2 人到本店核销。下面是本店写下的评价。",
+      "过期后店里手记的那张不计入核销。",
+    ],
+    next: "这一页就是老板要看的结果，流程在这里收束。",
+  },
+  tiersEmpty: {
+    no: "N01",
+    role: "丽妍雅集顾问",
+    title: "档位发完",
+    say: "两档总量都已发完。林夏点不进去，须等老板在后台调高总量。",
+    points: [
+      "血条为空，剩余 0，卡片不可点。",
+      "页顶提示：总量已发完，请联系店长或老板调量。",
+      "不生成领取码。",
+    ],
+    next: "老板调高总量后，回到选档页可继续发。",
+    isNew: true,
+  },
+  codeV35: {
+    no: "N02",
+    role: "丽妍雅集顾问",
+    title: "V3–V5 亮码",
+    say: "选了 V3–V5 档。码上只写两项择一的权益，不写等级字。",
+    points: [
+      "¥198 首席设计师洗剪吹，或 ¥218 法式头皮减压洗。",
+      "到店由顾客口头选一项，系统不记录。",
+      "底栏：仅限现场扫码 · 请勿转发。",
+    ],
+    next: "顾客扫码后落到对应领取页。",
+    isNew: true,
+  },
+  claimV35: {
+    no: "N03",
+    role: "顾客",
+    title: "V3–V5 领取",
+    say: "顾客只看到两项择一的会员礼遇，看不到 V3–V5。点领取时授权手机号。",
+    points: [
+      "页上并列两项价格与项目名。",
+      "条款含女性非会员、1 次、提前 3 天预约。",
+      "授权弹窗盖在本页。",
+    ],
+    next: "授权后领到券。",
+    isNew: true,
+  },
+  ticketV35: {
+    no: "N04",
+    role: "顾客",
+    title: "V3–V5 领到券",
+    say: "领取成功。券上写清两项择一，核销码已生成。",
+    points: [
+      "不出现等级字。",
+      "到店口头确认体验哪一项。",
+      "适用 9 店，有效期三个月。",
+    ],
+    next: "预约后到店，在我的券或店铺页出示核销码。",
+    isNew: true,
+  },
+  showQr: {
+    no: "N05",
+    role: "顾客",
+    title: "出示核销码",
+    say: "顾客点「立即使用」后，全屏亮出核销码给店员扫。",
+    points: [
+      "码尽量大，便于店员扫。",
+      "下方写项目名、券号、有效期。",
+      "不展示丽妍雅集等级。",
+    ],
+    next: "GANO 店员扫这张码。",
+    isNew: true,
+  },
+  myCoupons: {
+    no: "N06",
+    role: "顾客",
+    title: "我的券",
+    say: "关掉小程序后再进来，从「我的」进入券列表，找到待使用的联盟券。",
+    points: [
+      "分待使用、已核销、已过期。",
+      "点待使用进入券详情或出示核销码。",
+      "这是到店核销率的入口。",
+    ],
+    next: "点开待使用券，出示核销码。",
+    isNew: true,
+  },
+  sessionExpired: {
+    no: "N07",
+    role: "顾客",
+    title: "领取码失效",
+    say: "扫到的领取码已过期、已使用或无效。页面说明原因，无法领取。",
+    points: [
+      "不展示联盟优惠券。",
+      "提示请让顾问重新亮码。",
+      "不进入领取流程。",
+    ],
+    next: "顾问重新亮码后，顾客再扫。",
+    isNew: true,
+  },
+  alreadyClaimed: {
+    no: "N08",
+    role: "顾客",
+    title: "重复领取",
+    say: "该手机号在本活动已领过。点领取后提示不可再领，并给出「查看我的券」。",
+    points: [
+      "每人限享 1 次。",
+      "可跳转到已领的那张券。",
+      "不扣减新的档位总量。",
+    ],
+    next: "顾客打开我的券使用已领的券。",
+    isNew: true,
+  },
+  denyAuth: {
+    no: "N09",
+    role: "顾客",
+    title: "拒绝授权",
+    say: "领取需要手机号。顾客点拒绝后，券领不下来，页上说明原因。",
+    points: [
+      "授权弹窗可关闭。",
+      "关闭后底部仍是领取按钮，再次点击会再弹授权。",
+      "未授权不能生成券。",
+    ],
+    next: "允许授权后才能领成功。",
+    isNew: true,
+  },
+  shopPublic: {
+    no: "N10",
+    role: "顾客",
+    title: "无会话进店",
+    say: "顾客未扫顾问亮码、公开进入 GANO 店铺页。不展示联盟优惠，不可领取。",
+    points: [
+      "只有热销，没有联盟优惠页签。",
+      "避免档位控制被绕过。",
+      "文案可提示：联盟礼遇须由顾问现场发放。",
+    ],
+    next: "须经顾问亮码扫入，才能看到领取入口。",
+    isNew: true,
+  },
+};
+
+const SUPPLEMENTS: Supplement[] = [
+  { id: "tiersEmpty", title: "档位发完", role: "顾问" },
+  { id: "codeV35", title: "V3–V5 亮码", role: "顾问" },
+  { id: "claimV35", title: "V3–V5 领取", role: "顾客" },
+  { id: "ticketV35", title: "V3–V5 领到券", role: "顾客" },
+  { id: "showQr", title: "出示核销码", role: "顾客" },
+  { id: "myCoupons", title: "我的券", role: "顾客" },
+  { id: "sessionExpired", title: "领取码失效", role: "顾客" },
+  { id: "alreadyClaimed", title: "重复领取", role: "顾客" },
+  { id: "denyAuth", title: "拒绝授权", role: "顾客" },
+  { id: "shopPublic", title: "无会话进店", role: "顾客" },
+];
+
+export default function GanoRubisFlow() {
+  const theme = useHostTheme();
+  const [open, setOpen] = useCanvasState("open-view", "");
+  const labelH = 22;
+  const colW = Math.round(DESIGN_W * SCALE) + 28;
+  const phoneH = Math.round(DESIGN_H * SCALE) + labelH + 12;
+  const width = 168 + COLUMNS.length * colW;
+  const suppW = 120 + SUPPLEMENTS.length * colW;
+  return (
+    <div style={{ overflowX: "auto", background: theme.bg.editor, paddingBottom: 32, fontFamily: UI_FONT }}>
+      <div style={{ padding: "16px 16px 8px", minWidth: width }}>
+        <Text size="small" weight="semibold" style={{ color: theme.accent.primary }}>
+          原有主路径 · 390×844 · 无边框
+        </Text>
+        <Text size="small" tone="secondary" style={{ marginTop: 4 }}>
+          丽妍雅集 → GANO · 顾问发券到老板看数 · 文字标签区分原有/新增
+        </Text>
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `168px repeat(${COLUMNS.length}, ${colW}px)`,
+          gridTemplateRows: `36px ${phoneH}px ${phoneH}px ${phoneH}px ${phoneH}px ${phoneH}px ${phoneH}px`,
+          minWidth: width,
+        }}
+      >
+        <div style={{ position: "sticky", left: 0, zIndex: 3, background: theme.bg.editor }} />
+        {COLUMNS.map((col, index) => (
+          <div key={col.title} style={{ padding: "8px 8px 0", color: theme.text.secondary }}>
+            <Text size="small" weight="semibold">
+              {String(index + 1).padStart(2, "0")} {col.title}
+            </Text>
+          </div>
+        ))}
+        <LaneLabel name="丽妍雅集顾问" row={2} />
+        <SplitLabel top="顾客 · 核销成功" bottom="顾客 · 已过期" row={3} />
+        <SplitLabel top="GANO店员 · 核销成功" bottom="GANO店员 · 已过期" row={5} />
+        <LaneLabel name="丽妍雅集老板" row={7} />
+        {COLUMNS.map((col, index) => (
+          <ColumnCells key={col.title} col={col} column={index + 2} onOpen={setOpen} />
+        ))}
+      </div>
+
+      <div style={{ padding: "28px 16px 8px", minWidth: Math.max(width, suppW) }}>
+        <Text size="small" weight="semibold" style={{ color: ORANGE }}>
+          逻辑补全 · 文字标签「新增」
+        </Text>
+        <Text size="small" tone="secondary" style={{ marginTop: 4 }}>
+          P0：V3–V5 对称、出示核销码、我的券、档位发完 · P1：失效 / 重复 / 拒权 / 无会话
+        </Text>
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `120px repeat(${SUPPLEMENTS.length}, ${colW}px)`,
+          gridTemplateRows: `36px ${phoneH + 20}px`,
+          minWidth: suppW,
+        }}
+      >
+        <div style={{ position: "sticky", left: 0, zIndex: 3, background: theme.bg.editor }} />
+        {SUPPLEMENTS.map((item, index) => (
+          <div key={item.id} style={{ padding: "8px 8px 0", color: theme.text.secondary }}>
+            <Text size="small" weight="semibold">
+              N{String(index + 1).padStart(2, "0")} {item.title}
+            </Text>
+          </div>
+        ))}
+        <div
+          style={{
+            position: "sticky",
+            left: 0,
+            zIndex: 3,
+            gridColumn: 1,
+            gridRow: 2,
+            background: theme.bg.editor,
+            borderTop: `1px solid ${theme.stroke.tertiary}`,
+            display: "flex",
+            alignItems: "center",
+            padding: "0 12px",
+          }}
+        >
+          <Text size="small" weight="semibold">
+            补全页
+          </Text>
+        </div>
+        {SUPPLEMENTS.map((item, index) => (
+          <div
+            key={item.id}
+            style={{
+              gridColumn: index + 2,
+              gridRow: 2,
+              borderTop: `1px solid ${theme.stroke.tertiary}`,
+              background: theme.fill.tertiary,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              paddingTop: 8,
+            }}
+          >
+            <Text size="small" tone="tertiary">
+              {item.role}
+            </Text>
+            <Phone isNew onClick={() => setOpen(item.id)}>
+              <Screen id={item.id} />
+            </Phone>
+          </div>
+        ))}
+      </div>
+      {open && NOTES[open] ? <Lightbox id={open} onClose={() => setOpen("")} /> : null}
+    </div>
+  );
+}
+
+function LaneLabel({ name, row }: { name: string; row: number }) {
+  const theme = useHostTheme();
+  return (
+    <div
+      style={{
+        position: "sticky",
+        left: 0,
+        zIndex: 3,
+        gridColumn: 1,
+        gridRow: row,
+        background: theme.bg.editor,
+        borderTop: `1px solid ${theme.stroke.tertiary}`,
+        display: "flex",
+        alignItems: "center",
+        padding: "0 12px",
+      }}
+    >
+      <Text size="small" weight="semibold">
+        {name}
+      </Text>
+    </div>
+  );
+}
+
+function SplitLabel({ top, bottom, row }: { top: string; bottom: string; row: number }) {
+  const theme = useHostTheme();
+  const half = {
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    padding: "0 12px",
+  } as const;
+  return (
+    <div
+      style={{
+        position: "sticky",
+        left: 0,
+        zIndex: 3,
+        gridColumn: 1,
+        gridRow: `${row} / span 2`,
+        background: theme.bg.editor,
+        borderTop: `1px solid ${theme.stroke.tertiary}`,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div style={half}>
+        <Text size="small" weight="semibold">
+          {top}
+        </Text>
+      </div>
+      <div style={{ ...half, borderTop: `1px solid ${theme.stroke.tertiary}` }}>
+        <Text size="small" weight="semibold">
+          {bottom}
+        </Text>
+      </div>
+    </div>
+  );
+}
+
+function ColumnCells({ col, column, onOpen }: { col: Col; column: number; onOpen: (id: string) => void }) {
+  return (
+    <>
+      <Cell column={column} row={2} screen={col.advisor} onOpen={onOpen} />
+      {col.customer ? (
+        <Cell column={column} row="3 / span 2" screen={col.customer} onOpen={onOpen} />
+      ) : (
+        <>
+          <Cell column={column} row={3} screen={col.customerOk} onOpen={onOpen} />
+          <Cell column={column} row={4} screen={col.customerExpired} onOpen={onOpen} />
+        </>
+      )}
+      {col.gano ? (
+        <Cell column={column} row="5 / span 2" screen={col.gano} onOpen={onOpen} />
+      ) : (
+        <>
+          <Cell column={column} row={5} screen={col.ganoOk} onOpen={onOpen} />
+          <Cell column={column} row={6} screen={col.ganoExpired} onOpen={onOpen} />
+        </>
+      )}
+      <Cell column={column} row={7} screen={col.boss} onOpen={onOpen} />
+    </>
+  );
+}
+
+function Cell({
+  column,
+  row,
+  screen,
+  onOpen,
+}: {
+  column: number;
+  row: number | string;
+  screen?: string;
+  onOpen: (id: string) => void;
+}) {
+  const theme = useHostTheme();
+  return (
+    <div
+      style={{
+        gridColumn: column,
+        gridRow: row,
+        borderTop: `1px solid ${theme.stroke.tertiary}`,
+        background: theme.fill.tertiary,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {screen ? (
+        <Phone onClick={() => onOpen(screen)}>
+          <Screen id={screen} />
+        </Phone>
+      ) : null}
+    </div>
+  );
+}
+
+function Lightbox({ id, onClose }: { id: string; onClose: () => void }) {
+  const theme = useHostTheme();
+  const note = NOTES[id];
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 40,
+        background: "rgba(0,0,0,0.72)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 28,
+      }}
+    >
+      <div
+        onClick={(event: { stopPropagation: () => void }) => event.stopPropagation()}
+        style={{ display: "flex", gap: 28, alignItems: "center", maxWidth: "100%" }}
+      >
+        <div
+          style={{
+            width: 420,
+            maxHeight: "88vh",
+            overflow: "auto",
+            background: theme.bg.elevated,
+            padding: "20px 22px",
+            flexShrink: 0,
+          }}
+        >
+          <Stack gap={10}>
+            <Text size="small" tone="secondary" weight="semibold">
+              {note.isNew ? "新增" : "原有"} · {note.no} · {note.role}
+            </Text>
+            <H2>{note.title}</H2>
+            <Text>{note.say}</Text>
+            <H3>这一屏上的关键东西</H3>
+            <Stack gap={6}>
+              {note.points.map((point) => (
+                <RowPoint key={point} point={point} />
+              ))}
+            </Stack>
+            <Text size="small" tone="secondary">
+              下一屏：{note.next}
+            </Text>
+            <div onClick={onClose} style={{ cursor: "pointer" }}>
+              <Text size="small" tone="tertiary">
+                关闭
+              </Text>
+            </div>
+          </Stack>
+        </div>
+        <Phone scale={1} isNew={!!note.isNew}>
+          <Screen id={id} />
+        </Phone>
+      </div>
+    </div>
+  );
+}
+
+function RowPoint({ point }: { point: string }) {
+  const theme = useHostTheme();
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+      <div style={{ width: 6, height: 6, marginTop: 7, background: theme.accent.primary, flexShrink: 0 }} />
+      <Text size="small">{point}</Text>
+    </div>
+  );
+}
+
+function Phone({
+  children,
+  scale = SCALE,
+  onClick,
+  isNew = false,
+}: {
+  children: Parameters<typeof Stack>[0]["children"];
+  scale?: number;
+  onClick?: () => void;
+  isNew?: boolean;
+}) {
+  const labelH = 22;
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        width: DESIGN_W * scale,
+        height: DESIGN_H * scale + labelH,
+        flexShrink: 0,
+        cursor: onClick ? "pointer" : "default",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        fontFamily: UI_FONT,
+      }}
+    >
+      <div
+        style={{
+          height: labelH,
+          lineHeight: `${labelH}px`,
+          fontSize: 11,
+          fontWeight: 600,
+          color: isNew ? ORANGE : "#666666",
+          letterSpacing: 0.5,
+        }}
+      >
+        {isNew ? "新增" : "原有"}
+      </div>
+      <div style={{ width: DESIGN_W * scale, height: DESIGN_H * scale, overflow: "hidden" }}>
+        <div
+          style={{
+            width: DESIGN_W,
+            height: DESIGN_H,
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            background: PAPER,
+            boxSizing: "border-box",
+            overflow: "hidden",
+            color: INK,
+            fontFamily: UI_FONT,
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Screen({ id }: { id: string }) {
+  if (id === "enter") return <Enter />;
+  if (id === "tiers") return <Tiers />;
+  if (id === "code") return <StaffCode />;
+  if (id === "wxScan") return <WxScan />;
+  if (id === "shop") return <ShopLanding />;
+  if (id === "claim") return <Claim />;
+  if (id === "ticket") return <TicketFresh />;
+  if (id === "show") return <TicketShow />;
+  if (id === "camera") return <Camera />;
+  if (id === "redeemed") return <Redeemed />;
+  if (id === "used") return <TicketUsed />;
+  if (id === "expired") return <ExpiredStaff />;
+  if (id === "staleTicket") return <TicketStale />;
+  if (id === "review") return <Review />;
+  if (id === "feedback") return <Feedback />;
+  if (id === "stats") return <Stats />;
+  if (id === "tiersEmpty") return <TiersEmpty />;
+  if (id === "codeV35") return <StaffCodeV35 />;
+  if (id === "claimV35") return <ClaimV35 />;
+  if (id === "ticketV35") return <TicketV35 />;
+  if (id === "showQr") return <ShowQr />;
+  if (id === "myCoupons") return <MyCoupons />;
+  if (id === "sessionExpired") return <SessionExpired />;
+  if (id === "alreadyClaimed") return <AlreadyClaimed />;
+  if (id === "denyAuth") return <DenyAuth />;
+  if (id === "shopPublic") return <ShopPublic />;
+  return <Manual />;
+}
+
+function Shell({
+  children,
+  tab,
+  bg = PAGE,
+}: {
+  children: Parameters<typeof Stack>[0]["children"];
+  tab?: "获客" | "我的";
+  bg?: string;
+}) {
+  return (
+    <div style={{ height: "100%", background: bg, display: "flex", flexDirection: "column", color: INK }}>
+      <div style={{ height: 28, flexShrink: 0 }} />
+      <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>{children}</div>
+      {tab ? <TabBar active={tab} /> : null}
+    </div>
+  );
+}
+
+function TabBar({ active }: { active: "获客" | "我的" }) {
+  const items = ["首页", "获客", "我的"] as const;
+  return (
+    <div style={{ flexShrink: 0, height: 49, background: PAPER, borderTop: `1px solid ${LINE}`, display: "flex" }}>
+      {items.map((item) => (
+        <div key={item} style={{ flex: 1, textAlign: "center", paddingTop: 8, color: item === active ? ORANGE : "#999999", fontSize: 11, fontWeight: 600, lineHeight: "16px" }}>
+          {item}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Enter() {
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ height: "100%", boxSizing: "border-box", padding: 12, background: "#F7F7F7" }}>
+        <div style={{ fontSize: 12, lineHeight: "18px", color: "#999999" }}>获客</div>
+        <div style={{ marginTop: 4, fontSize: 20, fontWeight: 600, lineHeight: "28px", color: "#111111" }}>这次合作</div>
+        <div style={{ marginTop: 2, fontSize: 12, lineHeight: "18px", color: "#999999" }}>林夏 · 西岸中环店</div>
+        <div style={{ marginTop: 12, background: "#FFFFFF", borderRadius: 8, padding: 12, display: "flex" }}>
+          <div style={{ width: 96, height: 96, borderRadius: 8, background: "#E7D3C4", flexShrink: 0 }} />
+          <div style={{ marginLeft: 10, flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 17, fontWeight: 600, lineHeight: "24px", color: "#111111" }}>GANO HAIR</div>
+            <div style={{ marginTop: 6, display: "flex", alignItems: "center" }}>
+              <span style={{ color: "#FF6633", fontSize: 13, fontWeight: 600 }}>4.8</span>
+              <span style={{ display: "flex", marginLeft: 6, gap: 2 }}>
+                {[0, 1, 2, 3, 4].map((star) => (
+                  <span key={star} style={{ width: 8, height: 8, background: "#FF6633" }} />
+                ))}
+              </span>
+            </div>
+            <div style={{ marginTop: 4, fontSize: 12, lineHeight: "18px", color: "#666666" }}>128 条评价 · 美发</div>
+            <div style={{ marginTop: 6, display: "flex", gap: 4 }}>
+              <span style={{ background: "#FFF4EE", color: "#FF6633", fontSize: 12, lineHeight: "18px", padding: "2px 6px", borderRadius: 4 }}>9 家适用</span>
+              <span style={{ background: "#FFF4EE", color: "#FF6633", fontSize: 12, lineHeight: "18px", padding: "2px 6px", borderRadius: 4 }}>上海 · 苏州</span>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: 8, background: "#FFFFFF", borderRadius: 8, padding: 12, display: "flex", alignItems: "center" }}>
+          <span style={{ color: "#FF6633", fontWeight: 600, flexShrink: 0 }}>
+            <span style={{ fontSize: 13 }}>¥</span>
+            <span style={{ fontSize: 20 }}>480</span>
+          </span>
+          <span style={{ marginLeft: 2, fontSize: 12, color: "#999999" }}>起</span>
+          <span style={{ marginLeft: 8, flex: 1, fontSize: 13, color: "#333333" }}>玫丽盼护理体验</span>
+          <span style={{ fontSize: 13, color: "#FF6633" }}>去发券</span>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function TierCoupon({
+  title,
+  chip,
+  lines,
+  note,
+  left,
+  total,
+}: {
+  title: string;
+  chip?: string;
+  lines: [string, string][];
+  note?: string;
+  left: number;
+  total: number;
+}) {
+  return (
+    <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 8, marginTop: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+      <div style={{ padding: "12px 12px 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 16, fontWeight: 600, color: "#111111" }}>{title}</span>
+          {chip ? <span style={{ background: "#FFF4EE", color: "#FF6633", fontSize: 12, padding: "2px 8px", borderRadius: 4 }}>{chip}</span> : null}
+        </div>
+        {lines.map(([price, name]) => (
+          <div key={name} style={{ display: "flex", alignItems: "baseline", marginTop: 8 }}>
+            <span style={{ color: "#FF6633", flexShrink: 0 }}>
+              <span style={{ fontSize: 13 }}>¥</span>
+              <span style={{ fontSize: 22, fontWeight: 600 }}>{price}</span>
+            </span>
+            <span style={{ marginLeft: 8, fontSize: 13, color: "#333333" }}>{name}</span>
+          </div>
+        ))}
+        {note ? <div style={{ fontSize: 12, color: "#999999", marginTop: 8 }}>{note}</div> : null}
+      </div>
+      <div style={{ position: "relative", height: 16 }}>
+        <div style={{ position: "absolute", left: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F7F7F7" }} />
+        <div style={{ position: "absolute", right: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F7F7F7" }} />
+        <div style={{ position: "absolute", left: 14, right: 14, top: 7, borderTop: "1px dashed #E6E6E6" }} />
+      </div>
+      <div style={{ display: "flex", alignItems: "center", padding: "4px 12px 12px" }}>
+        <div style={{ flex: 1, height: 18, borderRadius: 9, background: "#F3F3F3", position: "relative", overflow: "hidden" }}>
+          <div style={{ width: `${Math.round((left / total) * 100)}%`, height: "100%", background: "#FF6633", borderRadius: "9px 3px 3px 9px" }} />
+          <span style={{ position: "absolute", left: 0, top: 0, width: `${Math.round((left / total) * 100)}%`, boxSizing: "border-box", paddingRight: 6, lineHeight: "18px", textAlign: "right", fontSize: 10, fontWeight: 600, color: "#FFFFFF" }}>剩余 {left}</span>
+        </div>
+        <span style={{ marginLeft: 6, fontSize: 11, color: "#999999", flexShrink: 0 }}>{total}</span>
+      </div>
+    </div>
+  );
+}
+
+function Tiers() {
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ background: "#F7F7F7", padding: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", height: 44 }}>
+          <span style={{ fontSize: 22, lineHeight: "24px", color: "#111111", marginRight: 8 }}>‹</span>
+          <span style={{ fontSize: 17, fontWeight: 600, color: "#111111" }}>GANO HAIR</span>
+        </div>
+        <div style={{ fontSize: 12, lineHeight: "18px", color: "#999999" }}>请依据顾客当前的丽妍雅集会员等级选择档位</div>
+        <TierCoupon
+          title="丽妍雅集 V3–V5"
+          chip="二选一"
+          lines={[["198", "首席设计师洗剪吹"], ["218", "法式头皮减压洗"]]}
+          note="两项择一，到店时由顾客确认"
+          left={60}
+          total={100}
+        />
+        <TierCoupon
+          title="丽妍雅集 V6–V10"
+          lines={[["480", "日本玫丽盼全球化护理"]]}
+          left={88}
+          total={100}
+        />
+      </div>
+    </Shell>
+  );
+}
+
+function StaffCode() {
+  return (
+    <div style={{ height: "100%", background: "#F7F7F7", display: "flex", flexDirection: "column", color: "#111111" }}>
+      <div style={{ height: 28, flexShrink: 0 }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin", padding: "8px 16px 12px" }}>
+        <div style={{ background: "#FFFFFF", borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+          <div style={{ height: 187, background: "#F3E4D6", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 16, boxSizing: "border-box" }}>
+            <div style={{ fontSize: 11, letterSpacing: 1, color: "#8A6A52" }}>GANO HAIR</div>
+            <div style={{ marginTop: 8, fontSize: 20, fontWeight: 600, color: "#3A2A22", lineHeight: "28px" }}>丽妍雅集会员专属礼遇</div>
+            <div style={{ marginTop: 8, fontSize: 12, lineHeight: "18px", color: "#6B5344" }}>一次护理体验。到店使用，凭券核销。</div>
+          </div>
+          <div style={{ position: "relative", height: 16 }}>
+            <div style={{ position: "absolute", left: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F7F7F7" }} />
+            <div style={{ position: "absolute", right: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F7F7F7" }} />
+            <div style={{ position: "absolute", left: 14, right: 14, top: 7, borderTop: "1px dashed #E6E6E6" }} />
+          </div>
+          <div style={{ padding: "8px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "baseline", color: "#FF6633" }}>
+              <span style={{ fontSize: 13 }}>¥</span>
+              <span style={{ fontSize: 28, fontWeight: 600 }}>480</span>
+            </div>
+            <div style={{ marginTop: 8, fontSize: 17, fontWeight: 600, textAlign: "center" }}>日本玫丽盼全球化护理一次</div>
+            <div style={{ marginTop: 6, fontSize: 12, color: "#999999" }}>会员礼遇 · 一次用完</div>
+            <div style={{ marginTop: 16 }}>
+              <FakeQr size={168} />
+            </div>
+            <div style={{ marginTop: 14, fontSize: 16, fontWeight: 600 }}>请顾客用微信扫码领取</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ flexShrink: 0, padding: "8px 16px 16px" }}>
+        <div style={{ height: 44, borderRadius: 22, background: "#F3F3F3", color: "#999999", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          仅限现场扫码 · 请勿转发
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Poster() {
+  return (
+    <div style={{ width: "100%", height: 132, borderRadius: 8, background: "#F3E4D6", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 14, boxSizing: "border-box" }}>
+      <div style={{ fontSize: 11, letterSpacing: 1, color: "#8A6A52" }}>GANO HAIR</div>
+      <div style={{ marginTop: 4, fontSize: 16, fontWeight: 600, color: "#3A2A22" }}>玫丽盼护理体验</div>
+    </div>
+  );
+}
+
+function ShopLanding() {
+  return (
+    <div style={{ height: "100%", background: "#F6F6F6", color: "#111111", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 28, flexShrink: 0, background: "#2B2B2B" }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <div style={{ height: 78, background: "#C4B2A4", display: "flex", alignItems: "flex-end", padding: "0 12px 10px", gap: 6 }}>
+          <div style={{ width: 72, height: 54, borderRadius: 6, background: "#E7D3C4" }} />
+          <div style={{ width: 72, height: 54, borderRadius: 6, background: "#D9C4B4" }} />
+          <div style={{ width: 72, height: 54, borderRadius: 6, background: "#BBA89A" }} />
+        </div>
+        <div style={{ margin: "-16px 8px 0", background: "#FFFFFF", borderRadius: 10, position: "relative", padding: "12px 12px 8px" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, lineHeight: "24px" }}>GANO HAIR</div>
+          <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+            {[0, 1, 2, 3, 4].map((star) => (
+              <span key={star} style={{ width: 8, height: 8, background: "#FF6633" }} />
+            ))}
+            <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 600, color: "#FF6633" }}>4.8</span>
+            <span style={{ fontSize: 12, color: "#666666" }}>128条</span>
+            <span style={{ marginLeft: "auto", fontSize: 12, color: "#666666" }}>¥328/人</span>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 12, color: "#666666" }}>美发</div>
+          <div style={{ marginTop: 8, height: 1, background: "#F0F0F0" }} />
+          <div style={{ marginTop: 8, display: "flex", alignItems: "center", fontSize: 12 }}>
+            <span style={{ color: "#2BA471", fontWeight: 600 }}>营业中</span>
+            <span style={{ marginLeft: 8, color: "#333333" }}>10:00-22:00</span>
+          </div>
+          <div style={{ marginTop: 8, height: 1, background: "#F0F0F0" }} />
+          <div style={{ marginTop: 8, display: "flex", alignItems: "center" }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, color: "#111111" }}>凯德晶萃广场</div>
+              <div style={{ marginTop: 2, fontSize: 11, color: "#999999" }}>距你 1.2km</div>
+            </div>
+            <span style={{ fontSize: 11, color: "#666666" }}>电话</span>
+          </div>
+        </div>
+        <div style={{ margin: "8px 8px 12px", background: "#FFFFFF", borderRadius: 10, padding: "10px 12px 0" }}>
+          <ShopTabs active="联盟优惠" />
+          <AllianceDrop />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WxScan() {
+  return (
+    <div style={{ height: "100%", background: "#111111", color: "#FFFFFF", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 48, paddingTop: 18, boxSizing: "border-box", position: "relative", display: "flex", alignItems: "center", flexShrink: 0 }}>
+        <span style={{ fontSize: 18, paddingLeft: 16 }}>×</span>
+        <span style={{ position: "absolute", left: 0, right: 0, top: 18, height: 30, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 600 }}>扫一扫</span>
+        <span style={{ marginLeft: "auto", fontSize: 13, paddingRight: 16 }}>相册</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 220, height: 220, position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: 22, height: 22, borderTop: "3px solid #FFFFFF", borderLeft: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: 22, height: 22, borderTop: "3px solid #FFFFFF", borderRight: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 22, height: 22, borderBottom: "3px solid #FFFFFF", borderLeft: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 22, height: 22, borderBottom: "3px solid #FFFFFF", borderRight: "3px solid #FFFFFF", boxSizing: "border-box" }} />
+        </div>
+        <span style={{ marginTop: 16, fontSize: 13, opacity: 0.7 }}>对准顾问手机上的领取码</span>
+      </div>
+      <div style={{ height: 64, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-evenly", fontSize: 14 }}>
+        <span>我的二维码</span>
+        <span>识别相册</span>
+      </div>
+    </div>
+  );
+}
+
+function Claim() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: "#F7F7F7", color: "#111111" }}>
+      <div style={{ height: "100%", overflow: "auto", paddingTop: 28, paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 12px" }}><Poster /></div>
+        <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 14 }}>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ color: "#FF6633", fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: "#FF6633", fontSize: 28, fontWeight: 600 }}>480</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 17, fontWeight: 600 }}>日本玫丽盼全球化护理一次</div>
+        </div>
+        <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 14 }}>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>仅限尚未成为GANO会员的女性顾客使用</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>每人限享 1 次，须一次使用完毕</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>请至少提前 3 天致电门店预约</div>
+          <div style={{ height: 1, background: "#EEEEEE", margin: "12px 0" }} />
+          <div style={{ fontSize: 13 }}><span style={{ fontSize: 12, color: "#999999" }}>有效期：</span>领券之日起三个月</div>
+          <div style={{ marginTop: 6, fontSize: 13 }}><span style={{ fontSize: 12, color: "#999999" }}>适用：</span>GANO上海、苏州门店</div>
+        </div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTop: "1px solid #EEEEEE", padding: "8px 12px 12px" }}>
+        <div style={{ height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>领取</div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, background: "rgba(0,0,0,0.45)" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "20px 16px 16px" }}>
+        <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center" }}>申请使用你的手机号</div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#999999", textAlign: "center" }}>用于把这张券记在你的微信上</div>
+        <div style={{ marginTop: 16, height: 44, borderRadius: 8, background: "#F2F2F2", lineHeight: "44px", padding: "0 14px", fontSize: 16 }}>138****6621</div>
+        <div style={{ marginTop: 16, height: 44, borderRadius: 8, background: "#07C160", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>允许</div>
+      </div>
+    </div>
+  );
+}
+
+function CouponSheet({ success }: { success: boolean }) {
+  const [zoom, setZoom] = useState(false);
+  const shops: [string, string][] = [
+    ["凯德晶萃店", "上海市静安区凯德晶萃"],
+    ["北外滩来福士店", "上海市虹口区东大名路"],
+    ["虹桥天地店", "上海市闵行区申长路"],
+    ["凯德虹口商业中心店", "上海市虹口区四川北路"],
+    ["人广来福士店", "上海市黄浦区西藏中路"],
+    ["长宁来福士店", "上海市长宁区长宁路"],
+    ["荟聚店", "上海市闵行区七莘路"],
+    ["苏州中心店", "苏州市工业园区星港街"],
+    ["仁恒仓街店", "苏州市姑苏区平江路仓街"],
+  ];
+  return (
+    <div style={{ height: "100%", background: "#F7F7F7", display: "flex", flexDirection: "column", position: "relative" }}>
+      <div style={{ height: 28, flexShrink: 0 }} />
+      <div style={{ flex: 1, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        {success ? <div style={{ padding: "8px 12px 0", fontSize: 20, fontWeight: 600, color: "#2BA471", textAlign: "center" }}>领取成功</div> : <div style={{ height: 8 }} />}
+        <div style={{ margin: 12, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+          <Poster />
+          <div style={{ marginTop: 12, fontSize: 17, fontWeight: 600, color: "#111111" }}>日本玫丽盼全球化护理一次</div>
+          <div style={{ marginTop: 8, display: "flex", alignItems: "baseline" }}>
+            <span style={{ fontSize: 13, color: "#FF6633" }}>¥</span>
+            <span style={{ fontSize: 24, fontWeight: 600, color: "#FF6633" }}>480</span>
+            <span style={{ fontSize: 13, color: "#333333" }}> · 会员礼遇</span>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 12, color: "#999999" }}>9店通用 · 有效期至 2027-02-02</div>
+          <div
+            onClick={(event: { stopPropagation: () => void }) => {
+              event.stopPropagation();
+              setZoom(true);
+            }}
+            style={{ marginTop: 14, display: "flex", justifyContent: "center", cursor: "pointer" }}
+          >
+            <FakeQr size={148} />
+          </div>
+          <div style={{ marginTop: 6, fontSize: 12, color: "#999999", textAlign: "center" }}>券号 A8K29</div>
+        </div>
+        <div style={{ margin: "0 12px 12px", background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#111111", marginBottom: 8 }}>使用说明</div>
+          {["仅限尚未成为GANO会员的女性顾客使用", "每人限享 1 次，须一次使用完毕", "请至少提前 3 天致电门店预约"].map((rule) => (
+            <div key={rule} style={{ display: "flex", alignItems: "center", marginTop: 8 }}>
+              <span style={{ width: 4, height: 4, borderRadius: 2, background: "#CCCCCC", marginRight: 8, flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: "#333333" }}>{rule}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ margin: "0 12px 24px", background: "#FFFFFF", borderRadius: 8, padding: "4px 12px 8px" }}>
+          <div style={{ padding: "10px 0 6px", fontSize: 13, fontWeight: 600, color: "#111111" }}>适用门店</div>
+          {shops.map(([name, address]) => (
+            <div key={name} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderTop: "1px solid #F3F3F3" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>{name}</div>
+                <div style={{ marginTop: 2, display: "flex", alignItems: "center" }}>
+                  <span style={{ fontSize: 11, color: "#999999", lineHeight: "16px" }}>{address}</span>
+                  <span style={{ marginLeft: 2, fontSize: 14, lineHeight: "16px", color: "#CCCCCC" }}>›</span>
+                </div>
+              </div>
+              <div style={{ width: 36, marginLeft: 8, textAlign: "center", flexShrink: 0 }}>
+                <div style={{ width: 28, height: 28, margin: "0 auto", borderRadius: 14, background: "#FFF4EE", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6633" strokeWidth="2" strokeLinejoin="round">
+                    <path d="M7 3h3l1.5 4-2.2 1.3a12 12 0 0 0 5.4 5.4L16 11.5 20 13v3a2 2 0 0 1-2 2A15 15 0 0 1 5 5a2 2 0 0 1 2-2z" />
+                  </svg>
+                </div>
+                <div style={{ marginTop: 2, fontSize: 10, color: "#666666" }}>预约</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {zoom ? (
+        <div
+          onClick={(event: { stopPropagation: () => void }) => {
+            event.stopPropagation();
+            setZoom(false);
+          }}
+          style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <div style={{ background: "#FFFFFF", padding: 16 }}>
+            <FakeQr size={260} />
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TicketFresh() {
+  return <CouponSheet success />;
+}
+
+function TicketShow() {
+  return (
+    <div style={{ height: "100%", background: "#F6F6F6", color: "#111111", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 28, flexShrink: 0, background: "#2B2B2B" }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <div style={{ height: 78, background: "#C4B2A4" }} />
+        <div style={{ margin: "-16px 8px 0", background: "#FFFFFF", borderRadius: 10, padding: "12px 12px 8px" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, lineHeight: "24px" }}>GANO HAIR</div>
+          <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+            {[0, 1, 2, 3, 4].map((star) => (
+              <span key={star} style={{ width: 8, height: 8, background: "#FF6633" }} />
+            ))}
+            <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 600, color: "#FF6633" }}>4.8</span>
+            <span style={{ fontSize: 12, color: "#666666" }}>128条</span>
+            <span style={{ marginLeft: "auto", fontSize: 12, color: "#666666" }}>¥328/人</span>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 12, color: "#666666" }}>美发 · 凯德晶萃广场</div>
+        </div>
+        <div style={{ margin: "8px 8px 12px", background: "#FFFFFF", borderRadius: 10, padding: "10px 12px 12px" }}>
+          <div style={{ display: "flex", fontSize: 14 }}>
+            <span style={{ color: "#111111", fontWeight: 600, borderBottom: "2px solid #FF6633", paddingBottom: 6 }}>热销</span>
+          </div>
+          <div style={{ position: "relative", marginTop: 12, minHeight: 136, background: "#FFF4EE", borderRadius: 8, border: "0.5px solid rgba(0,0,0,0.08)", padding: "28px 18px 16px", display: "flex", alignItems: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ position: "absolute", left: -8, top: "50%", marginTop: -8, width: 16, height: 16, borderRadius: 8, background: "#FFFFFF" }} />
+            <div style={{ position: "absolute", right: -8, top: "50%", marginTop: -8, width: 16, height: 16, borderRadius: 8, background: "#FFFFFF" }} />
+            <AllianceMark />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "#111111", lineHeight: "22px" }}>日本玫丽盼全球化护理一次</div>
+              <div style={{ marginTop: 8, fontSize: 12, lineHeight: "18px", color: "#666666" }}>9店通用</div>
+              <div style={{ marginTop: 2, fontSize: 12, lineHeight: "18px", color: "#999999" }}>有效期至 2027-02-02</div>
+            </div>
+            <span style={{ marginLeft: 12, flexShrink: 0, height: 28, padding: "0 10px", borderRadius: 14, background: "#FF6633", color: "#FFFFFF", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center" }}>立即使用</span>
+          </div>
+          {GANO_MENU.map(([name, price]) => (
+            <SaleRow key={name} name={name} price={price} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShopTabs({ active }: { active: "联盟优惠" | "热销" }) {
+  return (
+    <div style={{ display: "flex", gap: 16, fontSize: 14 }}>
+      {(["联盟优惠", "热销"] as const).map((name) => (
+        <span key={name} style={{ color: name === active ? "#111111" : "#666666", fontWeight: name === active ? 600 : 400, borderBottom: name === active ? "2px solid #FF6633" : "2px solid transparent", paddingBottom: 6 }}>{name}</span>
+      ))}
+    </div>
+  );
+}
+
+function AllianceDrop() {
+  return (
+    <div style={{ position: "relative", margin: "12px -12px 0", background: "#FFF4EE", borderRadius: 10, padding: "16px 20px 14px", textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+      <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, color: "#FF6633" }}>丽妍雅集会员专属礼遇</div>
+      <div style={{ marginTop: 8, color: "#FF6633" }}>
+        <span style={{ fontSize: 16, fontWeight: 600 }}>¥</span>
+        <span style={{ fontSize: 40, fontWeight: 600, lineHeight: "44px" }}>480</span>
+      </div>
+      <div style={{ marginTop: 4, fontSize: 15, fontWeight: 600, color: "#111111" }}>日本玫丽盼全球化护理一次</div>
+      <div style={{ marginTop: 4, fontSize: 12, color: "#666666" }}>9店通用</div>
+      <div style={{ position: "relative", height: 16, margin: "10px -20px 0" }}>
+        <div style={{ position: "absolute", left: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F6F6F6" }} />
+        <div style={{ position: "absolute", right: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F6F6F6" }} />
+        <div style={{ position: "absolute", left: 14, right: 14, top: 7, borderTop: "1px dashed rgba(255,102,51,0.28)" }} />
+      </div>
+      <div style={{ margin: "10px auto 0", width: "72%", height: 40, borderRadius: 20, background: "#FF6633", color: "#FFFFFF", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>立即领取</div>
+    </div>
+  );
+}
+
+const GANO_MENU: [string, string][] = [
+  ["首席设计师洗剪吹", "298"],
+  ["法式头皮减压洗", "268"],
+  ["日本玫丽盼全球化护理", "680"],
+];
+
+function SaleRow({ name, price }: { name: string; price: string }) {
+  return (
+    <div style={{ marginTop: 12, display: "flex" }}>
+      <div style={{ width: 72, height: 72, borderRadius: 6, background: "#EFEFEF", flexShrink: 0 }} />
+      <div style={{ marginLeft: 8, flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ fontSize: 14, fontWeight: 600, lineHeight: "20px", color: "#111111" }}>{name}</div>
+        <div style={{ marginTop: "auto", display: "flex", alignItems: "flex-end" }}>
+          <span style={{ color: "#FF6633" }}>
+            <span style={{ fontSize: 11 }}>¥</span>
+            <span style={{ fontSize: 16, fontWeight: 600 }}>{price}</span>
+          </span>
+          <span style={{ marginLeft: "auto", width: 52, height: 26, borderRadius: 13, background: "#FF6633", color: "#FFFFFF", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>抢购</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Camera() {
+  return (
+    <div style={{ height: "100%", background: "#111111", color: "#FFFFFF", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 52, paddingTop: 20, boxSizing: "border-box", display: "flex", alignItems: "center", position: "relative" }}>
+        <span style={{ fontSize: 14, paddingLeft: 16 }}>关闭</span>
+        <span style={{ position: "absolute", left: 0, right: 0, textAlign: "center", fontSize: 17, fontWeight: 600 }}>扫码核销</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 220, height: 220, position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: 28, height: 3, background: "#FF6633" }} />
+          <div style={{ position: "absolute", top: 0, left: 0, width: 3, height: 28, background: "#FF6633" }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: 28, height: 3, background: "#FF6633" }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: 3, height: 28, background: "#FF6633" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 28, height: 3, background: "#FF6633" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 3, height: 28, background: "#FF6633" }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 3, background: "#FF6633" }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: 3, height: 28, background: "#FF6633" }} />
+        </div>
+        <span style={{ fontSize: 13, marginTop: 16 }}>对准顾客券上的二维码</span>
+      </div>
+      <div style={{ height: 72, background: "#1A1A1A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 160, height: 40, borderRadius: 22, border: "1px solid rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>从相册选择</div>
+      </div>
+    </div>
+  );
+}
+
+function AllianceMark() {
+  return (
+    <span style={{ position: "absolute", top: 0, left: 0, zIndex: 3, width: 48, height: 17, overflow: "hidden", borderRadius: "3px 3px 10px 3px / 3px 8px 17px 3px", background: "linear-gradient(90deg, #FF7802 0%, #FF2AB2 100%)" }}>
+      <span style={{ position: "absolute", left: 5, top: 0, height: 17, fontSize: 11, fontWeight: 400, lineHeight: "17px", color: "#FFFFFF" }}>联盟券</span>
+    </span>
+  );
+}
+
+function MqCoupon({ disabled, expire, foot, reason }: { disabled?: boolean; expire: string; foot: string; reason?: string }) {
+  const accent = disabled ? "#999999" : "#FF4B10";
+  const nameColor = disabled ? "#999999" : "#222222";
+  return (
+    <div style={{ position: "relative", margin: "0 12px 12px" }}>
+      <AllianceMark />
+      <div style={{ display: "grid", gridTemplateColumns: "92px 1fr", background: "#FFFFFF", borderRadius: "9px 9px 0 0", padding: "22px 12px 4px 0" }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", color: accent, height: 42 }}>
+            <span style={{ fontSize: 16, lineHeight: "22px", paddingBottom: 4, marginRight: 2 }}>¥</span>
+            <span style={{ fontSize: 30, lineHeight: "42px" }}>480</span>
+          </div>
+          <div style={{ fontSize: 12, lineHeight: "18px", color: accent, textAlign: "center" }}>会员礼遇</div>
+        </div>
+        <div style={{ paddingTop: 6, paddingLeft: 2 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, lineHeight: "22px", color: nameColor }}>日本玫丽盼全球化护理一次</div>
+          <div style={{ marginTop: 2, fontSize: 12, lineHeight: "18px", color: accent }}>{expire}</div>
+        </div>
+      </div>
+      <div style={{ position: "relative", height: 16, background: "#FFFFFF" }}>
+        <div style={{ position: "absolute", left: -5, top: 3, width: 10, height: 10, borderRadius: 5, background: "#F7F7F7" }} />
+        <div style={{ position: "absolute", right: -5, top: 3, width: 10, height: 10, borderRadius: 5, background: "#F7F7F7" }} />
+        <div style={{ position: "absolute", left: 12, right: 12, top: 7, borderTop: "1px dashed rgba(0,0,0,0.12)" }} />
+      </div>
+      {reason ? (
+        <div style={{ background: "#FFFFFF", borderRadius: "0 0 9px 9px", padding: "4px 12px 12px" }}>
+          <div style={{ fontSize: 12, lineHeight: "16px", color: "#FF4B10", marginBottom: 4 }}>不可用原因</div>
+          <div style={{ fontSize: 12, lineHeight: "16px", color: "#222222" }}>{reason}</div>
+        </div>
+      ) : (
+        <div style={{ background: "#FFFFFF", borderRadius: "0 0 9px 9px", padding: "6px 12px 12px", fontSize: 12, lineHeight: "16px", color: "#999999" }}>{foot}</div>
+      )}
+    </div>
+  );
+}
+
+function ResultSheet({ title, children }: { title: string; children: Parameters<typeof Stack>[0]["children"] }) {
+  return (
+    <div style={{ height: "100%", overflowY: "scroll", scrollbarWidth: "thin", background: "#F7F7F7", color: "#111111" }}>
+      <div style={{ padding: "23px 15px 10px", textAlign: "center", fontSize: 17, fontWeight: 500, lineHeight: "24px" }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function Redeemed() {
+  return (
+    <ResultSheet title="核销成功">
+      <div style={{ margin: "0 15px 8px", fontSize: 14, fontWeight: 600, color: "#222222" }}>已核销的券</div>
+      <MqCoupon expire="有效期至 2027-02-02" foot="9店通用。仅限尚未成为GANO会员的女性顾客使用，须一次使用完毕。" />
+      <div style={{ margin: "4px 15px 16px", background: "#FFFFFF", borderRadius: 9, padding: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>顾客档案</div>
+        <div style={{ marginTop: 10, display: "flex", alignItems: "center" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 18, background: "#FFF4EE", color: "#FF6633", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>顾</div>
+          <div style={{ marginLeft: 10 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: "#111111" }}>138****6621</div>
+            <div style={{ marginTop: 2, fontSize: 12, color: "#999999" }}>券号 A8K29</div>
+          </div>
+        </div>
+        {[
+          ["丽妍雅集档位", "V6–V10"],
+          ["领券时间", "2026-11-02 11:20"],
+          ["核销时间", "2026-11-02 14:06"],
+        ].map(([label, value]) => (
+          <div key={label} style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "1px solid #F3F3F3" }}>
+            <span style={{ fontSize: 12, color: "#999999" }}>{label}</span>
+            <span style={{ fontSize: 13, color: "#111111" }}>{value}</span>
+          </div>
+        ))}
+        <div style={{ marginTop: 12, fontSize: 12, color: "#999999" }}>备注</div>
+        <div style={{ marginTop: 6, minHeight: 64, background: "#F6F6F6", borderRadius: 8, padding: 10, fontSize: 13, color: "#BBBBBB" }}>填写本次备注</div>
+      </div>
+    </ResultSheet>
+  );
+}
+
+function TicketUsed() {
+  return (
+    <ResultSheet title="联盟券">
+      <div style={{ margin: "0 15px 8px", fontSize: 14, fontWeight: 600, color: "#222222" }}>已核销的券</div>
+      <MqCoupon expire="有效期至 2027-02-02" foot="9店通用。仅限尚未成为GANO会员的女性顾客使用，须一次使用完毕。" />
+    </ResultSheet>
+  );
+}
+
+function ExpiredStaff() {
+  return (
+    <ResultSheet title="核销结果">
+      <div style={{ margin: "0 15px 8px", fontSize: 14, fontWeight: 600, color: "#222222" }}>不可用的券</div>
+      <MqCoupon disabled expire="2026-08-01 已过期" foot="" reason="该优惠券已过期，无法正常使用" />
+    </ResultSheet>
+  );
+}
+
+function TicketStale() {
+  return (
+    <ResultSheet title="联盟券">
+      <div style={{ margin: "0 15px 8px", fontSize: 14, fontWeight: 600, color: "#222222" }}>不可用的券</div>
+      <MqCoupon disabled expire="2026-08-01 已过期" foot="" reason="该优惠券已过期，无法正常使用" />
+    </ResultSheet>
+  );
+}
+
+function Review() {
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+          <div style={{ margin: 12, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: "#111111" }}>这次服务</div>
+            <div style={{ marginTop: 6, fontSize: 13, color: "#666666" }}>日本玫丽盼全球化护理一次</div>
+            <div style={{ marginTop: 16, fontSize: 13, color: "#333333" }}>备注</div>
+            <div style={{ marginTop: 8, minHeight: 88, boxSizing: "border-box", background: "#F6F6F6", borderRadius: 8, padding: 12, fontSize: 13, color: "#111111" }}>头皮敏感，手法放轻了</div>
+            <div style={{ marginTop: 16, fontSize: 13, color: "#333333" }}>评价</div>
+            <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+              <span style={{ flex: 1, height: 32, borderRadius: 16, background: "#FFF4EE", color: "#FF6633", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>满意</span>
+              <span style={{ flex: 1, height: 32, borderRadius: 16, background: "#FFFFFF", color: "#333333", border: "1px solid #EEEEEE", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>一般</span>
+              <span style={{ flex: 1, height: 32, borderRadius: 16, background: "#FFFFFF", color: "#333333", border: "1px solid #EEEEEE", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>不满意</span>
+            </div>
+          </div>
+        </div>
+        <div style={{ flexShrink: 0, padding: 12 }}>
+          <div style={{ height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>保存</div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+/** 原 09-看回写已删；回写只读并入订单明细口径 */
+function Feedback() {
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ padding: 12 }}>
+        <div style={{ color: "#111111", fontSize: 20, fontWeight: 600 }}>订单明细</div>
+        <div style={{ color: "#999999", fontSize: 12, marginTop: 4 }}>含顾客评价回写</div>
+        <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span style={{ color: "#111111", fontSize: 13, fontWeight: 600 }}>服务备注</span>
+            <span style={{ background: "#FFF4EE", color: "#FF6633", fontSize: 12, padding: "2px 8px", borderRadius: 4 }}>满意</span>
+          </div>
+          <div style={{ color: "#333333", fontSize: 13, lineHeight: "20px", marginTop: 8 }}>头皮敏感，手法放轻了</div>
+          <div style={{ color: "#999999", fontSize: 12, marginTop: 6 }}>凯德晶萃店 · 刚做完</div>
+        </div>
+        <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
+          <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>订单信息</div>
+          <div style={{ marginTop: 10, fontSize: 15, fontWeight: 600, color: "#111111" }}>138****6621</div>
+          <div style={{ marginTop: 2, fontSize: 12, color: "#999999" }}>券号 A8K29</div>
+          <div style={{ marginTop: 8, fontSize: 13, color: "#111111" }}>日本玫丽盼全球化护理一次</div>
+          <div style={{ color: "#FF6633", fontSize: 13, fontWeight: 600, marginTop: 4 }}>¥480</div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function Manual() {
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ padding: 12 }}>
+        <div style={{ fontSize: 20, fontWeight: 600, color: "#111111" }}>未进系统</div>
+        <div style={{ marginTop: 8, fontSize: 13, lineHeight: "20px", color: "#666666" }}>过期券不核销。若仍接待，只记在店里。</div>
+        <div style={{ marginTop: 12, background: "#FFFFFF", borderRadius: 8, borderTop: "1px dashed #DDDDDD", padding: "14px 12px" }}>
+          <div style={{ display: "flex" }}>
+            <span style={{ width: 56, fontSize: 12, color: "#999999" }}>券号</span>
+            <span style={{ flex: 1, fontSize: 13, color: "#111111" }}>A8K29</span>
+          </div>
+          <div style={{ display: "flex", marginTop: 10 }}>
+            <span style={{ width: 56, fontSize: 12, color: "#999999" }}>项目</span>
+            <span style={{ flex: 1, fontSize: 13, color: "#111111" }}>日本玫丽盼全球化护理一次</span>
+          </div>
+          <div style={{ display: "flex", marginTop: 10 }}>
+            <span style={{ width: 56, fontSize: 12, color: "#999999" }}>状态</span>
+            <span style={{ flex: 1, fontSize: 13, color: "#FF6633" }}>系统未核销</span>
+          </div>
+        </div>
+        <div style={{ marginTop: 12, fontSize: 12, color: "#999999" }}>丽妍雅集收不到这条。</div>
+      </div>
+    </Shell>
+  );
+}
+
+function TiersEmpty() {
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ background: "#F7F7F7", padding: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", height: 44 }}>
+          <span style={{ fontSize: 22, lineHeight: "24px", color: "#111111", marginRight: 8 }}>‹</span>
+          <span style={{ fontSize: 17, fontWeight: 600, color: "#111111" }}>GANO HAIR</span>
+        </div>
+        <div style={{ background: "#FFF4EE", borderRadius: 8, padding: "10px 12px", fontSize: 13, color: "#FF6633", lineHeight: "20px" }}>
+          总量已发完，请联系店长或老板调量后再发。
+        </div>
+        <TierCoupon title="丽妍雅集 V3–V5" chip="二选一" lines={[["198", "首席设计师洗剪吹"], ["218", "法式头皮减压洗"]]} note="已发完，不可发放" left={0} total={100} />
+        <TierCoupon title="丽妍雅集 V6–V10" lines={[["480", "日本玫丽盼全球化护理"]]} note="已发完，不可发放" left={0} total={100} />
+      </div>
+    </Shell>
+  );
+}
+
+function StaffCodeV35() {
+  return (
+    <div style={{ height: "100%", background: "#F7F7F7", display: "flex", flexDirection: "column", color: "#111111" }}>
+      <div style={{ height: 28, flexShrink: 0 }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin", padding: "8px 16px 12px" }}>
+        <div style={{ background: "#FFFFFF", borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+          <div style={{ height: 140, background: "#F3E4D6", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 16, boxSizing: "border-box" }}>
+            <div style={{ fontSize: 11, letterSpacing: 1, color: "#8A6A52" }}>GANO HAIR</div>
+            <div style={{ marginTop: 8, fontSize: 20, fontWeight: 600, color: "#3A2A22", lineHeight: "28px" }}>丽妍雅集会员专属礼遇</div>
+            <div style={{ marginTop: 8, fontSize: 12, lineHeight: "18px", color: "#6B5344" }}>两项择一 · 到店使用，凭券核销。</div>
+          </div>
+          <div style={{ position: "relative", height: 16 }}>
+            <div style={{ position: "absolute", left: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F7F7F7" }} />
+            <div style={{ position: "absolute", right: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F7F7F7" }} />
+            <div style={{ position: "absolute", left: 14, right: 14, top: 7, borderTop: "1px dashed #E6E6E6" }} />
+          </div>
+          <div style={{ padding: "8px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ width: "100%" }}>
+              <div style={{ display: "flex", alignItems: "baseline" }}>
+                <span style={{ color: "#FF6633", fontSize: 13 }}>¥</span>
+                <span style={{ color: "#FF6633", fontSize: 22, fontWeight: 600 }}>198</span>
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#333333" }}>首席设计师洗剪吹</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", marginTop: 8 }}>
+                <span style={{ color: "#FF6633", fontSize: 13 }}>¥</span>
+                <span style={{ color: "#FF6633", fontSize: 22, fontWeight: 600 }}>218</span>
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#333333" }}>法式头皮减压洗</span>
+              </div>
+            </div>
+            <div style={{ marginTop: 8, fontSize: 12, color: "#999999" }}>会员礼遇 · 到店口头选一项</div>
+            <div style={{ marginTop: 14 }}>
+              <FakeQr size={148} />
+            </div>
+            <div style={{ marginTop: 12, fontSize: 16, fontWeight: 600 }}>请顾客用微信扫码领取</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ flexShrink: 0, padding: "8px 16px 16px" }}>
+        <div style={{ height: 44, borderRadius: 22, background: "#F3F3F3", color: "#999999", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          仅限现场扫码 · 请勿转发
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ClaimV35() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: "#F7F7F7", color: "#111111" }}>
+      <div style={{ height: "100%", overflow: "auto", paddingTop: 28, paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 12px" }}><Poster /></div>
+        <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#FF6633" }}>两项择一 · 会员礼遇</div>
+          <div style={{ display: "flex", alignItems: "baseline", marginTop: 10 }}>
+            <span style={{ color: "#FF6633", fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: "#FF6633", fontSize: 24, fontWeight: 600 }}>198</span>
+            <span style={{ marginLeft: 8, fontSize: 14, color: "#333333" }}>首席设计师洗剪吹</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", marginTop: 8 }}>
+            <span style={{ color: "#FF6633", fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: "#FF6633", fontSize: 24, fontWeight: 600 }}>218</span>
+            <span style={{ marginLeft: 8, fontSize: 14, color: "#333333" }}>法式头皮减压洗</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12, color: "#999999" }}>到店时口头确认体验哪一项</div>
+        </div>
+        <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 14 }}>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>仅限尚未成为GANO会员的女性顾客使用</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>每人限享 1 次，须一次使用完毕</div>
+          <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>请至少提前 3 天致电门店预约</div>
+        </div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTop: "1px solid #EEEEEE", padding: "8px 12px 12px" }}>
+        <div style={{ height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>领取</div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, background: "rgba(0,0,0,0.45)" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "20px 16px 16px" }}>
+        <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center" }}>申请使用你的手机号</div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#999999", textAlign: "center" }}>用于把这张券记在你的微信上</div>
+        <div style={{ marginTop: 16, height: 44, borderRadius: 8, background: "#F2F2F2", lineHeight: "44px", padding: "0 14px", fontSize: 16 }}>138****6621</div>
+        <div style={{ marginTop: 16, height: 44, borderRadius: 8, background: "#07C160", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>允许</div>
+      </div>
+    </div>
+  );
+}
+
+function TicketV35() {
+  return (
+    <div style={{ height: "100%", background: "#F7F7F7", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 28, flexShrink: 0 }} />
+      <div style={{ flex: 1, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <div style={{ padding: "8px 12px 0", fontSize: 20, fontWeight: 600, color: "#2BA471", textAlign: "center" }}>领取成功</div>
+        <div style={{ margin: 12, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+          <Poster />
+          <div style={{ marginTop: 12, fontSize: 12, fontWeight: 600, color: "#FF6633" }}>两项择一 · 会员礼遇</div>
+          <div style={{ marginTop: 8, fontSize: 15, fontWeight: 600, color: "#111111" }}>¥198 首席设计师洗剪吹</div>
+          <div style={{ marginTop: 4, fontSize: 15, fontWeight: 600, color: "#111111" }}>¥218 法式头皮减压洗</div>
+          <div style={{ marginTop: 6, fontSize: 12, color: "#999999" }}>到店口头选一项 · 9店通用 · 有效期至 2027-02-02</div>
+          <div style={{ marginTop: 14, display: "flex", justifyContent: "center" }}>
+            <FakeQr size={148} />
+          </div>
+          <div style={{ marginTop: 6, fontSize: 12, color: "#999999", textAlign: "center" }}>券号 B3M17</div>
+        </div>
+        <div style={{ margin: "0 12px 24px", background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#111111", marginBottom: 8 }}>使用说明</div>
+          {["仅限尚未成为GANO会员的女性顾客使用", "每人限享 1 次，须一次使用完毕", "请至少提前 3 天致电门店预约", "到店时口头确认体验哪一项"].map((rule) => (
+            <div key={rule} style={{ display: "flex", alignItems: "center", marginTop: 8 }}>
+              <span style={{ width: 4, height: 4, borderRadius: 2, background: "#CCCCCC", marginRight: 8, flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: "#333333" }}>{rule}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShowQr() {
+  return (
+    <div style={{ height: "100%", background: "#111111", color: "#FFFFFF", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 52, paddingTop: 20, boxSizing: "border-box", display: "flex", alignItems: "center", position: "relative" }}>
+        <span style={{ fontSize: 14, paddingLeft: 16 }}>关闭</span>
+        <span style={{ position: "absolute", left: 0, right: 0, textAlign: "center", fontSize: 17, fontWeight: 600 }}>出示核销码</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 20, width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <FakeQr size={220} />
+          <div style={{ marginTop: 16, fontSize: 16, fontWeight: 600, color: "#111111", textAlign: "center" }}>日本玫丽盼全球化护理一次</div>
+          <div style={{ marginTop: 6, fontSize: 13, color: "#666666" }}>券号 A8K29 · 有效期至 2027-02-02</div>
+        </div>
+        <div style={{ marginTop: 16, fontSize: 13, opacity: 0.7 }}>请出示给门店店员扫码核销</div>
+      </div>
+    </div>
+  );
+}
+
+function MyCoupons() {
+  return (
+    <Shell tab="我的" bg="#F7F7F7">
+      <div style={{ padding: 12 }}>
+        <div style={{ fontSize: 20, fontWeight: 600, color: "#111111" }}>我的券</div>
+        <div style={{ marginTop: 12, display: "flex", gap: 16, fontSize: 14 }}>
+          <span style={{ color: "#111111", fontWeight: 600, borderBottom: "2px solid #FF6633", paddingBottom: 6 }}>待使用</span>
+          <span style={{ color: "#666666", paddingBottom: 6 }}>已核销</span>
+          <span style={{ color: "#666666", paddingBottom: 6 }}>已过期</span>
+        </div>
+        <div style={{ position: "relative", marginTop: 12, background: "#FFFFFF", borderRadius: 8, padding: "28px 12px 14px" }}>
+          <AllianceMark />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div>
+              <div style={{ color: "#FF6633", display: "flex", alignItems: "baseline" }}>
+                <span style={{ fontSize: 13 }}>¥</span>
+                <span style={{ fontSize: 26, fontWeight: 600 }}>480</span>
+              </div>
+              <div style={{ fontSize: 12, color: "#FF6633" }}>会员礼遇</div>
+            </div>
+            <div style={{ marginLeft: 12, flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#111111" }}>日本玫丽盼全球化护理一次</div>
+              <div style={{ marginTop: 4, fontSize: 12, color: "#999999" }}>有效期至 2027-02-02</div>
+            </div>
+            <span style={{ marginLeft: 8, height: 28, padding: "0 10px", borderRadius: 14, background: "#FF6633", color: "#FFFFFF", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center" }}>使用</span>
+          </div>
+        </div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#999999" }}>点「使用」出示核销码给店员。</div>
+      </div>
+    </Shell>
+  );
+}
+
+function SessionExpired() {
+  return (
+    <div style={{ height: "100%", background: "#F7F7F7", color: "#111111", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 28, flexShrink: 0 }} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32 }}>
+        <div style={{ width: 56, height: 56, borderRadius: 28, background: "#F3F3F3", color: "#999999", fontSize: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>!</div>
+        <div style={{ marginTop: 16, fontSize: 18, fontWeight: 600 }}>领取码已失效</div>
+        <div style={{ marginTop: 8, fontSize: 13, lineHeight: "20px", color: "#666666", textAlign: "center" }}>该码已过期、已使用或无效。请让顾问重新亮码后再扫。</div>
+        <div style={{ marginTop: 24, height: 44, width: "100%", borderRadius: 22, background: "#FFFFFF", border: "1px solid #EEEEEE", color: "#333333", fontSize: 15, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>我知道了</div>
+      </div>
+    </div>
+  );
+}
+
+function AlreadyClaimed() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: "#F7F7F7", color: "#111111" }}>
+      <div style={{ height: "100%", overflow: "auto", paddingTop: 28, paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 12px" }}><Poster /></div>
+        <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 14 }}>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ color: "#FF6633", fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: "#FF6633", fontSize: 28, fontWeight: 600 }}>480</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 17, fontWeight: 600 }}>日本玫丽盼全球化护理一次</div>
+        </div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, background: "rgba(0,0,0,0.45)" }} />
+      <div style={{ position: "absolute", left: 24, right: 24, top: "35%", background: "#FFFFFF", borderRadius: 12, padding: "24px 20px 20px" }}>
+        <div style={{ fontSize: 17, fontWeight: 600, textAlign: "center" }}>你已领取过</div>
+        <div style={{ marginTop: 8, fontSize: 13, lineHeight: "20px", color: "#666666", textAlign: "center" }}>本活动每人限享 1 次。可到「我的券」查看已领的券。</div>
+        <div style={{ marginTop: 20, height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>查看我的券</div>
+        <div style={{ marginTop: 10, height: 40, color: "#999999", textAlign: "center", lineHeight: "40px", fontSize: 14 }}>关闭</div>
+      </div>
+    </div>
+  );
+}
+
+function DenyAuth() {
+  return (
+    <div style={{ height: "100%", position: "relative", overflow: "hidden", background: "#F7F7F7", color: "#111111" }}>
+      <div style={{ height: "100%", overflow: "auto", paddingTop: 28, paddingBottom: 76, boxSizing: "border-box" }}>
+        <div style={{ margin: "0 12px" }}><Poster /></div>
+        <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 14 }}>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ color: "#FF6633", fontSize: 14, fontWeight: 600 }}>¥</span>
+            <span style={{ color: "#FF6633", fontSize: 28, fontWeight: 600 }}>480</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 17, fontWeight: 600 }}>日本玫丽盼全球化护理一次</div>
+        </div>
+        <div style={{ margin: "8px 12px 0", background: "#FFF4EE", borderRadius: 8, padding: 12, fontSize: 13, color: "#FF6633", lineHeight: "20px" }}>
+          未授权手机号，无法领取。再次点领取可重新授权。
+        </div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTop: "1px solid #EEEEEE", padding: "8px 12px 12px" }}>
+        <div style={{ height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>领取</div>
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, background: "rgba(0,0,0,0.45)" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "20px 16px 16px" }}>
+        <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center" }}>申请使用你的手机号</div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#999999", textAlign: "center" }}>用于把这张券记在你的微信上</div>
+        <div style={{ marginTop: 16, height: 44, borderRadius: 8, background: "#F2F2F2", lineHeight: "44px", padding: "0 14px", fontSize: 16 }}>138****6621</div>
+        <div style={{ marginTop: 16, height: 44, borderRadius: 8, background: "#07C160", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>允许</div>
+        <div style={{ marginTop: 10, height: 40, color: "#999999", textAlign: "center", lineHeight: "40px", fontSize: 14 }}>拒绝</div>
+      </div>
+    </div>
+  );
+}
+
+function ShopPublic() {
+  return (
+    <div style={{ height: "100%", background: "#F6F6F6", color: "#111111", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 28, flexShrink: 0, background: "#2B2B2B" }} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <div style={{ height: 78, background: "#C4B2A4" }} />
+        <div style={{ margin: "-16px 8px 0", background: "#FFFFFF", borderRadius: 10, padding: "12px 12px 8px" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, lineHeight: "24px" }}>GANO HAIR</div>
+          <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+            {[0, 1, 2, 3, 4].map((star) => (
+              <span key={star} style={{ width: 8, height: 8, background: "#FF6633" }} />
+            ))}
+            <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 600, color: "#FF6633" }}>4.8</span>
+            <span style={{ marginLeft: "auto", fontSize: 12, color: "#666666" }}>¥328/人</span>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 12, color: "#666666" }}>美发 · 凯德晶萃广场</div>
+        </div>
+        <div style={{ margin: "8px 8px 0", background: "#FFF4EE", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#FF6633", lineHeight: "18px" }}>
+          联盟礼遇须由顾问现场发放。当前入口无领取码，不展示联盟优惠。
+        </div>
+        <div style={{ margin: "8px 8px 12px", background: "#FFFFFF", borderRadius: 10, padding: "10px 12px 12px" }}>
+          <div style={{ display: "flex", fontSize: 14 }}>
+            <span style={{ color: "#111111", fontWeight: 600, borderBottom: "2px solid #FF6633", paddingBottom: 6 }}>热销</span>
+          </div>
+          {GANO_MENU.map(([name, price]) => (
+            <SaleRow key={name} name={name} price={price} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Stats() {
+  const funnel = (items: [string, number][]) =>
+    items.map((item) => (
+      <div key={item[0]} style={{ marginTop: 10 }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, color: "#333333" }}>{item[0]}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#333333" }}>{item[1]}</span>
+        </div>
+        <div style={{ marginTop: 4, height: 6, borderRadius: 3, background: "#F3F3F3" }}>
+          <div style={{ width: `${(item[1] / items[0][1]) * 100}%`, height: 6, borderRadius: 3, background: "#FF6633" }} />
+        </div>
+      </div>
+    ));
+  const review = (title: string, line: string) => (
+    <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ minWidth: 0, paddingRight: 8 }}>
+        <div style={{ fontSize: 13, color: "#333333" }}>{title}</div>
+        <div style={{ marginTop: 4, fontSize: 13, color: "#333333" }}>{line}</div>
+      </div>
+      <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 4, background: "#FFF4EE", fontSize: 12, color: "#FF6633" }}>满意</span>
+    </div>
+  );
+  return (
+    <Shell tab="获客" bg="#F7F7F7">
+      <div style={{ height: "100%", overflowY: "scroll", scrollbarWidth: "thin", padding: 12, boxSizing: "border-box" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 20, fontWeight: 600, color: "#111111" }}>数据</span>
+          <span style={{ width: 16, height: 16, borderRadius: 8, border: "1px solid #CCCCCC", color: "#999999", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center" }}>?</span>
+        </div>
+        <div style={{ marginTop: 2, fontSize: 12, color: "#999999" }}>西岸中环店</div>
+        <div style={{ marginTop: 12, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "#111111" }}>本店发出</div>
+          <div style={{ marginTop: 12, display: "flex" }}>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>9</div><div style={{ fontSize: 12, color: "#999999" }}>发出</div></div>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>4</div><div style={{ fontSize: 12, color: "#999999" }}>到GANO核销</div></div>
+          </div>
+          {funnel([["亮码", 18], ["扫码", 11], ["领取", 9], ["核销", 4]])}
+          {review("138****6621 · 日本玫丽盼", "GANO：头皮敏感，手法放轻了")}
+        </div>
+        <div style={{ marginTop: 8, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "#111111" }}>对方发来</div>
+          <div style={{ marginTop: 12, display: "flex" }}>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>4</div><div style={{ fontSize: 12, color: "#999999" }}>发出</div></div>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>2</div><div style={{ fontSize: 12, color: "#999999" }}>到本店核销</div></div>
+          </div>
+          {funnel([["亮码", 7], ["扫码", 5], ["领取", 4], ["核销", 2]])}
+          {review("紫镜嘭弾护理一次", "本店：肩颈放松了")}
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+const OPEN_QR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAagAAAGoAQMAAAApfOODAAAABlBMVEURERH////YdsArAAAC3ElEQVR42u1cwa4bQQiz+v//7KrJgk3e4VWvleDgJIqS2Z0LFmA8sOBPXsiu7Mquv9uF9+vPDz7v94f243Vr3/kLP3ll17/vQgHdaLxhev3j8++51ncGr128Cgv3qwLwhZC87309NryA1wMPOINfgcbgdc2/2suU1cCPmBm8DuWvzlhvT8NzrfFM/jqAlzzpu3f44QG8mtr7Kio+GmHUrbHhMl6KhZWu0EuoUMmmI7HhJl7lRBz8neZmLAryUJLYcB2vKrEekAwrE0Ie9wteu3xDVJ6lYoAzVHYOC5/fz18wTCrkVQxs73NVKjbcrZcpTVeilPsa5WGJhxfq5fYwfaZGNRJabLiMl3TDT59D67xUrIwNd+sv1Vv9LuHQzr96MXjt840iGaDph6qeU38d4vNWiYlf6KiSzQ2L48eGu/VXa1CG1YyFHGfMseGuf1mok0952YxmjIg+v69HjY6dKo+hjKaKOXrvBb5hZ2CerFyiSv66pG8UK5zh0BUPCYyJhxfwss7DFqEsp82V2HCbz4tbSDIch8y2Erxu5K/2Jo6mX8jxEL5xIR56y6EYvXVx1Hr0wyP5SxFwNCQ6dGrMDl7b+oa1AMC7N+gksZhj/OsA31DjKO2UsgFynSN4rftXcQpo1qELZz+zrO/YcN+/fMrLBajus2m1Knht40XHBBhNUs35O1IGrwv6hqaG8HE8CeONwetC/eUNHO5JnsXs3Dl4rfON2REK5S+M88rwjTP6xlQwNANBk3wLvthwES+qPFa3jQ81w2aZg9cBvAw1dUiRX6fQkXmHG3x+qFFTn+dHVkv9te1f1r6hFVc0aKpi4uERfcOf66B0BushTT/2nfrLJsr5RTGcZ9CJh+v6BnyyfHid61VA5vUO4TX6NDgacay3N/51Bi/SmrNBf0AKbeoy+etG/qI9J4re12FP/kr9dYcf+gyYPTyFmlHpojk2PFB/5emd2ZVd/3nXb5H87F/9DdWeAAAAAElFTkSuQmCC";
+
+function FakeQr({ size }: { size: number }) {
+  return (
+    <img
+      alt=""
+      src={OPEN_QR}
+      width={size}
+      height={size}
+      style={{ width: size, height: size, display: "block", imageRendering: "pixelated" as const }}
+    />
+  );
+}

@@ -1,0 +1,26 @@
+{
+  "fileKey": "gYtPZtAsGCSg3c2pUdtnGT",
+  "nodeId": "0:1",
+  "port": 8765,
+  "basePath": "/figma-capture.html",
+  "selector": "#frame",
+  "frameWidth": 390,
+  "gap": 80,
+  "fontFamily": "Noto Sans SC",
+  "skipBitmapPlaceholder": true,
+  "iconsMustBeSvg": true,
+  "screens": [
+    { "capture": "tiersSoldOut", "name": "待归位-02-档位已发完", "captureId": "57383288-f0aa-4337-a58f-f8312ea32f67", "delay": 2500 },
+    { "capture": "shopNoSession", "name": "待归位-04-无会话", "captureId": "1852bf29-51de-49d8-b861-fe7f22858458", "delay": 2500 },
+    { "capture": "ticketZoom", "name": "待归位-06-核销码放大", "captureId": "be0686e4-4005-41e1-925f-934f8c3888cc", "delay": 3000 },
+    { "capture": "logsDateSheet", "name": "待归位-11-日期Sheet", "captureId": "f5cd07bd-fef9-49a7-85b5-4847bc44f130", "delay": 3500 },
+    { "capture": "homeGuest", "name": "待归位-00-首页非顾问", "captureId": "a482f97b-3df5-4934-84ee-c726c710d68e", "delay": 2500 },
+    { "capture": "enterFrontline", "name": "待归位-一线无数据Tab", "captureId": "4338763d-9325-4b28-81c8-04b7411666af", "delay": 2500 },
+    { "capture": "claimSoldOut", "name": "待归位-领取售罄", "captureId": "3bf88554-e470-473b-970c-32cd3b87b413", "delay": 3000 },
+    { "capture": "logsFilterSheet", "name": "待归位-漏斗筛选Sheet", "captureId": "f1937154-9a1b-4d76-9430-35aa14ab92ad", "delay": 3500 },
+    { "capture": "logsEmpty", "name": "待归位-数据空态", "captureId": "09ac9731-b1fc-4b09-a82f-337394d95e1f", "delay": 2500 },
+    { "capture": "enterEmpty", "name": "待归位-无合作空态", "captureId": "225cc9b2-5f43-47a5-b8df-82192be18dfc", "delay": 2500 },
+    { "capture": "toastSamples", "name": "待归位-Toast样例", "captureId": "a0cb0766-fac7-4805-aa5a-5a38bb0bde4f", "delay": 2500 },
+    { "capture": "codeLoading", "name": "待归位-亮码轮换中", "captureId": "a1cf5b4f-6de2-44c5-bbb2-0bfdffef7f39", "delay": 2500 }
+  ]
+}

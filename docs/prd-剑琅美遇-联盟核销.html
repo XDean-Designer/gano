@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>剑琅美遇 · 联盟核销 PRD（A 向）</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --accent: #FF6002;
+      --accent-soft: #FFF4ED;
+      --ink: #1a1a1a;
+      --muted: #666;
+      --line: #e8e8e8;
+      --bg: #f6f5f3;
+      --card: #fff;
+      --code-bg: #f3f3f3;
+      --ok: #1a7f37;
+      --no: #a40e26;
+      --side-w: 240px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .layout { display: flex; min-height: 100vh; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      width: var(--side-w);
+      height: 100vh;
+      overflow: auto;
+      background: #111;
+      color: #ddd;
+      padding: 20px 16px 40px;
+      flex-shrink: 0;
+    }
+    nav.toc .brand {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    nav.toc h1 {
+      font-size: 15px;
+      color: #fff;
+      margin: 0 0 16px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    nav.toc a {
+      display: block;
+      color: #bbb;
+      font-size: 12.5px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-bottom: 2px;
+    }
+    nav.toc a:hover { background: #222; color: #fff; text-decoration: none; }
+    nav.toc a.sub { padding-left: 18px; color: #888; font-size: 12px; }
+    main {
+      flex: 1;
+      max-width: 920px;
+      padding: 32px 40px 80px;
+      margin: 0 auto;
+    }
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px 28px 22px;
+      margin-bottom: 28px;
+      border-top: 4px solid var(--accent);
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .hero .lead { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+    .meta {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 8px 12px;
+      font-size: 13px;
+    }
+    .meta dt { color: var(--muted); }
+    .meta dd { margin: 0; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px 28px 28px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    h2 .num { color: var(--accent); margin-right: 6px; }
+    h3 { margin: 22px 0 10px; font-size: 16px; font-weight: 600; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 1.35em; }
+    li { margin-bottom: 4px; }
+    strong { font-weight: 600; }
+    code {
+      font-family: ui-monospace, "SF Mono", Consolas, monospace;
+      font-size: 12.5px;
+      background: var(--code-bg);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .table-wrap { overflow-x: auto; margin: 12px 0 16px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 520px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--accent-soft);
+      color: #333;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    tr:nth-child(even) td { background: #fafafa; }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0 16px;
+      font-size: 13.5px;
+    }
+    .mermaid {
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 12px 0 16px;
+      overflow-x: auto;
+    }
+    .entity {
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      background: #fafafa;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+    .entity h4 { margin: 0 0 6px; font-size: 13px; color: var(--accent); }
+    .entity code { display: block; white-space: pre-wrap; background: transparent; padding: 0; line-height: 1.5; }
+    .check { list-style: none; padding-left: 0; }
+    .check li {
+      padding: 6px 0 6px 28px;
+      position: relative;
+      border-bottom: 1px dashed var(--line);
+    }
+    .check li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid #ccc;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 24px;
+    }
+    @media (max-width: 900px) {
+      nav.toc { display: none; }
+      main { padding: 20px 16px 60px; }
+    }
+    @media print {
+      nav.toc { display: none; }
+      body { background: #fff; }
+      section, .hero { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc">
+      <div class="brand">剑琅美遇 × PRD</div>
+      <h1>联盟核销 A 向</h1>
+      <a href="#s0">0. 决策记录</a>
+      <a href="#s1">1. 背景与目标</a>
+      <a href="#s2">2. 角色与权限</a>
+      <a href="#s3">3. 对象模型</a>
+      <a href="#s4">4. 流程与状态机</a>
+      <a class="sub" href="#s45">4.5 页面流程图</a>
+      <a href="#s5">5. 页面清单</a>
+      <a class="sub" href="#s53">5.3 UI/UX 逐页</a>
+      <a href="#s6">6. 业务规则</a>
+      <a href="#s7">7. 统计与对账</a>
+      <a href="#s8">8. 接口草案</a>
+      <a href="#s9">9. 数据实体</a>
+      <a href="#s10">10. 非目标</a>
+      <a href="#s11">11. 附录</a>
+    </nav>
+
+    <main>
+      <header class="hero" id="top">
+        <h1>剑琅美遇 · 联盟核销 PRD <span class="badge">v1.14</span></h1>
+        <p class="lead">活动码微信扫一扫拉起小程序 · 顾问冷启动 · 核销确认 · 本文写职责、状态机、权限、统计口径与接口契约</p>
+        <dl class="meta">
+          <dt>产品</dt><dd>微信小程序「剑琅美遇」</dd>
+          <dt>版本</dt><dd>v1.14（2026-11-06：23Q 活动码拉起小程序）</dd>
+          <dt>读者</dt><dd>前端 / 后端 / 测试</dd>
+          <dt>UI 源</dt><dd>Figma <code>gYtPZtAsGCSg3c2pUdtnGT</code>（①顾问 ②顾客 ③店员 ④异常 ⑤经营·对账与明细）</dd>
+          <dt>原型</dt><dd><a href="../alliance-flow-A-storyboard-spec.html">alliance-flow-A-storyboard-spec.html</a></dd>
+          <dt>Markdown</dt><dd><a href="./prd-剑琅美遇-联盟核销.md">prd-剑琅美遇-联盟核销.md</a>（完整契约以 MD 为准）</dd>
+        </dl>
+        <div class="callout" style="margin-top:16px">
+          <strong>v1.14：</strong>全部活动业务码须可被微信扫一扫拉起「剑琅美遇」· 礼遇码/核销码均带 path 参数 · 完整契约见 MD
+        </div>
+      </header>
+
+      <section id="s0">
+        <h2><span class="num">0.</span>决策记录（已锁定）</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>项</th><th>结论</th></tr></thead>
+            <tbody>
+              <tr><td>1A</td><td>端范围</td><td>仅「剑琅美遇」；丽妍顾问与 GANO 店员共用，能力由角色/门店门控</td></tr>
+              <tr><td>2C</td><td>多项目码（仅 A 向）</td><td>A 向不选品；统计取该档<strong>最高价</strong>。不适用于 B 向满 10000</td></tr>
+              <tr><td>15B</td><td>B 向组合礼计价</td><td>满 10000<strong>两项均享</strong>；展示可分列；记账/核销=<strong>¥1360</strong>（980+380）</td></tr>
+              <tr><td>3A</td><td>限量</td><td>每类礼遇码/档位<strong>全局共 1000</strong>（v1 写死；限量管理后台后续版）</td></tr>
+              <tr><td>4A</td><td>亮码时效</td><td>每 <strong>3 分钟</strong>自动换新；<strong>旧码立即失效</strong></td></tr>
+              <tr><td>13N</td><td>店员备注</td><td>08a 可选服务备注（≠顾客星评）</td></tr>
+              <tr><td>14P</td><td>明细手机号</td><td>12 列表脱敏；13 有权限可完整号</td></tr>
+              <tr><td>5B</td><td>角色能力</td><td>顾问=亮码发券；店员=扫码核销；一线不可见「数据」；店长/品牌运营可见</td></tr>
+              <tr><td>6A</td><td>文档形态</td><td>单份中文 Markdown + 本 HTML</td></tr>
+              <tr><td>7C</td><td>数据范围</td><td>店长/运营均可看<strong>联盟两侧全量</strong>（发券侧 + 核销侧）</td></tr>
+              <tr><td>8P</td><td>核销顾客感知</td><td>07b <strong>每 2s 轮询</strong>（兼 onShow）；USED→08e；v1 无推送</td></tr>
+              <tr><td>9R</td><td>评价返回</td><td>保存成功 → <strong>07 热销</strong>；rating 必填 1–5</td></tr>
+              <tr><td>10M</td><td>过期手记</td><td>v1 <strong>不落库</strong>；不进统计</td></tr>
+              <tr><td>11D</td><td>07 联盟券显隐</td><td>无券/USED 不展示；EXPIRED 灰钮「已失效」；UNUSED「立即使用」</td></tr>
+              <tr><td>12T</td><td>统计日切</td><td>Asia/Shanghai</td></tr>
+              <tr><td>16S</td><td>10 顶区获客</td><td>「丽妍雅集 获客」= 对方发来且在本品牌核销成功人数；「GANO 获客」= 本侧发出且在 GANO 核销成功人数；v1 只读</td></tr>
+              <tr><td>17H</td><td>核销后首页</td><td>券 USED（不必评价）后杀进程再进 → 线上常规首页；已领未核仍可按活动规则找回券</td></tr>
+              <tr><td>18O</td><td>团购活动订单</td><td>仅「已使用」；核销成功落库；下单时间=核销时间；实付 0；活动金额=档位记账价</td></tr>
+              <tr><td>19D</td><td>经营钻取</td><td>每日/按门店均四态；亮码/扫码/领取只读；仅核销下钻；按门店无门店筛</td></tr>
+              <tr><td>20L</td><td>顾问冷启动</td><td>可获客角色启动直达获客，跳过首页；17H 仅顾客</td></tr>
+              <tr><td>21S</td><td>领券截图提示</td><td>06/B06：「可将核销码截图保存，到店出示即可」</td></tr>
+              <tr><td>22R</td><td>核销前确认</td><td>08x 弹窗确认本店非会员；取消核销 / 确认核销；不对接会员库</td></tr>
+              <tr><td>23Q</td><td>活动码拉起小程序</td><td>礼遇码/核销码等均为可打开本小程序的码；微信扫一扫可直达；端内扫码备用；<strong>不出</strong>拉起说明文案</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>业务补充（产品方）</h3>
+        <ol>
+          <li>双方门店与可操作手机号预录入；亮码绑定店员手机。</li>
+          <li>A 向多项目档取最高价；B 向满 10000 取合计 ¥1360（两项均享）。</li>
+          <li>领取码 <strong>180s</strong> 轮换，旧码即废；落地 04（path+sessionToken）。</li>
+          <li>04：立即领取→06；点券面→05；未登录先登录，无授权 Sheet。</li>
+          <li>07b 单出；无券列表 / 无 08-已核销；评价仅顾客 08e，回写只读在 13；店员 08a 可选服务备注。</li>
+          <li>底栏「数据统计」仅店长/运营 → 10；点头像拨打（列表脱敏；13 完整号）。</li>
+        </ol>
+      </section>
+
+      <section id="s1">
+        <h2><span class="num">1.</span>背景与目标</h2>
+        <h3>1.1 一句话</h3>
+        <p>用丽妍雅集顾问作 GANO 获客渠道：顾问按会员档位亮「联盟礼遇码」→ 顾客扫码领券 → 到 GANO 核销体验 → 回写评价 → 店长/运营看双边漏斗与明细。</p>
+        <h3>1.2 本版目标</h3>
+        <ul>
+          <li>打通 A 向闭环：亮码 → 扫码 → 领取 → 核销 → 回写 → 数据钻取。</li>
+          <li>领取码与核销码分模型；亮码归因到店员手机号与门店。</li>
+          <li>提供店长/运营可看的双边对账与明细下钻。</li>
+        </ul>
+        <h3>1.3 非本版（见 §10）</h3>
+        <ul>
+          <li>B 向完整工程闭环可分期；档位与 15B 合计计价已锁定。</li>
+          <li>限量后台配置、与双方会员系统对接校验。</li>
+          <li>灰度发布策略。</li>
+        </ul>
+      </section>
+
+      <section id="s2">
+        <h2><span class="num">2.</span>角色与权限矩阵</h2>
+        <div class="callout">鉴权：微信登录拿到手机号后，与预录入「可亮码/可核销店员名单」匹配；未录入按顾客处理。</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>角色</th><th>典型身份</th><th>联盟（获客/亮码）</th><th>扫码核销</th><th>数据统计</th><th>说明</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>丽妍顾问</td><td>一线发券</td><td>✓ 选档亮码</td><td>✗</td><td>✗</td><td>首页可见「获客」；获客区内隐藏「数据统计」</td></tr>
+              <tr><td>GANO 店员</td><td>一线核销</td><td>✗（本向）</td><td>✓</td><td>✗</td><td>首页无「获客」；获客区内隐藏「数据统计」</td></tr>
+              <tr><td>店长</td><td>丽妍或 GANO 本店负责人</td><td>按所属品牌能力</td><td>按所属品牌能力</td><td>✓</td><td><strong>可见联盟两侧全量数据</strong></td></tr>
+              <tr><td>品牌运营</td><td>丽妍或 GANO 运营</td><td>视配置</td><td>视配置</td><td>✓</td><td>同店长，双边全量</td></tr>
+              <tr><td>顾客</td><td>未在店员名单</td><td>✗</td><td>✗</td><td>✗</td><td>扫码领券、到店找券、「立即使用」出示核销码（无券列表）</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul>
+          <li>A 向：发券侧为丽妍门店顾问；核销侧为 GANO 门店店员。</li>
+          <li>资格（是否对方女性非会员、丽妍 VIP 档）由顾问/店员<strong>口头确认</strong>，系统不对接会员库。</li>
+          <li>顾客端不展示 VIP 分档文案（不出现「V3–V5」等对客等级字）。</li>
+        </ul>
+      </section>
+
+      <section id="s3">
+        <h2><span class="num">3.</span>对象模型</h2>
+        <div class="mermaid">
+flowchart LR
+  Campaign[AllianceCampaign]
+  Tier[Tier_礼遇码类型]
+  Session[ClaimSession_亮码会话]
+  Coupon[Coupon_权益券]
+  Redeem[RedeemRecord]
+  Review[Review_回写]
+  Staff[Staff_预录入]
+  Store[Store]
+  Campaign --> Tier
+  Tier --> Session
+  Staff --> Session
+  Store --> Staff
+  Session --> Coupon
+  Coupon --> Redeem
+  Redeem --> Review
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>对象</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td><strong>AllianceCampaign</strong></td><td>一次联盟活动（本版：丽妍×GANO A 向）</td></tr>
+              <tr><td><strong>Tier</strong></td><td>如 <code>V3_V5</code>、<code>V6_V10</code>；权益文案、海报、项目标价、全局限量</td></tr>
+              <tr><td><strong>ClaimSession</strong></td><td>动态领取码；绑定店员手机/门店/档位；TTL=<strong>180s</strong>；旧 token 立即失效</td></tr>
+              <tr><td><strong>Coupon</strong></td><td>已登录用户点领取直接发券（无授权弹层）；含核销码；一活动一人一券</td></tr>
+              <tr><td><strong>RedeemRecord</strong></td><td>核销成功；金额按档规则计入</td></tr>
+              <tr><td><strong>Review</strong></td><td>评价/备注，回写发券侧</td></tr>
+              <tr><td><strong>Store / Staff</strong></td><td>预录入双方门店与手机号角色</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>两个二维码（禁止混用）</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>码</th><th>载体</th><th>用途</th><th>有效期</th></tr></thead>
+            <tbody>
+              <tr><td>领取码（联盟礼遇码）</td><td>ClaimSession</td><td>顾客扫码进店领券</td><td><strong>3 分钟</strong>，自动轮换，旧码即废</td></tr>
+              <tr><td>核销码</td><td>Coupon</td><td>到店出示给店员扫</td><td>随券有效期（默认领券起三个月）</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s4">
+        <h2><span class="num">4.</span>主流程与状态机</h2>
+        <h3>4.1 主成功路径</h3>
+        <div class="mermaid">
+sequenceDiagram
+  participant Adv as 丽妍顾问
+  participant MP as 剑琅美遇
+  participant Cus as 顾客
+  participant Stf as GANO店员
+  Adv->>MP: 进入联盟选档并亮码
+  MP-->>Adv: ClaimSession token 每 3 分钟轮换
+  Cus->>MP: 扫领取码
+  MP-->>Cus: 04-GANO店铺（需有效会话）
+  alt 立即领取
+    Cus->>MP: 点「立即领取」（已登录，无授权）
+    MP-->>Cus: 06-领到券
+  else 先看详情
+    Cus->>MP: 点券面进 05-领取详情
+    Cus->>MP: 在详情点领取
+    MP-->>Cus: 06-领到券
+  end
+  Cus->>MP: 到店找券「立即使用」→ 07b
+  Note over Cus,MP: 07b 每2s轮询券状态
+  Stf->>MP: POST /redeem
+  MP-->>Stf: 08a（无写评价）
+  Cus->>MP: 轮询 USED → 08e
+  Cus->>MP: 保存评价（星级必填）→ 返回07
+        </div>
+        <h3>4.2 ClaimSession 状态</h3>
+        <p><code>ACTIVE</code> →（<strong>180s</strong> 到期或主动轮换）→ <code>REVOKED</code>。扫已失效 token → 提示领取码失效，不可领。</p>
+        <h3>4.3 Coupon 状态</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>状态</th><th>含义</th><th>可核销</th></tr></thead>
+            <tbody>
+              <tr><td><code>UNUSED</code></td><td>已领取未用</td><td>有效期内 ✓</td></tr>
+              <tr><td><code>USED</code></td><td>已核销</td><td>✗</td></tr>
+              <tr><td><code>EXPIRED</code></td><td>过期</td><td>✗（可「过期手记」，系统不记核销）</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>4.4 异常路径（须覆盖）</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>场景</th><th>表现</th></tr></thead>
+            <tbody>
+              <tr><td>领取码过期/已轮换</td><td>扫后提示失效，不进可领态</td></tr>
+              <tr><td>公开进 GANO 店（无有效会话）</td><td>不展示联盟优惠券卡，不可领</td></tr>
+              <tr><td>（已删除）手机号授权</td><td>登录态下直接领取，无授权 Sheet</td></tr>
+              <tr><td>本活动已领过</td><td>重复领取提示；接口幂等</td></tr>
+              <tr><td>档位全局已发满 1000</td><td>顾问端不可发；顾客端不可领</td></tr>
+              <tr><td>券已核销 / 过期</td><td>对应结果页；过期可手记</td></tr>
+              <tr><td>非名单店员</td><td>无对应 Tab 或无权限提示</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="s45">4.5 页面流程图</h3>
+        <h3>4.5.1 总览泳道（A 向）</h3>
+        <div class="mermaid">
+flowchart TB
+  subgraph advisor [①顾问发码主路径]
+    A0[00首页获客Tab] --> A1[01进入获客]
+    A1 --> A2[02按档点选]
+    A2 --> A3a[03亮码V3V5]
+    A2 --> A3b[03亮码V6V10]
+    A3a --> A3r[每3分钟轮换]
+    A3b --> A3r
+  end
+  subgraph customer [②顾客领取与到店主路径]
+    C1[03微信扫码] --> C2[04GANO店铺]
+    C2 -->|立即领取| C4[06领到券]
+    C2 -->|点券面| C3[05领取详情]
+    C3 --> C4
+    C4 --> C5[07到店找券]
+    C5 --> C6[07b出示核销码]
+    C6 --> C7[08核销成功顾客含评价]
+
+  end
+  subgraph staff [③店员核销主路径]
+    S1[07扫码核销] --> S2[08核销成功]
+  end
+  subgraph ex [④异常边界态]
+    E1[04b领取码失效]
+    E2[05b重复领取]
+    E2c[05c领取售罄]
+    E3[08过期不可核]
+    E5[09过期手记不落库]
+    E3 --> E5
+  end
+  subgraph boss [⑤经营对账与明细]
+    B1[10两边账] --> B2[11数据明细]
+    B2 --> B3[12当日详情]
+    B3 --> B4[13订单明细]
+  end
+  A3r --> C1
+  C6 --> S1
+  C7 -->|评价回写只读| B4
+  C2 -.-> E1
+  C2 -.-> E2
+  C2 -.-> E2c
+  S1 -.-> E3
+  A3r -.->|漏斗亮码| B1
+  C1 -.->|漏斗扫码| B1
+  C4 -.->|漏斗领取| B1
+  S2 -.->|漏斗核销| B1
+        </div>
+        <h3>4.5.2 发券亮码流</h3>
+        <div class="mermaid">
+flowchart TD
+  start([顾问打开剑琅美遇]) --> auth{手机号在预录入名单?}
+  auth -->|否| cust[顾客能力]
+  auth -->|是且可发券| enter[01进入获客]
+  enter --> tiers[02按档点选]
+  tiers --> stock{剩余大于0?}
+  stock -->|否| empty[档位发完不可点]
+  stock -->|是| code[03亮码页]
+  code --> tick{满60秒或进页?}
+  tick --> rotate[签发新token旧码REVOKED]
+  rotate --> code
+  code --> wait[等待顾客现场扫码]
+        </div>
+        <h3>4.5.3 顾客领券流</h3>
+        <div class="mermaid">
+flowchart TD
+  scan[扫领取码] --> valid{session有效?}
+  valid -->|否| bad[04b领取码失效]
+  valid -->|是| shop[04GANO店铺展示联盟券]
+  shop --> act{点击位置}
+  act -->|立即领取按钮| check[校验限领与库存]
+  act -->|券面其他区域| detail[05领取详情]
+  detail --> tapClaim[点领取]
+  tapClaim --> check
+  check --> limit{已领过或档位满?}
+  limit -->|已领| dup[05b重复领取]
+  limit -->|满| sold[05c领取售罄]
+  limit -->|通过| ok[06领到券含核销码]
+  ok --> later[07到店找券]
+  later --> has{联盟券状态}
+  has -->|无券或已核销| hide[不展示联盟Deal]
+  has -->|已过期| grey[灰钮已失效]
+  has -->|UNUSED有效| use[立即使用]
+  use --> showCode[07b出示核销码]
+        </div>
+        <h3>4.5.4 核销回写流</h3>
+        <div class="mermaid">
+flowchart TD
+  tab[店员点底栏扫码核销] --> cam[07s摄像头]
+  cam --> read[识别核销码]
+  read --> st{券状态}
+  st -->|UNUSED且未过期| ok[08a核销成功档案]
+  st -->|USED| used[Toast已核销]
+  st -->|EXPIRED| exp[08c过期不可核]
+  ok --> poll[顾客07b轮询USED]
+  poll --> cust[08e顾客评价]
+  cust --> sync[回写至13订单明细]
+  cust --> back07[返回07热销]
+  exp --> manual[09c说明不落库]
+        </div>
+        <h3>4.5.5 数据钻取流</h3>
+        <div class="mermaid">
+flowchart TD
+  stats[10两边账] --> tap{点击漏斗字段}
+  tap -->|亮码或扫码或领取或核销| detail[11数据明细]
+  detail --> view{每日或按门店}
+  view -->|每日| dayCard[日卡片展开门店行]
+  view -->|按门店| storeCard[单日下拉加门店卡片]
+  dayCard --> dayList[12当日详情]
+  storeCard --> dayList
+  dayList --> order[13订单明细]
+  order --> dial[点头像拨打电话]
+        </div>
+        <h3>4.5.6 异常总图</h3>
+        <div class="mermaid">
+flowchart TD
+  subgraph claimEx [领取侧异常]
+    e1[旧领取码或过期] --> e1a[失效不可领]
+    e2[无session公开进店] --> e2a[无联盟券卡]
+    e4[重复手机号] --> e4a[已领取提示幂等]
+    e5[档位issued达1000] --> e5a[顾问不可发顾客不可领]
+  end
+  subgraph redeemEx [核销侧异常]
+    e6[已核销再扫] --> e6a[Toast已核销]
+    e7[过期券] --> e7a[08c不可核并可进手记]
+    e8[非核销角色] --> e8a[无扫码能力或FORBIDDEN]
+  end
+  subgraph dataEx [数据侧异常]
+    e9[一线顾问或店员] --> e9a[隐藏数据统计Tab]
+    e10[无权限调统计API] --> e10a[403]
+  end
+        </div>
+      </section>
+
+      <section id="s5">
+        <h2><span class="num">5.</span>页面清单</h2>
+        <p>设计稿 390×844。Figma 5 行泳道。员工底栏：联盟 / 扫码核销 / 数据统计（一线无数据）。05=领取详情（无授权）；04 立即领取→06；07b 单出；无券列表。<strong>07 联盟 Deal</strong>：无券/已核销不展示；过期灰钮「已失效」；可用「立即使用」。</p>
+        <h3>5.1 ① 顾问 · 发码（主路径）</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>编号</th><th>名称</th><th>节点</th><th>跳转</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td>小程序首页</td><td><code>198:436</code></td><td>获客 → 01</td></tr>
+            <tr><td>01</td><td>进入获客</td><td><code>75:2</code></td><td>→ 02</td></tr>
+            <tr><td>02</td><td>按档点选</td><td><code>76:2</code></td><td>→ 03</td></tr>
+            <tr><td>03a</td><td>亮码 V3–V5</td><td><code>193:17</code></td><td>顾客扫 → 04</td></tr>
+            <tr><td>03b</td><td>亮码 V6–V10</td><td><code>77:2</code></td><td>顾客扫 → 04</td></tr>
+          </tbody>
+        </table></div>
+        <h3>5.2 ② 顾客 · 领取与到店（主路径）</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>编号</th><th>名称</th><th>节点</th><th>跳转</th></tr></thead>
+          <tbody>
+            <tr><td>03c</td><td>微信扫码</td><td><code>78:2</code></td><td>→ 04</td></tr>
+            <tr><td>04</td><td>GANO 店铺</td><td><code>79:2</code></td><td>立即领取 → 06；点券面 → 05</td></tr>
+            <tr><td>05</td><td>领取详情</td><td><code>80:2</code></td><td>→ 06</td></tr>
+            <tr><td>06a</td><td>领到券 V3–V5</td><td><code>195:17</code></td><td>→ 07</td></tr>
+            <tr><td>06b</td><td>领到券</td><td><code>81:2</code></td><td>→ 07</td></tr>
+            <tr><td>07a</td><td>到店找券</td><td><code>82:2</code></td><td>无券/USED 不展示 Deal；过期「已失效」；可用→07b</td></tr>
+            <tr><td>07b</td><td>出示核销码</td><td><code>270:144</code></td><td>轮询 USED→08e</td></tr>
+            <tr><td>08e</td><td>核销成功-顾客</td><td><code>212:201</code></td><td>保存评价→07；回写→13</td></tr>
+            <tr><td colspan="4"><em>08b 已核销页已删；店员再扫用 Toast</em></td></tr>
+          </tbody>
+        </table></div>
+        <h3>5.3 ③ 店员 · 核销（主路径）</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>编号</th><th>名称</th><th>节点</th><th>跳转</th></tr></thead>
+          <tbody>
+            <tr><td>07s</td><td>扫码核销</td><td><code>83:2</code></td><td>→ 08a / 异常行</td></tr>
+            <tr><td>08a</td><td>核销成功</td><td><code>84:2</code></td><td>可选服务备注 +「确认并返回」；不可写顾客星评</td></tr>
+            <tr><td colspan="4"><em>09a 店员写星评已删除；顾客评价在 08e</em></td></tr>
+          </tbody>
+        </table></div>
+        <h3>5.4 ④ 异常 / 边界态</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>编号</th><th>名称</th><th>节点</th><th>触发</th></tr></thead>
+          <tbody>
+            <tr><td>04b</td><td>领取码失效 Dialog</td><td><code>294:144</code></td><td>同05c款；扫失效领取码</td></tr>
+            <tr><td>05b</td><td>重复领取</td><td><code>215:201</code></td><td>再次领取</td></tr>
+            <tr><td>05c</td><td>领取售罄</td><td><code>250:201</code></td><td>档位达上限</td></tr>
+            <tr><td>08c</td><td>过期不可核</td><td><code>86:2</code></td><td>扫过期券</td></tr>
+            <tr><td colspan="4"><em>08d 已删；顾客过期：07 灰钮「已失效」</em></td></tr>
+            <tr><td>09c</td><td>过期手记</td><td><code>90:2</code></td><td>自 08c；v1 不落库</td></tr>
+          </tbody>
+        </table></div>
+        <h3>5.5 ⑤ 经营 · 对账与明细</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>编号</th><th>名称</th><th>节点</th><th>职责</th></tr></thead>
+          <tbody>
+            <tr><td colspan="4"><em>09b 已删；10 无评价摘要；回写只读在 13</em></td></tr>
+            <tr><td>10</td><td>两边账</td><td><code>91:2</code></td><td>联盟对账 + 获客；漏斗数值 → 11</td></tr>
+            <tr><td>11-亮/扫/领</td><td>每日只读</td><td><code>169:17</code> / <code>418:142</code> / <code>418:425</code></td><td>不可进 12/13</td></tr>
+            <tr><td>11</td><td>每日·核销</td><td><code>168:17</code></td><td>点<strong>店铺行</strong> → 12</td></tr>
+            <tr><td>11c-亮/扫/领</td><td>按门店只读</td><td><code>433:152</code> / <code>433:247</code> / <code>433:342</code></td><td>日期+四态；店卡汇总；不可下钻</td></tr>
+            <tr><td>11c</td><td>按门店·核销</td><td><code>178:17</code></td><td>日期+四态；点订单行 → 13；无门店筛</td></tr>
+            <tr><td>11d/e</td><td>发来·每日/按门店</td><td><code>294:155</code> / <code>418:330</code></td><td>与发出对称；发来按门店亮/扫/领同壳</td></tr>
+            <tr><td>11-日期</td><td>日期日历 Sheet</td><td><code>247:201</code></td><td>「选择日期」；全部+日历；无副文案</td></tr>
+            <tr><td>11-时间</td><td>时间范围 Sheet</td><td><code>432:253</code></td><td>「选择时间范围」；近7天等四项；仅每日</td></tr>
+            <tr><td>11-门店</td><td>门店 Sheet</td><td><code>432:142</code></td><td>「选择门店」；全部+店列表；仅每日</td></tr>
+            <tr><td>11-漏斗</td><td>漏斗筛选 Sheet</td><td><code>251:201</code> / <code>437:296</code></td><td>「选择漏斗态」；四态；选中「已选」</td></tr>
+            <tr><td>12</td><td>当日详情</td><td><code>171:17</code></td><td>表头顾客·发券门店·项目；点行 → 13</td></tr>
+            <tr><td>13</td><td>订单明细</td><td><code>172:17</code></td><td>单笔；Hero 留价；订单卡无金额行</td></tr>
+          </tbody>
+        </table></div>
+        <ul>
+          <li><strong>19D：</strong>每日/按门店均四态；亮码/扫码/领取只读；仅核销可下钻。</li>
+          <li>Sheet：无副文案；选中「已选」；按门店无门店筛。</li>
+        </ul>
+
+        <h3 id="s53">5.6 UI/UX 逐页说明（组件级）</h3>
+        <div class="callout"><strong>全局：</strong>390×844 · 主色 <code>#FF6002</code> · 员工底栏「联盟 / 扫码核销 / 数据统计」· 一线隐藏数据 Tab · 票券真缺口 · 对客不出现 V 档文案 · 主按钮高约 48、圆角约 22。</div>
+
+        <h3>01 进入获客</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>分区</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>顶区</td><td>眉题+标题+身份</td><td>获客 / 这次合作 / 姓名·门店</td></tr>
+            <tr><td>Hero</td><td>店铺实拍条</td><td>全宽，上压合作卡</td></tr>
+            <tr><td>合作卡</td><td>方图·店名·评分·芯片</td><td>9 家适用、上海·苏州</td></tr>
+            <tr><td>权益行</td><td>缩略图·价·去发券</td><td>CTA → 02</td></tr>
+            <tr><td>空态</td><td>—</td><td>暂无进行中的联盟合作</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>02 按档点选</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>分区</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>导航</td><td>返回+标题</td><td>GANO HAIR</td></tr>
+            <tr><td>说明</td><td>辅助文案</td><td>按丽妍会员等级选档（仅顾问）</td></tr>
+            <tr><td>档位券卡</td><td>标题·chip·价目·剩余条</td><td>V3–V5 二选一；剩余 left/1000；0 不可点</td></tr>
+            <tr><td>点击</td><td>整卡</td><td>→ 03 亮码</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>03 亮码</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>分区</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>导航</td><td>顶栏</td><td>标题「联盟礼遇码」</td></tr>
+            <tr><td>票券上区</td><td>色带标题</td><td>联盟礼遇；对客无 V 字</td></tr>
+            <tr><td>QR</td><td>动态码+提示</td><td>请顾客微信扫码；<strong>180s</strong> 换码旧码即废</td></tr>
+            <tr><td>底栏</td><td>灰胶囊</td><td>仅限现场扫码·请勿转发（不可点发）</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>03b 微信扫码 · 04 GANO 店铺</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>页</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>03b</td><td>深色扫一扫</td><td>对准顾问领取码 → 04</td></tr>
+            <tr><td>04</td><td>Hero+店卡+Tab</td><td>联盟优惠 / 热销</td></tr>
+            <tr><td>04</td><td>联盟券卡</td><td>「立即领取」→06；点券面其他区域→05；无会话不展示券卡</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>00 首页 · 05 领取详情 · 06 领到券 · 07a 到店找券</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>页</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td>底栏首页\|我的\|获客</td><td>仅顾问见获客；点获客→01</td></tr>
+            <tr><td>05</td><td>海报·价格卡·条款·领取</td><td>领取详情（非授权）；已登录直接发券→06</td></tr>
+            <tr><td>06</td><td>券票·核销QR·门店列表</td><td>点击放大码；门店预约拨号</td></tr>
+            <tr><td>07a</td><td>热销顶联盟 Deal</td><td>无券/USED 不渲染；EXPIRED 灰钮「已失效」；UNUSED「立即使用」→07b</td></tr>
+            <tr><td>07b</td><td>出示核销码票面</td><td>橙头图+大QR+使用说明；每2s轮询→08e</td></tr>
+            <tr><td>08e</td><td>顾客核销成功</td><td>与店员 08a 成对；保存回 07</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>07s 扫码核销 · 08 结果态</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>页</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>07s</td><td>深色取景+相册</td><td>对准顾客核销码</td></tr>
+            <tr><td>08a</td><td>已核销券+顾客档案+备注</td><td>点头像拨打；可选服务备注；确认并返回</td></tr>
+            <tr><td colspan="3"><em>08b 已删；再扫 Toast「已核销」</em></td></tr>
+            <tr><td>08c</td><td>过期不可用原因</td><td>可进 09c 说明（不落库）</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>09 评价 / 回写 / 手记</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>页</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>08e</td><td>成功区+RTS评分输入卡</td><td>rating 必填；标签：很糟糕/较差/一般/<strong>还可以</strong>/很棒；保存→07</td></tr>
+            <tr><td colspan="3"><em>09b 已删；回写只读并入 13</em></td></tr>
+            <tr><td>09c</td><td>过期手记说明页</td><td>不落库；不进统计</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>10–13 数据</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>页</th><th>组件</th><th>内容 / 行为</th></tr></thead>
+          <tbody>
+            <tr><td>10</td><td>Hero「联盟对账」+ 获客 + 发出/发来漏斗</td><td>获客只读；点漏斗→11；无评价列表</td></tr>
+            <tr><td>11</td><td>每日/按门店</td><td>四态；亮扫领只读；每日核销→12→13；按门店核销→13</td></tr>
+            <tr><td>12</td><td>当日该店订单列表</td><td>手机脱敏·发券店·项目；点行→13</td></tr>
+            <tr><td>13</td><td>订单明细</td><td>完整号；头像拨打</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>5.4 跨页交互与动效（最低要求）</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>场景</th><th>UX</th></tr></thead>
+          <tbody>
+            <tr><td>亮码轮换</td><td>QR 区短暂 loading；失败 Toast，旧码服务端已废</td></tr>
+            <tr><td>数据卡展开</td><td>箭头旋转 180°</td></tr>
+            <tr><td>时间/门店/漏斗/日期 Sheet</td><td>底向上滑入 + ~45% 蒙层；无副文案；选中「已选」</td></tr>
+            <tr><td>核销码放大</td><td>72% 蒙层居中大码</td></tr>
+            <tr><td>主按钮</td><td>提交中禁用防重复</td></tr>
+            <tr><td>扫码成功</td><td>允许则短震动 + 跳转结果页</td></tr>
+          </tbody>
+        </table></div>
+        <p class="lead" style="font-size:13px;color:var(--muted)">更细的逐组件字段表见 Markdown 同节全文；HTML 为便于阅读的浓缩版，开发以 MD+Figma 为准。</p>
+      </section>
+
+      <section id="s6">
+        <h2><span class="num">6.</span>业务规则详表</h2>
+        <h3>6.1 档位与权益（A 向）</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>档位（顾问侧）</th><th>对客呈现</th><th>项目与标价</th><th>统计计价（2C）</th></tr></thead>
+            <tbody>
+              <tr><td>丽妍 V3–V5</td><td><strong>二选一</strong>，不出现 V 字</td><td>¥198 洗剪吹；¥218 法式头皮减压洗</td><td>取 <strong>¥218</strong>（max）</td></tr>
+              <tr><td>丽妍 V6–V10</td><td>单项目</td><td>¥480 日本玫丽盼全球化护理</td><td><strong>¥480</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>顾客到店口头选 V3–V5 项目；<strong>系统不记录选项、不做选品 UI</strong>。禁用「免费」话术，以 Figma 为准。</p>
+        <h3>6.1b 档位与权益（B 向：GANO→丽妍购卡礼）</h3>
+        <div class="callout"><strong>与 A 向二选一不同：</strong>满 10000 为<strong>两项均享</strong>；记账金额 = <strong>¥1360</strong>（980+380）。禁止套用 2C 的 max。</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>档位</th><th>对客呈现</th><th>项目与标价</th><th>记账金额（15B）</th></tr></thead>
+            <tbody>
+              <tr><td>购卡满 ¥5,000</td><td>单次礼遇</td><td>¥980 紫镜嘭弾护理一次</td><td><strong>¥980</strong></td></tr>
+              <tr><td>购卡满 ¥10,000</td><td><strong>两项均享</strong></td><td>¥980 紫镜 + ¥380 归元暖腹</td><td><strong>¥1360</strong>（sum）</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>B02 主价可展示 ¥1360；亮码/详情/领券可分列 980/380；核销与漏斗按 1360/笔。适用：尚未成为丽妍会员的女性；门店含除外三店说明。</p>
+        <h3>6.2 领取与使用条款</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>规则</th><th>v1 口径</th></tr></thead>
+            <tbody>
+              <tr><td>适用人群</td><td>尚未成为 GANO 会员的女性顾客（口头确认）</td></tr>
+              <tr><td>限次</td><td>每人 1 次，一次性使用完毕</td></tr>
+              <tr><td>有效期</td><td>领券之日起三个月</td></tr>
+              <tr><td>预约</td><td>至少提前 3 天致电门店</td></tr>
+              <tr><td>适用门店</td><td>GANO 上海、苏州名单店（预录入冻结）</td></tr>
+              <tr><td>限量</td><td>每档全局 <strong>1000</strong>；发完不可发</td></tr>
+              <tr><td>转发</td><td>仅限现场扫码</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>6.3–6.6 亮码 · 核销 · 电话</h3>
+        <ul>
+          <li>每 <strong>3 分钟</strong>签发新 <code>sessionToken</code>，旧 token → <code>REVOKED</code>；漏斗事件可回溯亮码店员手机号。</li>
+          <li>核销成功 → Coupon USED + RedeemRecord；08a 可选 <code>staffNote</code>；过期走「过期手记」，不进核销统计。</li>
+          <li><strong>17H：</strong>USED 后杀进程再进 → 线上常规首页；UNUSED/EXPIRED 仍可按活动规则进 07/07b。</li>
+          <li>点头像拨号；12 列表脱敏；13 明细完整号（核销员/店长/运营）。</li>
+        </ul>
+        <h3>6.7 我的订单 · 团购活动（18O）</h3>
+        <div class="callout">核销成功瞬间落入「团购活动 → <strong>已使用</strong>」。仅此状态（无待支付/已支付/已退单）。UI 复用线上壳。</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>字段</th><th>口径</th></tr></thead>
+            <tbody>
+              <tr><td>下单时间</td><td>核销成功时间</td></tr>
+              <tr><td>实付金额</td><td>¥0</td></tr>
+              <tr><td>活动金额</td><td>A：218 / 480；B：980 / 1360（档位记账原价）</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s7">
+        <h2><span class="num">7.</span>统计与对账</h2>
+        <h3>7.1 漏斗四态</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>态</th><th>计数定义（「N人」）</th><th>金额</th></tr></thead>
+            <tbody>
+              <tr><td>亮码</td><td>ClaimSession 次数；列表单位「次」</td><td>不展示</td></tr>
+              <tr><td>扫码</td><td>打开04次数；「次」；openId+上海日+session去重</td><td>不展示</td></tr>
+              <tr><td>领取</td><td>按手机去重；单位「人」</td><td>展示档位记账金额（非¥0）</td></tr>
+              <tr><td>核销</td><td>按手机去重；单位「人」</td><td>展示</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <strong>金额锁定：</strong>亮码/扫码无金额列；<strong>领取与核销均展示</strong>档位记账金额（领取非¥0）。<strong>A 向</strong>多项目取 <code>max</code>（V3–V5→218）。<strong>B 向</strong>满 10000 取 <code>sum</code>→<strong>1360</strong>（满 5000→980）；展示可分列，记账不拆两笔。
+        </div>
+        <h3>7.2 双边账</h3>
+        <p>店长/运营看联盟两侧全量。页面：Hero「联盟对账」+ 获客（16S）+ 发出/发来漏斗（无评价摘要列表）。</p>
+        <h3>7.3 钻取路径（19D）</h3>
+        <p>亮码/扫码/领取 → 11 每日或按门店<strong>只读</strong>。核销 → 每日点<strong>店铺行</strong> → 12 → 13；按门店点订单行 → 13。日界 Asia/Shanghai。Sheet 定稿见 MD §5.6「11 · 筛选 Sheet」。</p>
+      </section>
+
+      <section id="s8">
+        <h2><span class="num">8.</span>接口草案</h2>
+        <p>Base：<code>/api/v1/alliance</code>。鉴权：微信 <code>code</code> 换票后带 <code>Authorization</code>。错误体：<code>{ code, message }</code>。</p>
+
+        <h3>8.1 鉴权与名单</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>POST</td><td><code>/auth/wx-login</code></td><td>code → token；返回 role[]、storeIds、brand</td></tr>
+              <tr><td>GET</td><td><code>/me</code></td><td>当前用户角色与门店</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>8.2 亮码</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>GET</td><td><code>/campaigns/current</code></td><td>当前活动摘要</td></tr>
+              <tr><td>GET</td><td><code>/tiers</code></td><td>档位列表含 remain / total(1000)</td></tr>
+              <tr><td>POST</td><td><code>/claim-sessions</code></td><td>签发 session + qrPayload</td></tr>
+              <tr><td>POST</td><td><code>/claim-sessions/{id}/rotate</code></td><td>轮换；旧 token 立即失效</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>8.3 顾客领券</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>GET</td><td><code>/shop/gano</code></td><td>query sessionToken；无效→04b</td></tr>
+              <tr><td>POST</td><td><code>/coupons/claim</code></td><td>需登录；原子扣减；一活动一手机</td></tr>
+              <tr><td>GET</td><td><code>/coupons/active</code></td><td>驱动 07 Deal 显隐；含 status</td></tr>
+              <tr><td>GET</td><td><code>/coupons/{id}</code></td><td>券详情；<strong>07b 轮询</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>8.4 核销与回写</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>POST</td><td><code>/redeem</code></td><td>核销券码；可带 <code>staffNote?</code> → 店员 08a</td></tr>
+              <tr><td>GET / PATCH</td><td><code>/redeem/{id}</code></td><td>核销档案；PATCH 可补写 <code>staffNote</code></td></tr>
+              <tr><td>POST</td><td><code>/redeem/{id}/reviews</code></td><td>顾客写星评 <code>{rating, content?}</code>；店员写星评 403</td></tr>
+              <tr><td colspan="3"><em>GET /reviews 已取消；评价随 GET /stats/orders/{id}</em></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>8.5 统计</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>GET</td><td><code>/stats/overview</code></td><td>获客摘要 + 发出/发来漏斗 + 评价（店长/运营）</td></tr>
+              <tr><td>GET</td><td><code>/stats/details</code></td><td>metric + groupBy day|store</td></tr>
+              <tr><td>GET</td><td><code>/stats/day-orders</code></td><td>当日明细</td></tr>
+              <tr><td>GET</td><td><code>/stats/orders/{id}</code></td><td>订单明细</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>8.6 关键错误码</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>code</th><th>HTTP</th><th>含义</th></tr></thead>
+            <tbody>
+              <tr><td><code>SESSION_INVALID</code></td><td>400</td><td>领取码无效/过期/已轮换</td></tr>
+              <tr><td><code>SESSION_REQUIRED</code></td><td>400</td><td>公开进店无会话</td></tr>
+              <tr><td><code>TIER_SOLD_OUT</code></td><td>409</td><td>该档已满 1000</td></tr>
+              <tr><td><code>ALREADY_CLAIMED</code></td><td>409</td><td>本活动已领取</td></tr>
+              <tr><td><code>UNAUTHORIZED</code></td><td>401</td><td>未登录小程序</td></tr>
+              <tr><td><code>COUPON_USED</code></td><td>409</td><td>店员 Toast；顾客 07 不展示 Deal</td></tr>
+              <tr><td><code>COUPON_EXPIRED</code></td><td>409</td><td>店员 08c；顾客 07「已失效」</td></tr>
+              <tr><td><code>FORBIDDEN</code></td><td>403</td><td>角色无权（含店员写评价）</td></tr>
+              <tr><td><code>NOT_IN_STAFF</code></td><td>403</td><td>非预录入员工</td></tr>
+              <tr><td><code>REVIEW_INVALID</code></td><td>400</td><td>未选星 / 文案超长</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>8.7 幂等与并发</h3>
+        <ul>
+          <li><code>POST /coupons/claim</code>：唯一 <code>(campaignId, phone)</code>；再领→05b。</li>
+          <li>扣减 remain 须原子，禁止超发。</li>
+          <li><code>POST /redeem</code>：按 couponId 唯一；重复→COUPON_USED。</li>
+          <li><code>POST .../reviews</code>：每笔 redeem 一条；重复提交更新。</li>
+        </ul>
+        <p class="lead" style="font-size:13px;color:var(--muted)">请求/响应 JSON 示例见 Markdown §8。</p>
+      </section>
+
+      <section id="s9">
+        <h2><span class="num">9.</span>数据实体字段摘要</h2>
+        <div class="entity"><h4>Staff</h4><code>id, phone, name, brand(liyan|gano), storeId, roles[], canIssue, canRedeem, createdAt</code></div>
+        <div class="entity"><h4>Store</h4><code>id, brand, name, city, phone, address, active, sort</code></div>
+        <div class="entity"><h4>Campaign</h4><code>id, name, direction(A), status, startAt, endAt</code></div>
+        <div class="entity"><h4>Tier</h4><code>id, campaignId, code(V3_V5|V6_V10), advisorTitle, customerTitle, items[{name,price}], displayProjectName, totalLimit, issuedCount, posterUrl, rulesSnapshot</code></div>
+        <div class="entity"><h4>ClaimSession</h4><code>id, tokenHash, campaignId, tierId, issuerStaffId, issuerStaffPhone, issuerStoreId, status(ACTIVE|REVOKED), createdAt, expiresAt</code></div>
+        <div class="entity"><h4>Coupon</h4><code>id, campaignId, tierId, sessionId, customerPhone, customerOpenId, redeemCode, status(UNUSED|USED|EXPIRED), claimedAt, expiresAt, rulesSnapshot, displayProjectName</code></div>
+        <div class="entity"><h4>RedeemRecord</h4><code>id, couponId, storeId, staffId, staffPhone, redeemedAt, amount, projectDisplayName</code></div>
+        <div class="entity"><h4>Review</h4><code>id, redeemId, rating(1..5), content(nullable ≤500), createdAt, updatedAt</code></div>
+        <div class="entity"><h4>FunnelEvent（可选）</h4><code>id, type(ISSUE|SCAN|CLAIM|REDEEM), sessionId?, couponId?, actorOpenId?, storeId?, createdAt · 聚合按 Asia/Shanghai</code></div>
+      </section>
+
+      <section id="s10">
+        <h2><span class="num">10.</span>非目标 / 后续版本</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>项</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>限量管理后台</td><td>调整每档 totalLimit、按日限等</td></tr>
+              <tr><td>B 向完整工程闭环</td><td>可分期；档位与 15B 合计计价已锁定；关键 UI 见 Figma B 帧</td></tr>
+              <tr><td>会员系统对接</td><td>自动校验是否会员 / VIP</td></tr>
+              <tr><td>补差价 / 升单</td><td>本版不做</td></tr>
+              <tr><td>风控产品化</td><td>v1 仅 TTL + 现场提示</td></tr>
+              <tr><td>灰度放量</td><td>运营策略另案</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s11">
+        <h2><span class="num">11.</span>附录</h2>
+        <h3>11.1 Figma</h3>
+        <ul>
+          <li>文件：<a href="https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT" target="_blank" rel="noopener">gYtPZtAsGCSg3c2pUdtnGT</a></li>
+          <li>排布：5 行方案 A；⑤「经营 · 对账与明细」</li>
+          <li>07b <code>270:144</code> 最新票面 · <strong>已删</strong> 08-已核销 / 08-过期券 / 09-写评价 / 09-看回写</li>
+          <li>主色 <code>#FF6002</code> · 字体 Noto Sans SC / PingFang SC</li>
+        </ul>
+        <h3>11.2 原型与材料</h3>
+        <ul>
+          <li><a href="../alliance-flow-A-storyboard-spec.html">alliance-flow-A-storyboard-spec.html</a></li>
+          <li><code>核心流程说明.md</code>、<code>互换优惠内容.md</code></li>
+        </ul>
+        <h3>11.4 验收清单</h3>
+        <ul class="check">
+          <li>预录入手机号才能亮码/核销；亮码 <strong>180s</strong> 轮换→04b</li>
+          <li>扫码落地 04；无会话无联盟券；未登录先登录再领</li>
+          <li>04 立即领取→06；点券面→05；售罄 05c；重复 05b</li>
+          <li><strong>07</strong>：无券/USED 不展示 Deal；EXPIRED 灰钮「已失效」；UNUSED→07b</li>
+          <li><strong>07b</strong> 每 2s 轮询；核销后进 08e；星级含「还可以」；保存回 07；回写见 13</li>
+          <li>店员写顾客星评 403；08a 可选服务备注；无 GET /reviews；无券列表</li>
+          <li>V3–V5 金额 218；<strong>B 向</strong>满 10000 记账 1360（两项均享）；满 5000=980</li>
+          <li><strong>10</strong>：Hero「联盟对账」；获客 16S；无评价摘要列表</li>
+          <li>USED 后重启首页为线上常规；已领未核仍可 07/07b；核销落团购·已使用（实付0，活动金额=档价）</li>
+          <li>19D：每日/按门店四态；亮码扫码领取只读；每日核销店铺行→12→13；按门店核销订单行→13</li>
+          <li>Sheet 无副文案；选中「已选」；时间四项；门店全部+列表；日期全部+日历；漏斗四态</li>
+          <li>按门店无门店筛；12 礼遇券名列；13 订单卡无金额行</li>
+          <li>一线无数据 Tab；日切上海时区；12 脱敏 / 13 完整号；选日无行日期；09c 不落库</li>
+        </ul>
+      </section>
+
+      <footer>剑琅美遇 · 联盟核销 PRD v1.14 · 与 Markdown 同源</footer>
+    </main>
+  </div>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+</body>
+</html>
