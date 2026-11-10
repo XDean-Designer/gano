@@ -25,12 +25,38 @@
   }
   button{font-family:inherit}
   img{display:block;flex-shrink:0}
+
+  /* run-on-phone */
+  html.is-mobile{--statusbar-h:0px}
+  html.is-mobile,html.is-mobile body{height:100%;overflow:hidden}
+  html.is-mobile body{
+    background:#000;
+    padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+    box-sizing:border-box;
+  }
+  html.is-mobile .hint{display:none!important}
+  html.is-mobile .status-bar{display:none!important}
+  html.is-mobile .page{
+    margin:0;padding:0;width:100%;height:100%;min-height:0;
+    align-items:flex-start;justify-content:center;overflow:hidden;
+  }
+  html.is-mobile .phone{
+    width:390px;max-width:none;
+    height:var(--mobile-h,844px);
+    transform:scale(var(--mobile-scale));
+    transform-origin:top center;
+    margin:0;border-radius:0;border:none;box-shadow:none;
+  }
+  html.is-mobile .proto-sheet{bottom:var(--kb-h,0px)!important}
+  html.capture-figma .hint{display:none!important}
+  html.capture-figma .page{margin:0!important;padding:0!important;justify-content:flex-start!important}
+  html.capture-figma .phone{transform:none!important;margin:0!important}
 </style>
 </head>
 <body>
-<div class="page">
+<div class="page stage">
   <div class="hint">
-    <b>联盟对账</b>：点漏斗行进 11→12→13。<b>店长模式</b>：Hero 右侧切换 → 20–22；被核销可复用 12→13。
+    <b>联盟对账</b>：点漏斗行进 11→12→13。<b>店长模式</b>：Hero 右侧切换 → 20–22；被核销可复用 12→13。真机自动全屏；桌面加 <b>?mobile=1</b>。
   </div>
   <div class="phone" id="root"></div>
 </div>
@@ -387,7 +413,7 @@ function NavCapsule() {
 }
 
 function StatusBar() {
-  return <div style={{ height: 53, flexShrink: 0, background: PAPER }} />;
+  return <div className="status-bar" style={{ height: 53, flexShrink: 0, background: PAPER }} />;
 }
 
 function SafeBottom() {
@@ -501,7 +527,7 @@ function Sheet({ title, options, value, onPick, onClose }) {
   return (
     <>
       <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 40 }} />
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 41, background: PAPER, borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "16px 16px 28px", maxHeight: "55%", overflow: "auto" }}>
+      <div className="proto-sheet" style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 41, background: PAPER, borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "16px 16px 28px", maxHeight: "55%", overflow: "auto" }}>
         <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center", color: INK }}>{title}</div>
         <div style={{ marginTop: 8 }}>
           {options.map((opt) => {
@@ -1347,6 +1373,182 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+<script>
+/* run-on-phone — adapted for .page + #root.phone */
+(function () {
+  var CONFIG = {
+    logicalWidth: 390,
+    logicalHeightFallback: 844,
+    minLogicalHeight: 500,
+    frameSelector: "#root",
+    stageSelector: ".page",
+    navSelector: "#siteNav",
+    scrimSelector: "#siteNavScrim",
+    edge: 24,
+    openDx: 56,
+    closeDx: -48,
+    kbJitterPx: 80
+  };
+
+  var root = document.documentElement;
+  var nav = document.querySelector(CONFIG.navSelector);
+  var scrim = document.querySelector(CONFIG.scrimSelector);
+  var stage = document.querySelector(CONFIG.stageSelector);
+
+  function queryForce() {
+    try {
+      var q = new URLSearchParams(location.search).get("mobile");
+      if (q === "1" || q === "true") return true;
+      if (q === "0" || q === "false") return false;
+    } catch (e) {}
+    return null;
+  }
+
+  function isRealPhone() {
+    var ua = navigator.userAgent || "";
+    if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)) {
+      if (/Android/i.test(ua) && !/Mobile/i.test(ua)) return false;
+      return true;
+    }
+    if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true;
+    return false;
+  }
+
+  function shouldMobile() {
+    var force = queryForce();
+    if (force !== null) return force;
+    return isRealPhone();
+  }
+
+  function isNavOpen() {
+    return root.classList.contains("is-nav-open");
+  }
+
+  function openSiteNav() {
+    if (!root.classList.contains("is-mobile")) return;
+    root.classList.add("is-nav-open");
+    if (scrim) scrim.setAttribute("aria-hidden", "false");
+  }
+
+  function closeSiteNav() {
+    root.classList.remove("is-nav-open");
+    if (scrim) scrim.setAttribute("aria-hidden", "true");
+  }
+
+  window.openSiteNav = openSiteNav;
+  window.closeSiteNav = closeSiteNav;
+
+  function updateScale() {
+    if (!root.classList.contains("is-mobile") || !stage) return;
+    var w = stage.clientWidth || window.innerWidth;
+    var h = stage.clientHeight || window.innerHeight;
+    var lw = CONFIG.logicalWidth;
+    var lh0 = CONFIG.logicalHeightFallback;
+    var scale = w / lw;
+    var logicalH = scale > 0 ? h / scale : h;
+    if (!isFinite(logicalH) || logicalH < CONFIG.minLogicalHeight) {
+      scale = Math.min(w / lw, h / lh0);
+      logicalH = lh0;
+    }
+    if (!isFinite(scale) || scale <= 0) scale = 1;
+    root.style.setProperty("--mobile-scale", String(Math.round(scale * 1000) / 1000));
+    root.style.setProperty("--mobile-h", Math.round(logicalH) + "px");
+  }
+
+  function updateKeyboardInset() {
+    if (!root.classList.contains("is-mobile")) return;
+    var vv = window.visualViewport;
+    if (!vv) {
+      root.style.setProperty("--kb-h", "0px");
+      return;
+    }
+    var overlap = window.innerHeight - vv.height - (vv.offsetTop || 0);
+    if (!isFinite(overlap) || overlap < 0) overlap = 0;
+    var scale = parseFloat(root.style.getPropertyValue("--mobile-scale")) || 1;
+    if (!isFinite(scale) || scale <= 0) scale = 1;
+    var logical = overlap > CONFIG.kbJitterPx ? overlap / scale : 0;
+    root.style.setProperty("--kb-h", Math.round(logical) + "px");
+  }
+
+  function applyMode() {
+    var on = shouldMobile();
+    root.classList.toggle("is-mobile", on);
+    if (!on) {
+      closeSiteNav();
+      root.style.removeProperty("--mobile-scale");
+      root.style.removeProperty("--mobile-h");
+      root.style.removeProperty("--kb-h");
+      return;
+    }
+    updateScale();
+    updateKeyboardInset();
+  }
+
+  if (scrim) {
+    scrim.addEventListener("click", function () {
+      closeSiteNav();
+    });
+  }
+
+  var track = null;
+  function onTouchStart(e) {
+    if (!root.classList.contains("is-mobile")) return;
+    if (!nav) return;
+    if (e.touches.length !== 1) return;
+    var t = e.touches[0];
+    var open = isNavOpen();
+    if (!open && t.clientX > CONFIG.edge) return;
+    track = { x0: t.clientX, y0: t.clientY, open: open, locked: false, axis: null };
+  }
+  function onTouchMove(e) {
+    if (!track) return;
+    var t = e.touches[0];
+    var dx = t.clientX - track.x0;
+    var dy = t.clientY - track.y0;
+    if (!track.locked) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      track.axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+      track.locked = true;
+      if (track.axis === "y") {
+        track = null;
+        return;
+      }
+    }
+    if (track.axis === "x" && e.cancelable) e.preventDefault();
+  }
+  function onTouchEnd(e) {
+    if (!track) return;
+    var t = (e.changedTouches && e.changedTouches[0]) || null;
+    var dx = t ? t.clientX - track.x0 : 0;
+    var open = track.open;
+    var axis = track.axis;
+    track = null;
+    if (axis !== "x") return;
+    if (!open && dx >= CONFIG.openDx) openSiteNav();
+    else if (open && dx <= CONFIG.closeDx) closeSiteNav();
+  }
+
+  document.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
+  document.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
+  document.addEventListener("touchend", onTouchEnd, { passive: true, capture: true });
+  document.addEventListener("touchcancel", function () { track = null; }, { passive: true });
+
+  applyMode();
+  window.addEventListener("resize", function () {
+    if (root.classList.contains("is-mobile")) {
+      updateScale();
+      updateKeyboardInset();
+    }
+  }, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", function () {
+      updateScale();
+      updateKeyboardInset();
+    }, { passive: true });
+    window.visualViewport.addEventListener("scroll", updateKeyboardInset, { passive: true });
+  }
+})();
 </script>
 </body>
 </html>
