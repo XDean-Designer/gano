@@ -85,14 +85,7 @@ URL 规则：`https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id={node}
 
 ## A 向 · 店长模式（数据模块内切换 · 仅店长）
 
-| 编号 | 名称 | node-id | 路由 |
-|------|------|---------|------|
-| 20 | 店长看板首页 | `660:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-142) · Hero 右切回联盟对账 |
-| 21 | 本店明细 | `660:183` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-183) · 按日/按员工；被核销→12 |
-| 22 | 员工详情 | `660:206` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-206) · 脱敏号 · 流水 |
-| 23 | 本店排行 | `660:224` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-224) · 亮码榜/核销榜 |
-
-可点原型：[data-prototype.html](../data-prototype.html) · [Pages](https://xdean-designer.github.io/gano/data-prototype.html)
+> 20–23 Figma 帧待 HTML 原型确认后再导入。可点原型暂保留交互：[data-prototype.html](../data-prototype.html)
 
 ## B 向 · GANO → 丽妍购卡礼（关键帧）
 
