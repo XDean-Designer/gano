@@ -15,6 +15,21 @@ const DESIGN_H = 844;
 const SCALE = 0.52;
 const UI_FONT = '"Noto Sans SC", "Source Han Sans SC", sans-serif';
 
+function ChevronDown({ size = 12, color = "#999999", rotate = 0 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden="true"
+      style={{ display: "block", flexShrink: 0, transform: rotate ? `rotate(${rotate}deg)` : undefined }}
+    >
+      <path d="M3 4.5L6 7.5L9 4.5" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function Screen({ id }) {
   if (id === "enter") return <Enter />;
   if (id === "tiers") return <Tiers />;
@@ -32,6 +47,7 @@ function Screen({ id }) {
   if (id === "review") return <Review />;
   if (id === "feedback") return <OrderDetail />;
   if (id === "stats") return <Stats />;
+  if (id === "logs") return <LogsDetail />;
   if (id === "tiersEmpty") return <TiersEmpty />;
   if (id === "codeV35") return <StaffCodeV35 />;
   if (id === "claimV35") return <ClaimV35 />;
@@ -379,7 +395,7 @@ function CouponSheet({ success }) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>{name}</div>
                 <div style={{ marginTop: 2, display: "flex", alignItems: "center" }}>
                   <span style={{ fontSize: 11, color: "#999999", lineHeight: "16px" }}>{address}</span>
-                  <span style={{ marginLeft: 2, fontSize: 14, lineHeight: "16px", color: "#CCCCCC" }}>›</span>
+                  <span style={{ marginLeft: 2, display: "inline-flex", alignItems: "center" }}><ChevronDown size={12} color="#CCCCCC" rotate={-90} /></span>
                 </div>
               </div>
               <div style={{ width: 36, marginLeft: 8, textAlign: "center", flexShrink: 0 }}>
@@ -689,6 +705,20 @@ function Feedback() {
           </div>
           <div style={{ color: "#333333", fontSize: 13, lineHeight: "20px", marginTop: 8 }}>头皮敏感，手法放轻了</div>
           <div style={{ color: "#999999", fontSize: 12, marginTop: 6 }}>凯德晶萃店 · 刚做完</div>
+        </div>
+        <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
+          <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>生命周期</div>
+          {[
+            ["亮码人", "138****1024"],
+            ["扫码人", "138****6621"],
+            ["领取人", "138****6621"],
+            ["核销人", "186****3308"],
+          ].map(([k, v]) => (
+            <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 10 }}>
+              <span style={{ fontSize: 13, color: "#999999" }}>{k}</span>
+              <span style={{ fontSize: 14, color: "#333333" }}>{v}</span>
+            </div>
+          ))}
         </div>
         <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
           <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>订单信息</div>
@@ -1016,6 +1046,63 @@ function ShopPublic() {
   );
 }
 
+/** 数据明细 · 每日 · 四态 L2 门店行展开 L3 手机号·次数（27E） */
+function LogsDetail() {
+  const [open, setOpen] = useState("kade");
+  const stores = [
+    { id: "kade", name: "凯德晶萃店", count: "3次", phones: [["138****1024", "2次"], ["186****3308", "1次"]] },
+    { id: "raff", name: "来福士店", count: "2次", phones: [["139****8810", "2次"]] },
+  ];
+  return (
+    <Shell tab="数据" bg="#F7F7F7">
+      <div style={{ padding: 12 }}>
+        <div style={{ textAlign: "center", fontSize: 17, fontWeight: 600 }}>数据明细</div>
+        <div style={{ textAlign: "center", fontSize: 12, color: "#999999", marginTop: 2 }}>丽妍雅集</div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 28, marginTop: 12, fontSize: 14 }}>
+          <span style={{ color: "#FF6633", fontWeight: 600, borderBottom: "2px solid #FF6633", paddingBottom: 6 }}>每日</span>
+          <span style={{ color: "#999999", paddingBottom: 6 }}>按门店</span>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          {["近7天", "亮码", "全部门店"].map((c, i) => (
+            <span key={c} style={{ padding: "6px 10px", borderRadius: 16, border: `1px solid ${i === 1 ? "#FF6633" : "#DDDDDD"}`, fontSize: 12, color: i === 1 ? "#FF6633" : "#666666" }}>{c}</span>
+          ))}
+        </div>
+        <div style={{ marginTop: 12, background: "#FFFFFF", borderRadius: 8, overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #F0F0F0" }}>
+            <span style={{ flex: 1, fontSize: 15, fontWeight: 600 }}>11月03日</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: "#FF6633" }}>6次</span>
+            <span style={{ marginLeft: 12 }}><ChevronDown size={12} color="#999999" /></span>
+          </div>
+          {stores.map((s) => {
+            const expanded = open === s.id;
+            return (
+              <div key={s.id}>
+                <div
+                  onClick={() => setOpen(expanded ? "" : s.id)}
+                  style={{ display: "flex", alignItems: "center", padding: "12px 16px", cursor: "pointer" }}
+                >
+                  <span style={{ flex: 1, fontSize: 14 }}>{s.name}</span>
+                  <span style={{ fontSize: 14, marginRight: 8 }}>{s.count}</span>
+                  <ChevronDown size={12} color="#999999" rotate={expanded ? 180 : -90} />
+                </div>
+                {expanded && s.phones.map(([p, c]) => (
+                  <div key={p} style={{ display: "flex", padding: "10px 16px 10px 32px", fontSize: 13, color: "#666666" }}>
+                    <span style={{ flex: 1 }}>{p}</span>
+                    <span style={{ color: "#333333" }}>{c}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ marginTop: 8, fontSize: 11, color: "#999999", lineHeight: "16px" }}>
+          L3：亮码=顾问号 · 扫码/领取=顾客号 · 被核销=核销员号（可点 › 进 12）
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
 function Stats() {
   const funnel = (items) =>
     items.map((item) => (
@@ -1052,7 +1139,7 @@ function Stats() {
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>9</div><div style={{ fontSize: 12, color: "#999999" }}>发出</div></div>
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>4</div><div style={{ fontSize: 12, color: "#999999" }}>到GANO核销</div></div>
           </div>
-          {funnel([["亮码", 18], ["扫码", 11], ["领取", 9], ["核销", 4]])}
+          {funnel([["亮码", 18], ["扫码", 11], ["领取", 9], ["被核销", 4]])}
           {review("138****6621 · 日本玫丽盼", "GANO：头皮敏感，手法放轻了")}
         </div>
         <div style={{ marginTop: 8, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
@@ -1061,7 +1148,7 @@ function Stats() {
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>4</div><div style={{ fontSize: 12, color: "#999999" }}>发出</div></div>
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>2</div><div style={{ fontSize: 12, color: "#999999" }}>到本店核销</div></div>
           </div>
-          {funnel([["亮码", 7], ["扫码", 5], ["领取", 4], ["核销", 2]])}
+          {funnel([["亮码", 7], ["扫码", 5], ["领取", 4], ["被核销", 2]])}
           {review("紫镜嘭弾护理一次", "本店：肩颈放松了")}
         </div>
       </div>

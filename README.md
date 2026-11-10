@@ -11,8 +11,9 @@
 
 | 文件 | 说明 |
 |------|------|
-| [docs/prd-剑琅美遇-联盟核销.md](./docs/prd-剑琅美遇-联盟核销.md) | PRD（当前 v1.14） |
+| [docs/prd-剑琅美遇-联盟核销.md](./docs/prd-剑琅美遇-联盟核销.md) | PRD（当前 v1.16） |
 | [docs/prd-剑琅美遇-联盟核销.html](./docs/prd-剑琅美遇-联盟核销.html) | PRD HTML 版 |
+| [docs/操作手册-GANO.html](./docs/操作手册-GANO.html) | GANO 侧操作手册（顾问 / 店员 / 店长运营） |
 | [核心流程说明.md](./核心流程说明.md) | 角色步骤原稿 |
 | [互换优惠内容.md](./互换优惠内容.md) | 权益与门店名单 |
 
@@ -20,6 +21,7 @@
 
 | 文件 | 说明 |
 |------|------|
+| **[data-prototype.html](./data-prototype.html)** | **数据钻取可点原型（10→11→12→13）** · [GitHub Pages](https://xdean-designer.github.io/gano/data-prototype.html) |
 | `alliance-flow-A-storyboard-spec.html` | A 向故事板（规范版） |
 | `alliance-flow-A-storyboard.html` | A 向故事板 |
 | `alliance-flow-B-catalog.html` | B 向目录 |

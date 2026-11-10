@@ -4,6 +4,21 @@ const ORANGE = "#FF6633";
 const CHIP = "#FFF4EE";
 const INK = "#222222";
 const MUTED = "#888888";
+
+function ChevronDown({ size = 12, color = "#999999", rotate = 0 }: { size?: number; color?: string; rotate?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden="true"
+      style={{ display: "block", flexShrink: 0, transform: rotate ? `rotate(${rotate}deg)` : undefined }}
+    >
+      <path d="M3 4.5L6 7.5L9 4.5" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 const LINE = "#EEEEEE";
 const PAGE = "#F6F6F6";
 const PAPER = "#FFFFFF";
@@ -1149,7 +1164,7 @@ function CouponSheet({ success }: { success: boolean }) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>{name}</div>
                 <div style={{ marginTop: 2, display: "flex", alignItems: "center" }}>
                   <span style={{ fontSize: 11, color: "#999999", lineHeight: "16px" }}>{address}</span>
-                  <span style={{ marginLeft: 2, fontSize: 14, lineHeight: "16px", color: "#CCCCCC" }}>›</span>
+                  <span style={{ marginLeft: 2, display: "inline-flex", alignItems: "center" }}><ChevronDown size={12} color="#CCCCCC" rotate={-90} /></span>
                 </div>
               </div>
               <div style={{ width: 36, marginLeft: 8, textAlign: "center", flexShrink: 0 }}>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>GANO × 丽妍 · 数据钻取原型（10–13）</title>
+<style>
+  @font-face{
+    font-family:"Noto Sans SC";
+    src:url("./fonts/NotoSansSC-VF.ttf") format("truetype");
+    font-weight:100 900;
+    font-style:normal;
+    font-display:swap;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;min-height:100%;background:#E8E8E8;font-family:"Noto Sans SC","Source Han Sans SC",sans-serif;color:#222}
+  .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 12px 32px}
+  .hint{max-width:390px;width:100%;margin:0 0 12px;font-size:12px;line-height:18px;color:#666}
+  .hint b{color:#FF6633}
+  .phone{
+    width:390px;height:844px;max-width:100%;
+    background:#F7F7F7;border-radius:28px;overflow:hidden;
+    box-shadow:0 16px 48px rgba(0,0,0,.12);
+    border:1px solid #ddd;
+    position:relative;
+  }
+  button{font-family:inherit}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hint">可点原型 · <b>10 两边账</b> → 漏斗进 <b>11</b> → L2 展开 L3 → 仅「被核销」L3 进 <b>12</b> → 行进 <b>13</b>。试：点「发出 · 被核销」。</div>
+  <div class="phone" id="root"></div>
+</div>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.0/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+const ORANGE = "#FF6633";
+const CHIP = "#FFF4EE";
+const INK = "#222222";
+const MUTED = "#888888";
+const LINE = "#EEEEEE";
+const PAGE = "#F7F7F7";
+const PAPER = "#FFFFFF";
+const METRICS = ["亮码", "扫码", "领取", "被核销"];
+
+const DAY_DATA = {
+  亮码: [
+    { date: "11月03日", total: 6, amount: null, stores: [
+      { name: "凯德晶萃店", count: 3, amount: null, phones: [["138****1024", 2], ["186****3308", 1]] },
+      { name: "来福士店", count: 2, amount: null, phones: [["139****8810", 2]] },
+      { name: "西岸中环店", count: 1, amount: null, phones: [["137****4412", 1]] },
+    ]},
+    { date: "11月02日", total: 7, amount: null, stores: [
+      { name: "凯德晶萃店", count: 4, amount: null, phones: [["138****1024", 3], ["150****9090", 1]] },
+      { name: "来福士店", count: 2, amount: null, phones: [["139****8810", 2]] },
+      { name: "静安嘉里店", count: 1, amount: null, phones: [["186****2209", 1]] },
+    ]},
+  ],
+  扫码: [
+    { date: "11月03日", total: 4, amount: null, stores: [
+      { name: "凯德晶萃店", count: 2, amount: null, phones: [["138****6621", 1], ["139****8810", 1]] },
+      { name: "来福士店", count: 2, amount: null, phones: [["186****2209", 2]] },
+    ]},
+    { date: "11月02日", total: 4, amount: null, stores: [
+      { name: "凯德晶萃店", count: 3, amount: null, phones: [["138****6621", 2], ["137****4412", 1]] },
+      { name: "来福士店", count: 1, amount: null, phones: [["159****7733", 1]] },
+    ]},
+  ],
+  领取: [
+    { date: "11月03日", total: 3, amount: 0, stores: [
+      { name: "凯德晶萃店", count: 2, amount: 0, phones: [["138****6621", 1], ["139****8810", 1]] },
+      { name: "来福士店", count: 1, amount: 0, phones: [["186****2209", 1]] },
+    ]},
+    { date: "11月02日", total: 4, amount: 0, stores: [
+      { name: "凯德晶萃店", count: 2, amount: 0, phones: [["138****6621", 1], ["137****4412", 1]] },
+      { name: "来福士店", count: 1, amount: 0, phones: [["159****7733", 1]] },
+      { name: "西岸中环店", count: 1, amount: 0, phones: [["150****9090", 1]] },
+    ]},
+  ],
+  被核销: [
+    { date: "11月03日", total: 2, amount: 960, stores: [
+      { name: "凯德晶萃店", count: 1, amount: 480, phones: [["186****3308", 1]] },
+      { name: "来福士店", count: 1, amount: 480, phones: [["139****8810", 1]] },
+    ]},
+    { date: "11月02日", total: 1, amount: 480, stores: [
+      { name: "凯德晶萃店", count: 1, amount: 480, phones: [["186****3308", 1]] },
+    ]},
+    { date: "11月01日", total: 1, amount: 480, stores: [
+      { name: "静安嘉里店", count: 1, amount: 480, phones: [["150****9090", 1]] },
+    ]},
+  ],
+};
+
+const STORE_DATA = {
+  亮码: [
+    { shop: "凯德晶萃店", count: 7, amount: null, phones: [["138****1024", 5], ["186****3308", 2]] },
+    { shop: "来福士店", count: 4, amount: null, phones: [["139****8810", 4]] },
+  ],
+  扫码: [
+    { shop: "凯德晶萃店", count: 5, amount: null, phones: [["138****6621", 3], ["137****4412", 2]] },
+    { shop: "来福士店", count: 3, amount: null, phones: [["186****2209", 2], ["159****7733", 1]] },
+  ],
+  领取: [
+    { shop: "凯德晶萃店", count: 4, amount: 0, phones: [["138****6621", 2], ["137****4412", 1], ["139****8810", 1]] },
+    { shop: "来福士店", count: 2, amount: 0, phones: [["186****2209", 1], ["159****7733", 1]] },
+  ],
+  被核销: [
+    { shop: "凯德晶萃店", count: 2, amount: 960, phones: [["186****3308", 2]] },
+    { shop: "来福士店", count: 1, amount: 480, phones: [["139****8810", 1]] },
+    { shop: "静安嘉里店", count: 1, amount: 480, phones: [["150****9090", 1]] },
+  ],
+};
+
+const ORDERS = {
+  "11月03日|凯德晶萃店|186****3308": [
+    { id: "o1", customer: "138****6621", shop: "西岸中环店", item: "日本玫丽盼全球化护理", price: 480 },
+  ],
+  "11月03日|来福士店|139****8810": [
+    { id: "o2", customer: "139****8810", shop: "徐汇店", item: "紫镜嘭弹护理", price: 480 },
+  ],
+  "11月02日|凯德晶萃店|186****3308": [
+    { id: "o3", customer: "137****4412", shop: "西岸中环店", item: "日本玫丽盼全球化护理", price: 480 },
+  ],
+  "11月01日|静安嘉里店|150****9090": [
+    { id: "o4", customer: "150****9090", shop: "西岸中环店", item: "日本玫丽盼全球化护理", price: 480 },
+  ],
+};
+
+const ORDER_DETAIL = {
+  o1: {
+    customer: "138****6621", customerFull: "13812346621", coupon: "A8K29",
+    item: "日本玫丽盼全球化护理", price: 480, tag: "满意",
+    note: "头皮敏感，手法放轻了", noteMeta: "凯德晶萃店 · 刚做完",
+    life: [["亮码人", "138****1024"], ["扫码人", "138****6621"], ["领取人", "138****6621"], ["核销人", "186****3308"]],
+    fields: [["来源门店", "GANO · 西岸中环店"], ["核销门店", "丽妍 · 凯德晶萃店"], ["领券时间", "2026-11-03 11:20"], ["核销时间", "2026-11-03 14:06"], ["丽妍雅集档位", "V6–V10"]],
+  },
+  o2: {
+    customer: "139****8810", customerFull: "13912348810", coupon: "B2M17",
+    item: "紫镜嘭弹护理", price: 480, tag: "满意",
+    note: "肩颈放松了", noteMeta: "来福士店 · 昨天",
+    life: [["亮码人", "139****8810"], ["扫码人", "139****8810"], ["领取人", "139****8810"], ["核销人", "139****8810"]],
+    fields: [["来源门店", "GANO · 徐汇店"], ["核销门店", "丽妍 · 来福士店"], ["领券时间", "2026-11-03 10:05"], ["核销时间", "2026-11-03 15:22"], ["丽妍雅集档位", "V3–V5"]],
+  },
+  o3: {
+    customer: "137****4412", customerFull: "13712344412", coupon: "C9P04",
+    item: "日本玫丽盼全球化护理", price: 480, tag: "满意",
+    note: "效果不错，会再来", noteMeta: "凯德晶萃店 · 11/02",
+    life: [["亮码人", "138****1024"], ["扫码人", "137****4412"], ["领取人", "137****4412"], ["核销人", "186****3308"]],
+    fields: [["来源门店", "GANO · 西岸中环店"], ["核销门店", "丽妍 · 凯德晶萃店"], ["领券时间", "2026-11-02 11:20"], ["核销时间", "2026-11-02 14:06"], ["丽妍雅集档位", "V6–V10"]],
+  },
+  o4: {
+    customer: "150****9090", customerFull: "15012349090", coupon: "D1K88",
+    item: "日本玫丽盼全球化护理", price: 480, tag: "一般",
+    note: "等待稍久", noteMeta: "静安嘉里店 · 11/01",
+    life: [["亮码人", "150****9090"], ["扫码人", "150****9090"], ["领取人", "150****9090"], ["核销人", "150****9090"]],
+    fields: [["来源门店", "GANO · 西岸中环店"], ["核销门店", "丽妍 · 静安嘉里店"], ["领券时间", "2026-11-01 12:00"], ["核销时间", "2026-11-01 16:40"], ["丽妍雅集档位", "V6–V10"]],
+  },
+};
+
+const TIME_OPTS = ["近7天", "近30天", "本月", "上月"];
+const STORE_OPTS = ["全部门店", "凯德晶萃店", "来福士店", "西岸中环店", "静安嘉里店"];
+const DATE_OPTS = ["全部", "11月03日", "11月02日", "11月01日", "10月31日"];
+
+function unitOf(metric) {
+  if (metric === "亮码" || metric === "扫码") return "次";
+  return "人";
+}
+function showAmount(metric) {
+  return metric === "领取" || metric === "被核销";
+}
+
+function ChevronDown({ size = 12, color = MUTED, rotate = 0 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 12 12" fill="none" aria-hidden="true"
+      style={{ display: "block", flexShrink: 0, transform: rotate ? `rotate(${rotate}deg)` : undefined, transition: "transform .15s" }}>
+      <path d="M3 4.5L6 7.5L9 4.5" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function ChevronLeft({ size = 22, color = INK }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 18l-6-6 6-6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function HelpIcon({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke={MUTED} strokeWidth="1.6" />
+      <path d="M9.6 9.4a2.4 2.4 0 1 1 3.5 2.14c-.7.4-1.1.8-1.1 1.66V14" stroke={MUTED} strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="12" cy="17" r="1" fill={MUTED} />
+    </svg>
+  );
+}
+
+function StatusBar() {
+  return <div style={{ height: 44, flexShrink: 0, background: PAPER }} />;
+}
+
+function NavBar({ title, subtitle, right, onBack }) {
+  return (
+    <div style={{ flexShrink: 0, background: PAPER, paddingBottom: 8 }}>
+      <div style={{ height: 44, display: "flex", alignItems: "center", position: "relative" }}>
+        {onBack ? (
+          <button type="button" onClick={onBack} style={{ width: 44, height: 44, border: "none", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            <ChevronLeft />
+          </button>
+        ) : <div style={{ width: 44 }} />}
+        <div style={{ position: "absolute", left: 56, right: 56, textAlign: "center", fontSize: 17, fontWeight: 600, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
+        {right ? <div style={{ marginLeft: "auto", paddingRight: 14, fontSize: 12, color: MUTED }}>{right}</div> : <div style={{ width: 44 }} />}
+      </div>
+      {subtitle ? <div style={{ textAlign: "center", fontSize: 12, color: MUTED, marginTop: -2 }}>{subtitle}</div> : null}
+    </div>
+  );
+}
+
+function Sheet({ title, options, value, onPick, onClose }) {
+  return (
+    <>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 40 }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 41, background: PAPER, borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "16px 16px 28px", maxHeight: "55%", overflow: "auto" }}>
+        <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center", color: INK }}>{title}</div>
+        <div style={{ marginTop: 8 }}>
+          {options.map((opt) => {
+            const on = opt === value;
+            return (
+              <button key={opt} type="button" onClick={() => onPick(opt)}
+                style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", height: 48, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4px", fontSize: 15, color: on ? ORANGE : INK, fontWeight: on ? 600 : 400, cursor: "pointer" }}>
+                <span>{opt}</span>
+                {on ? <span style={{ fontSize: 13, color: ORANGE }}>已选</span> : null}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function FilterChip({ label, active, onClick }) {
+  return (
+    <button type="button" onClick={onClick}
+      style={{ appearance: "none", border: `1px solid ${active ? ORANGE : "#DDDDDD"}`, background: active ? CHIP : PAPER, color: active ? ORANGE : "#666", borderRadius: 16, height: 30, padding: "0 12px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, cursor: "pointer" }}>
+      <span>{label}</span>
+      <ChevronDown size={10} color={active ? ORANGE : MUTED} />
+    </button>
+  );
+}
+
+function TabBar({ active }) {
+  const items = ["联盟", "扫码核销", "数据统计"];
+  return (
+    <div style={{ flexShrink: 0, height: 52, background: PAPER, borderTop: `1px solid ${LINE}`, display: "flex" }}>
+      {items.map((item) => (
+        <div key={item} style={{ flex: 1, textAlign: "center", paddingTop: 10, fontSize: 11, fontWeight: 600, color: item === active ? ORANGE : "#999" }}>{item}</div>
+      ))}
+    </div>
+  );
+}
+
+/* —— 10 两边账 —— */
+function StatsScreen({ onOpenLogs }) {
+  const funnel = (side, items) =>
+    items.map(([label, n]) => (
+      <button key={label} type="button" onClick={() => onOpenLogs({ side, metric: label })}
+        style={{ appearance: "none", border: "none", background: "transparent", width: "100%", marginTop: 10, padding: 0, cursor: "pointer", textAlign: "left" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 13, color: INK }}>{label}</span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: INK }}>{n}</span>
+            <ChevronDown size={12} color="#CCC" rotate={-90} />
+          </span>
+        </div>
+        <div style={{ marginTop: 6, height: 6, borderRadius: 3, background: "#F3F3F3" }}>
+          <div style={{ width: `${(n / items[0][1]) * 100}%`, height: 6, borderRadius: 3, background: ORANGE }} />
+        </div>
+      </button>
+    ));
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+      <StatusBar />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <div style={{ fontSize: 20, fontWeight: 600, color: INK }}>数据</div>
+        <div style={{ marginTop: 12, borderRadius: 12, overflow: "hidden", background: "linear-gradient(135deg,#FFF4EE 0%,#FFE4D2 55%,#F7F7F7 100%)", border: "1px solid #F0F0F0", padding: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: 12, color: "#B86A3C" }}>联盟对账</div>
+              <div style={{ marginTop: 4, fontSize: 18, fontWeight: 600 }}>西岸中环店 · 店长视角</div>
+            </div>
+            <HelpIcon size={18} />
+          </div>
+          <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+            {[["丽妍雅集获客", "9"], ["GANO获客", "4"]].map(([l, n]) => (
+              <div key={l} style={{ flex: 1, background: "rgba(255,255,255,.75)", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+                <div style={{ fontSize: 20, fontWeight: 700, color: ORANGE }}>{n}</div>
+                <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 600 }}>丽妍雅集 发出</div>
+          <div style={{ marginTop: 12, display: "flex" }}>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>9</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>发出</div></div>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>4</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>到GANO核销</div></div>
+          </div>
+          {funnel("发出", [["亮码", 18], ["扫码", 11], ["领取", 9], ["被核销", 4]])}
+        </div>
+
+        <div style={{ marginTop: 8, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 600 }}>GANO 发来</div>
+          <div style={{ marginTop: 12, display: "flex" }}>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>4</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>发出</div></div>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>2</div><div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>到丽妍雅集核销</div></div>
+          </div>
+          {funnel("发来", [["亮码", 7], ["扫码", 5], ["领取", 4], ["被核销", 2]])}
+        </div>
+      </div>
+      <TabBar active="数据统计" />
+    </div>
+  );
+}
+
+/* —— 11 数据明细 —— */
+function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
+  const [tab, setTab] = useState("每日");
+  const [metric, setMetric] = useState(initMetric || "被核销");
+  const [timeRange, setTimeRange] = useState("近7天");
+  const [store, setStore] = useState("全部门店");
+  const [storeDate, setStoreDate] = useState("全部");
+  const [sheet, setSheet] = useState(null);
+  const [openDay, setOpenDay] = useState("11月03日");
+  const [openStoreL2, setOpenStoreL2] = useState({ "11月03日|凯德晶萃店": true });
+  const [openShop, setOpenShop] = useState("凯德晶萃店");
+
+  const brand = side === "发来" ? "GANO HAIR" : "丽妍雅集";
+  const unit = unitOf(metric);
+  const withAmt = showAmount(metric);
+  const clickableL3 = metric === "被核销";
+
+  const days = useMemo(() => {
+    let list = DAY_DATA[metric] || [];
+    if (store !== "全部门店") {
+      list = list.map((d) => ({
+        ...d,
+        stores: d.stores.filter((s) => s.name === store),
+      })).filter((d) => d.stores.length);
+    }
+    return list;
+  }, [metric, store]);
+
+  const shops = STORE_DATA[metric] || [];
+
+  const openSheet = (kind) => setSheet(kind);
+  const closeSheet = () => setSheet(null);
+
+  const toggleL2 = (key) => setOpenStoreL2((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const renderPhones = (phones, ctx) =>
+    phones.map(([phone, n]) => (
+      <button
+        key={phone + n}
+        type="button"
+        onClick={() => {
+          if (!clickableL3) return;
+          onOpenDay({ date: ctx.date, shop: ctx.shop, clerk: phone });
+        }}
+        style={{
+          appearance: "none", border: "none", background: clickableL3 ? "transparent" : "transparent",
+          width: "100%", display: "flex", alignItems: "center", padding: "10px 16px 10px 32px",
+          cursor: clickableL3 ? "pointer" : "default", textAlign: "left",
+        }}
+      >
+        <span style={{ flex: 1, fontSize: 13, color: "#666" }}>{phone}</span>
+        <span style={{ fontSize: 13, color: INK, marginRight: clickableL3 ? 6 : 0 }}>{n}次</span>
+        {clickableL3 ? <ChevronDown size={12} color="#CCC" rotate={-90} /> : null}
+      </button>
+    ));
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
+      <StatusBar />
+      <NavBar title="数据明细" subtitle={brand} onBack={onBack} />
+      <div style={{ display: "flex", justifyContent: "center", gap: 28, background: PAPER, paddingBottom: 2, borderBottom: `1px solid ${LINE}` }}>
+        {["每日", "按门店"].map((name) => {
+          const on = tab === name;
+          return (
+            <button key={name} type="button" onClick={() => setTab(name)}
+              style={{ appearance: "none", border: "none", background: "transparent", padding: "10px 0 8px", fontSize: 14, fontWeight: on ? 600 : 400, color: on ? ORANGE : MUTED, borderBottom: on ? `2px solid ${ORANGE}` : "2px solid transparent", cursor: "pointer" }}>
+              {name}
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", gap: 8, padding: "10px 16px", overflowX: "auto", flexShrink: 0 }}>
+        {tab === "每日" ? (
+          <>
+            <FilterChip label={timeRange} active onClick={() => openSheet("time")} />
+            <FilterChip label={metric} active onClick={() => openSheet("metric")} />
+            <FilterChip label={store} onClick={() => openSheet("store")} />
+          </>
+        ) : (
+          <>
+            <FilterChip label={storeDate === "全部" ? "全部日期" : storeDate} active onClick={() => openSheet("date")} />
+            <FilterChip label={metric} active onClick={() => openSheet("metric")} />
+          </>
+        )}
+      </div>
+
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 12px 16px" }}>
+        {tab === "每日" ? (
+          days.length === 0 ? (
+            <Empty />
+          ) : days.map((day) => {
+            const dayOpen = openDay === day.date;
+            return (
+              <div key={day.date} style={{ background: PAPER, borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
+                <button type="button" onClick={() => setOpenDay(dayOpen ? "" : day.date)}
+                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer" }}>
+                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left" }}>{day.date}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: ORANGE, marginRight: 8 }}>{day.total}{unit}</span>
+                  {withAmt ? <span style={{ fontSize: 15, fontWeight: 700, marginRight: 8 }}>¥{day.amount}</span> : null}
+                  <ChevronDown rotate={dayOpen ? 180 : 0} />
+                </button>
+                {dayOpen ? day.stores.map((s) => {
+                  const key = day.date + "|" + s.name;
+                  const expanded = !!openStoreL2[key];
+                  return (
+                    <div key={s.name}>
+                      <button type="button" onClick={() => toggleL2(key)}
+                        style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px", cursor: "pointer" }}>
+                        <span style={{ flex: 1, fontSize: 14, textAlign: "left" }}>{s.name}</span>
+                        <span style={{ fontSize: 14, marginRight: 8 }}>{s.count}{unit}</span>
+                        {withAmt && s.amount != null ? <span style={{ fontSize: 14, marginRight: 8 }}>¥{s.amount}</span> : null}
+                        <ChevronDown rotate={expanded ? 180 : -90} />
+                      </button>
+                      {expanded ? renderPhones(s.phones, { date: day.date, shop: s.name }) : null}
+                    </div>
+                  );
+                }) : null}
+              </div>
+            );
+          })
+        ) : (
+          shops.map((card) => {
+            const isOpen = openShop === card.shop;
+            return (
+              <div key={card.shop} style={{ background: PAPER, borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
+                <button type="button" onClick={() => setOpenShop(isOpen ? "" : card.shop)}
+                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer" }}>
+                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left" }}>{card.shop}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: ORANGE, marginRight: 8 }}>{card.count}{unit}</span>
+                  {withAmt ? <span style={{ fontSize: 15, fontWeight: 700, marginRight: 8 }}>¥{card.amount}</span> : null}
+                  <ChevronDown rotate={isOpen ? 180 : 0} />
+                </button>
+                {isOpen ? renderPhones(card.phones, { date: storeDate === "全部" ? "11月03日" : storeDate, shop: card.shop }) : null}
+              </div>
+            );
+          })
+        )}
+        <div style={{ marginTop: 4, fontSize: 11, color: MUTED, lineHeight: "16px", padding: "0 4px" }}>
+          L3：亮码=顾问 · 扫码/领取=顾客 · 被核销=核销员（可点 › 进 12）
+        </div>
+      </div>
+
+      {sheet === "time" ? <Sheet title="选择时间范围" options={TIME_OPTS} value={timeRange} onPick={(v) => { setTimeRange(v); closeSheet(); }} onClose={closeSheet} /> : null}
+      {sheet === "metric" ? <Sheet title="选择漏斗态" options={METRICS} value={metric} onPick={(v) => { setMetric(v); closeSheet(); }} onClose={closeSheet} /> : null}
+      {sheet === "store" ? <Sheet title="选择门店" options={STORE_OPTS} value={store} onPick={(v) => { setStore(v); closeSheet(); }} onClose={closeSheet} /> : null}
+      {sheet === "date" ? <Sheet title="选择日期" options={DATE_OPTS} value={storeDate} onPick={(v) => { setStoreDate(v); closeSheet(); }} onClose={closeSheet} /> : null}
+    </div>
+  );
+}
+
+function Empty() {
+  return (
+    <div style={{ padding: "64px 24px", textAlign: "center" }}>
+      <div style={{ width: 56, height: 56, borderRadius: 28, background: LINE, margin: "0 auto" }} />
+      <div style={{ marginTop: 16, fontSize: 15, fontWeight: 600 }}>该筛选条件下暂无记录</div>
+      <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>试试切换时间、漏斗态或门店</div>
+    </div>
+  );
+}
+
+/* —— 12 当日详情 —— */
+function DayDetailScreen({ date, shop, clerk, onBack, onOpenOrder }) {
+  const key = `${date}|${shop}|${clerk}`;
+  const rows = ORDERS[key] || ORDERS["11月03日|凯德晶萃店|186****3308"];
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+      <StatusBar />
+      <div style={{ height: 44, flexShrink: 0, background: PAPER, display: "flex", alignItems: "center", position: "relative" }}>
+        <button type="button" onClick={onBack} style={{ width: 44, height: 44, border: "none", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+          <ChevronLeft />
+        </button>
+        <div style={{ position: "absolute", left: 72, right: 100, textAlign: "center", fontSize: 17, fontWeight: 600 }}>{date}</div>
+        <div style={{ marginLeft: "auto", paddingRight: 14, fontSize: 12, color: MUTED }}>{shop}</div>
+      </div>
+      <div style={{ padding: "8px 16px", fontSize: 12, color: MUTED, background: PAPER, borderBottom: `1px solid ${LINE}` }}>核销人 {clerk}</div>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <div style={{ background: PAPER, borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ display: "flex", padding: "10px 16px", fontSize: 12, color: MUTED, borderBottom: `1px solid ${LINE}` }}>
+            <span style={{ flex: 1.1 }}>顾客</span>
+            <span style={{ flex: 1 }}>发券门店</span>
+            <span style={{ flex: 1.4, textAlign: "right" }}>项目</span>
+            <span style={{ width: 16 }} />
+          </div>
+          {rows.map((row) => (
+            <button key={row.id} type="button" onClick={() => onOpenOrder(row.id)}
+              style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", textAlign: "left", gap: 8 }}>
+              <span style={{ flex: 1.1, fontSize: 13, color: INK }}>{row.customer}</span>
+              <span style={{ flex: 1, fontSize: 12, color: MUTED }}>{row.shop}</span>
+              <span style={{ flex: 1.4, fontSize: 12, color: INK, textAlign: "right" }}>{row.item}</span>
+              <ChevronDown size={12} color="#CCC" rotate={-90} />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* —— 13 订单明细 —— */
+function OrderDetailScreen({ orderId, onBack }) {
+  const d = ORDER_DETAIL[orderId] || ORDER_DETAIL.o1;
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+      <StatusBar />
+      <NavBar title="订单明细" onBack={onBack} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <div style={{ background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 16, fontWeight: 600 }}>{d.item}</div>
+          <div style={{ marginTop: 6, display: "flex", alignItems: "baseline", gap: 6 }}>
+            <span style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>¥{d.price}</span>
+            <span style={{ padding: "2px 8px", borderRadius: 4, background: CHIP, color: ORANGE, fontSize: 12 }}>{d.tag}</span>
+          </div>
+        </div>
+        <div style={{ marginTop: 10, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 14, fontWeight: 600 }}>服务备注</span>
+            <span style={{ padding: "2px 8px", borderRadius: 4, background: CHIP, color: ORANGE, fontSize: 12 }}>{d.tag}</span>
+          </div>
+          <div style={{ marginTop: 10, fontSize: 13, lineHeight: "20px", color: INK }}>{d.note}</div>
+          <div style={{ marginTop: 6, fontSize: 12, color: MUTED }}>{d.noteMeta}</div>
+        </div>
+        <div style={{ marginTop: 10, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 14, fontWeight: 600 }}>生命周期</div>
+          {d.life.map(([k, v]) => (
+            <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
+              <span style={{ fontSize: 13, color: MUTED }}>{k}</span>
+              <span style={{ fontSize: 14, color: INK }}>{v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 10, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 14, fontWeight: 600 }}>订单信息</div>
+          <div style={{ marginTop: 12, display: "flex", alignItems: "center" }}>
+            <div style={{ width: 36, height: 36, borderRadius: 18, background: CHIP, color: ORANGE, fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>顾</div>
+            <div style={{ marginLeft: 10 }}>
+              <div style={{ fontSize: 15, fontWeight: 600 }}>{d.customerFull}</div>
+              <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>券号 {d.coupon}</div>
+            </div>
+          </div>
+          {d.fields.map(([k, v]) => (
+            <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 12, paddingTop: 10, borderTop: `1px solid ${LINE}` }}>
+              <span style={{ fontSize: 12, color: MUTED }}>{k}</span>
+              <span style={{ fontSize: 13, color: INK }}>{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [stack, setStack] = useState([{ name: "stats" }]);
+  const top = stack[stack.length - 1];
+  const push = (frame) => setStack((s) => [...s, frame]);
+  const pop = () => setStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
+
+  if (top.name === "stats") {
+    return <StatsScreen onOpenLogs={({ side, metric }) => push({ name: "logs", side, metric })} />;
+  }
+  if (top.name === "logs") {
+    return (
+      <LogsScreen
+        side={top.side}
+        metric={top.metric}
+        onBack={pop}
+        onOpenDay={(ctx) => push({ name: "day", ...ctx })}
+      />
+    );
+  }
+  if (top.name === "day") {
+    return (
+      <DayDetailScreen
+        date={top.date}
+        shop={top.shop}
+        clerk={top.clerk}
+        onBack={pop}
+        onOpenOrder={(orderId) => push({ name: "order", orderId })}
+      />
+    );
+  }
+  if (top.name === "order") {
+    return <OrderDetailScreen orderId={top.orderId} onBack={pop} />;
+  }
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
