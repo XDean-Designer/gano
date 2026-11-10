@@ -30,10 +30,11 @@
 <body>
 <div class="page">
   <div class="hint">
-    <b>联盟对账</b>：点漏斗行进 11→12→13。<b>店长模式</b>：Hero 右侧切换 → 20–23；被核销可复用 12→13。
+    <b>联盟对账</b>：点漏斗行进 11→12→13。<b>店长模式</b>：Hero 右侧切换 → 20–22；被核销可复用 12→13。
   </div>
   <div class="phone" id="root"></div>
 </div>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
 <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.26.0/babel.min.js"></script>
@@ -153,6 +154,7 @@ const ORDERS = {
   ],
   "11月03日|西岸中环店|186****3308": [
     { id: "o1", customer: "138****6621", shop: "凯德晶萃店", item: "日本玫丽盼全球化护理" },
+    { id: "o2", customer: "139****8810", shop: "来福士店", item: "紫镜嘭弹护理" },
   ],
 };
 
@@ -262,12 +264,21 @@ const MG_FUNNEL_STAFF = {
 const MG_STAFF_DETAIL = {
   "138****1024": {
     role: "亮码顾问",
-    kpi: [["亮码", "5次"], ["带来领取", "3人"], ["带来核销", "2人"], ["转化", "40%"]],
+    kpi: [["亮码", "5次"], ["发券", "3人"], ["核销", "2人"], ["转化", "40%"]],
     trend: [["11/01", 1], ["11/02", 2], ["11/03", 3]],
     logs: [
       { t: "11/03 14:06", act: "亮码 V6–V10", note: "会话 #A8K" },
       { t: "11/03 11:18", act: "亮码 V6–V10", note: "会话 #B2M" },
       { t: "11/02 16:40", act: "亮码 V3–V5", note: "会话 #C9P" },
+    ],
+  },
+  "186****2209": {
+    role: "亮码顾问",
+    kpi: [["亮码", "2次"], ["发券", "1人"], ["核销", "0人"], ["转化", "0%"]],
+    trend: [["11/01", 0], ["11/02", 0], ["11/03", 2]],
+    logs: [
+      { t: "11/03 16:02", act: "亮码 V3–V5", note: "会话 #D4N" },
+      { t: "11/03 10:40", act: "亮码 V3–V5", note: "会话 #E1Q" },
     ],
   },
   "186****3308": {
@@ -281,13 +292,11 @@ const MG_STAFF_DETAIL = {
     ],
   },
 };
-const MG_RANK_CODE = [
-  { phone: "138****1024", n: 5, extra: "带来核销 2" },
-  { phone: "186****2209", n: 2, extra: "带来核销 0" },
-  { phone: "150****9090", n: 2, extra: "带来核销 1" },
-];
-const MG_RANK_REDEEM = [
-  { phone: "186****3308", n: 3, extra: "¥1440" },
+/* 今日员工表：发券=当日从其亮码领取人数；核销=当日核销对面领来券数 */
+const MG_TODAY_STAFF = [
+  { phone: "138****1024", issue: 2, redeem: 0 },
+  { phone: "186****2209", issue: 1, redeem: 0 },
+  { phone: "186****3308", issue: 0, redeem: 2 },
 ];
 
 const TIME_OPTS = ["近7天", "近30天", "本月", "上月"];
@@ -307,8 +316,74 @@ function fmtAmt(v) {
 }
 
 /* —— Asset icons —— */
-function Icon({ name, size = 12, style }) {
-  return <img src={`${ASSET}/${name}`} width={size} height={size} alt="" style={style} />;
+const ICON_SVG = {
+  "chevron-left.svg": {
+    vb: "0 0 24 24",
+    body: '<path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    color: "#333333",
+  },
+  "chevron-down.svg": {
+    vb: "0 0 12 12",
+    body: '<path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    color: "#929292",
+  },
+  "chevron-down-orange.svg": {
+    vb: "0 0 12 12",
+    body: '<path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    color: "#FF6002",
+  },
+  "chevron-up.svg": {
+    vb: "0 0 12 12",
+    body: '<path d="M3 7.5L6 4.5L9 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    color: "#929292",
+  },
+  "chevron-right.svg": {
+    vb: "0 0 12 12",
+    body: '<path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    color: "#929292",
+  },
+  "help.svg": {
+    vb: "0 0 18 18",
+    body: '<path d="M15.75 9C15.75 12.7279 12.7279 15.75 9 15.75C5.27208 15.75 2.25 12.7279 2.25 9C2.25 5.27208 5.27208 2.25 9 2.25C12.7279 2.25 15.75 5.27208 15.75 9Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M7.2 7.05C7.20092 6.73063 7.2868 6.41726 7.44882 6.14204C7.61084 5.86682 7.84316 5.63966 8.12196 5.48388C8.40075 5.32809 8.71598 5.24928 9.03529 5.25555C9.35459 5.26181 9.66648 5.35291 9.93896 5.51951C10.2114 5.68611 10.4347 5.9222 10.5858 6.20356C10.7369 6.48492 10.8104 6.80142 10.7988 7.12058C10.7872 7.43973 10.6909 7.75006 10.5198 8.01971C10.3486 8.28936 10.1088 8.50862 9.825 8.655C9.3 8.955 9 9.255 9 9.9V10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 13.5C9.41421 13.5 9.75 13.1642 9.75 12.75C9.75 12.3358 9.41421 12 9 12C8.58579 12 8.25 12.3358 8.25 12.75C8.25 13.1642 8.58579 13.5 9 13.5Z" fill="currentColor"/>',
+    color: "#975026",
+  },
+  "copy.svg": {
+    vb: "0 0 16 16",
+    body: '<rect x="5.5" y="5.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M10.5 5.5V4.2C10.5 3.53726 9.96274 3 9.3 3H4.2C3.53726 3 3 3.53726 3 4.2V9.3C3 9.96274 3.53726 10.5 4.2 10.5H5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>',
+    color: "#929292",
+  },
+};
+
+function Icon({ name, size = 12, style, color }) {
+  const def = ICON_SVG[name];
+  if (!def) return null;
+  const col = color || def.color;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={def.vb}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ display: "block", flexShrink: 0, color: col, ...style }}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: def.body }}
+    />
+  );
+}
+
+function NavCapsule() {
+  return (
+    <svg width={91} height={34} viewBox="0 0 90.6667 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ display: "block", flexShrink: 0 }}>
+      <rect x="0.25" y="0.25" width="90.1667" height="33.5" rx="16.75" fill="white" fillOpacity="0.3" stroke="#DDDDDD" strokeWidth="0.5" />
+      <circle cx="68.996" cy="16.506" r="3.536" fill="#333333" />
+      <circle cx="23.026" cy="17.676" r="3.536" fill="#333333" />
+      <circle cx="31.2773" cy="17.6773" r="2.35733" fill="#333333" />
+      <circle cx="14.7773" cy="17.6773" r="2.35733" fill="#333333" />
+      <circle cx="68.9993" cy="16.4993" r="8.25067" stroke="#333333" strokeWidth="2.35733" fill="none" />
+      <rect x="45.42" y="5.89" width="0.589333" height="21.216" fill="#424242" fillOpacity="0.5" />
+    </svg>
+  );
 }
 
 function StatusBar() {
@@ -319,7 +394,7 @@ function SafeBottom() {
   return <div style={{ height: 34, flexShrink: 0 }} />;
 }
 
-function TitleBar({ title, subtitle, onBack, right }) {
+function TitleBar({ title, subtitle, onBack, right, onCopy }) {
   return (
     <div style={{ flexShrink: 0, background: PAPER, height: subtitle ? 56 : 44, position: "relative", display: "flex", alignItems: "center" }}>
       {onBack ? (
@@ -327,13 +402,80 @@ function TitleBar({ title, subtitle, onBack, right }) {
           <Icon name="chevron-left.svg" size={24} />
         </button>
       ) : <div style={{ width: 44 }} />}
-      <div style={{ position: "absolute", left: 72, right: 72, top: subtitle ? 10 : 10, textAlign: "center", pointerEvents: "none" }}>
-        <div style={{ fontSize: 18, fontWeight: 600, color: INK, lineHeight: "24px" }}>{title}</div>
+      <div style={{ position: "absolute", left: 56, right: 56, top: subtitle ? 8 : 10, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, maxWidth: "100%" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: INK, lineHeight: "24px", whiteSpace: "nowrap" }}>{title}</div>
+          {onCopy ? (
+            <button
+              type="button"
+              onClick={onCopy}
+              aria-label="复制报表"
+              style={{
+                appearance: "none", border: "none", background: "transparent",
+                width: 28, height: 28, padding: 0, cursor: "pointer",
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                pointerEvents: "auto", flexShrink: 0,
+              }}
+            >
+              <Icon name="copy.svg" size={16} color={MUTED} />
+            </button>
+          ) : null}
+        </div>
         {subtitle ? <div style={{ fontSize: 11, color: MUTED, lineHeight: "15px", marginTop: 2 }}>{subtitle}</div> : null}
       </div>
       {right ? <div style={{ marginLeft: "auto", paddingRight: 10, display: "flex", alignItems: "center", zIndex: 1 }}>{right}</div> : <div style={{ width: 44 }} />}
     </div>
   );
+}
+
+function Toast({ message }) {
+  if (!message) return null;
+  return (
+    <div style={{
+      position: "absolute", left: "50%", bottom: 120, transform: "translateX(-50%)",
+      zIndex: 50, maxWidth: "80%", padding: "10px 16px", borderRadius: 8,
+      background: "rgba(51,51,51,0.92)", color: "#fff", fontSize: 14, lineHeight: "20px",
+      textAlign: "center", whiteSpace: "nowrap", pointerEvents: "none",
+      boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+    }}>
+      {message}
+    </div>
+  );
+}
+
+async function copyMarkdown(text) {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) { /* fallback */ }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function useCopyToast() {
+  const [toast, setToast] = useState("");
+  const showCopied = async (md) => {
+    const ok = await copyMarkdown(md);
+    if (ok) {
+      setToast("报表已复制到粘贴板");
+      window.clearTimeout(useCopyToast._t);
+      useCopyToast._t = window.setTimeout(() => setToast(""), 2000);
+    }
+  };
+  return { toast, showCopied };
 }
 
 function ModeSwitch({ mode, onToggle }) {
@@ -350,7 +492,7 @@ function ModeSwitch({ mode, onToggle }) {
         boxShadow: "0 2px 8px rgba(0,0,0,.06)",
       }}>
       {isMgr ? "联盟对账" : "店长模式"}
-      <Icon name={isMgr ? "chevron-down.svg" : "chevron-down-orange.svg"} size={10} style={{ filter: isMgr ? "brightness(10)" : undefined, transform: "rotate(-90deg)" }} />
+      <Icon name="chevron-right.svg" size={10} color={isMgr ? "#FFFFFF" : ORANGE} />
     </button>
   );
 }
@@ -397,22 +539,47 @@ function FilterChip({ label, active, onClick }) {
 }
 
 function TabBar({ active }) {
-  const items = ["联盟", "扫码核销", "数据统计"];
+  /* Figma 437:288 — 胶囊 306×52 @x42；文案行 275 gap53；blur40；白60%+四层内阴影+外阴影 */
+  const items = [
+    { name: "联盟", w: 56 },
+    { name: "扫码核销", w: 57 },
+    { name: "数据统计", w: 56 },
+  ];
   return (
-    <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 4, pointerEvents: "none" }}>
+    <div style={{
+      position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 20,
+      height: 87, display: "flex", flexDirection: "column", alignItems: "center",
+      background: "transparent", pointerEvents: "none",
+    }}>
       <div style={{
         width: 306, height: 52, borderRadius: 200, position: "relative",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.1)",
-        pointerEvents: "auto",
+        pointerEvents: "auto", overflow: "hidden",
+        background: "rgba(255,255,255,0.6)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        boxShadow: [
+          "0 20px 50px rgba(0,0,0,0.10)",
+          "inset 0 0 22px rgba(242,242,242,0.5)",
+          "inset -2px -2px 1px -2px #B3B3B3",
+          "inset 2px 2px 1px -2px #B3B3B3",
+          "inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.5)",
+        ].join(", "),
       }}>
         <div style={{
-          position: "absolute", inset: 0, borderRadius: 200,
-          background: "rgba(255,255,255,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-          boxShadow: "inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.5), inset 2px 2px 1px -2px #b3b3b3, inset -2px -2px 1px -2px #b3b3b3, inset 0 0 22px rgba(242,242,242,0.5)",
-        }} />
-        <div style={{ position: "relative", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", fontSize: 14, fontWeight: 500 }}>
+          position: "absolute", left: 13, top: 0, width: 275, height: 52,
+          display: "flex", alignItems: "center", gap: 53, padding: "16px 0", boxSizing: "border-box",
+          fontFamily: '"PingFang SC","Noto Sans SC",sans-serif',
+          fontSize: 14, fontWeight: 500, lineHeight: "20px",
+        }}>
           {items.map((item) => (
-            <div key={item} style={{ width: 56, textAlign: "center", color: item === active ? ORANGE : MUTED }}>{item}</div>
+            <div
+              key={item.name}
+              style={{
+                width: item.w, flexShrink: 0, textAlign: "center",
+                color: item.name === active ? ORANGE : "#929292",
+              }}
+            >
+              {item.name}
+            </div>
           ))}
         </div>
       </div>
@@ -462,14 +629,14 @@ function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
   const inRows = [["亮码", 7], ["扫码", 5], ["领取", 4], ["被核销", 2]];
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
       <StatusBar />
       <TitleBar
         title="数据"
         onBack={() => {}}
-        right={<img src={`${ASSET}/nav-capsule.svg`} width={91} height={34} alt="" />}
+        right={<NavCapsule />}
       />
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 12px" }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 100px" }}>
         {/* Hero — ModeSwitch overlays right */}
         <div style={{ position: "relative", marginTop: 12 }}>
           <div style={{
@@ -586,6 +753,41 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
 
   const closeSheet = () => setSheet(null);
   const toggleL2 = (key) => setOpenStoreL2((prev) => ({ ...prev, [key]: !prev[key] }));
+  const { toast, showCopied } = useCopyToast();
+
+  /* 29C：亮码/扫码/领取/被核销 均按当前 metric 导出 Markdown */
+  const buildLogsMarkdown = () => {
+    const lines = [];
+    lines.push(`# 数据明细 · ${brand}`);
+    if (tab === "每日") {
+      lines.push(`筛选：${timeRange} · ${metric} · ${store}`);
+      lines.push("");
+      days.forEach((day) => {
+        const amt = withAmt && day.amount != null ? ` · ${fmtAmt(day.amount)}` : "";
+        lines.push(`## ${day.date} · ${day.total}${unit}${amt}`);
+        day.stores.forEach((s) => {
+          const sa = withAmt && s.amount != null ? ` · ${fmtAmt(s.amount)}` : "";
+          lines.push(`- ${s.name} · ${s.count}${unit}${sa}`);
+          (s.phones || []).forEach(([phone, n]) => {
+            lines.push(`  - ${phone} · ${n}次`);
+          });
+        });
+        lines.push("");
+      });
+    } else {
+      lines.push(`筛选：${storeDate === "全部" ? "全部日期" : storeDate} · ${metric}`);
+      lines.push("");
+      shops.forEach((card) => {
+        const amt = withAmt && card.amount != null ? ` · ${fmtAmt(card.amount)}` : "";
+        lines.push(`## ${card.shop} · ${card.count}${unit}${amt}`);
+        (card.phones || []).forEach(([phone, n]) => {
+          lines.push(`- ${phone} · ${n}次`);
+        });
+        lines.push("");
+      });
+    }
+    return lines.join("\n").trim() + "\n";
+  };
 
   const renderPhones = (phones, ctx) =>
     phones.map(([phone, n]) => (
@@ -626,7 +828,7 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
       <StatusBar />
-      <TitleBar title="数据明细" subtitle={brand} onBack={onBack} />
+      <TitleBar title="数据明细" subtitle={brand} onBack={onBack} onCopy={() => showCopied(buildLogsMarkdown())} />
       <div style={{ display: "flex", justifyContent: "center", gap: 24, background: PAPER, borderBottom: `1px solid ${LINE}`, flexShrink: 0 }}>
         {["每日", "按门店"].map((name) => {
           const on = tab === name;
@@ -717,6 +919,7 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
       {sheet === "metric" ? <Sheet title="选择漏斗态" options={METRICS} value={metric} onPick={(v) => { setMetric(v); closeSheet(); }} onClose={closeSheet} /> : null}
       {sheet === "store" ? <Sheet title="选择门店" options={STORE_OPTS} value={store} onPick={(v) => { setStore(v); closeSheet(); }} onClose={closeSheet} /> : null}
       {sheet === "date" ? <Sheet title="选择日期" options={DATE_OPTS} value={storeDate} onPick={(v) => { setStoreDate(v); closeSheet(); }} onClose={closeSheet} /> : null}
+      <Toast message={toast} />
     </div>
   );
 }
@@ -784,7 +987,7 @@ function OrderDetailScreen({ orderId, onBack }) {
         </Card>
 
         <Card style={{ marginTop: 10, padding: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>生命周期</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: INK }}>本单人员</div>
           {d.life.map(([k, v]) => (
             <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 14 }}>
               <span style={{ fontSize: 13, color: MUTED }}>{k}</span>
@@ -812,16 +1015,16 @@ function OrderDetailScreen({ orderId, onBack }) {
 }
 
 /* —— 20 店长看板 —— */
-function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff, onOpenRank }) {
+function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff }) {
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
       <StatusBar />
       <TitleBar
         title="数据"
         onBack={() => {}}
-        right={<img src={`${ASSET}/nav-capsule.svg`} width={91} height={34} alt="" />}
+        right={<NavCapsule />}
       />
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 12px" }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 100px" }}>
         <div style={{ marginTop: 12 }}>
           <div style={{ borderRadius: 12, background: HERO_BG, border: `1px solid ${HERO_BORDER}`, padding: "18px 16px 16px" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, minHeight: 56 }}>
@@ -831,7 +1034,7 @@ function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff, onOpenRank
                   <Icon name="help.svg" size={14} />
                 </div>
                 <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: HERO_TITLE, lineHeight: "28px" }}>{MY_STORE}</div>
-                <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>近7天 · 员工颗粒度</div>
+                <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>近7天 · 按员工看</div>
               </div>
               <ModeSwitch mode={mode} onToggle={onToggleMode} />
             </div>
@@ -850,7 +1053,7 @@ function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff, onOpenRank
 
         <Card style={{ marginTop: 12, padding: 16 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>转化摘要</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>转化情况</span>
             <button type="button" onClick={() => onOpenDetail("被核销")} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer" }}>看明细</button>
           </div>
           <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
@@ -865,33 +1068,27 @@ function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff, onOpenRank
 
         <Card style={{ marginTop: 12, padding: 16, marginBottom: 8 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>员工贡献 Top</span>
-            <button type="button" onClick={onOpenRank} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 2 }}>
-              排行 <Icon name="chevron-right.svg" size={12} />
+            <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>今日</span>
+            <button type="button" onClick={() => onOpenDetail("被核销")} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 2 }}>
+              看全部 <Icon name="chevron-right.svg" size={12} />
             </button>
           </div>
-          <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>亮码顾问</div>
-          {MG_RANK_CODE.slice(0, 2).map((r, i) => (
-            <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
-              style={{ appearance: "none", border: "none", borderTop: i ? `1px solid ${LINE}` : "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 0", cursor: "pointer", textAlign: "left" }}>
-              <span style={{ width: 20, fontSize: 13, color: ORANGE, fontWeight: 700 }}>{i + 1}</span>
-              <span style={{ flex: 1, fontSize: 14, color: INK }}>{r.phone}</span>
-              <span style={{ fontSize: 13, fontWeight: 600, marginRight: 8 }}>{r.n}次</span>
-              <Icon name="chevron-right.svg" size={12} />
-            </button>
-          ))}
-          <div style={{ marginTop: 8, fontSize: 11, color: MUTED }}>核销店员</div>
-          {MG_RANK_REDEEM.map((r) => (
-            <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
-              style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 0", cursor: "pointer", textAlign: "left" }}>
-              <span style={{ width: 20, fontSize: 13, color: ORANGE, fontWeight: 700 }}>1</span>
-              <span style={{ flex: 1, fontSize: 14, color: INK }}>{r.phone}</span>
-              <span style={{ width: 72, textAlign: "right", fontSize: 13, fontWeight: 600, color: ORANGE }}>{r.n}人</span>
-              <span style={{ width: 88, textAlign: "right", fontSize: 13, fontWeight: 600, color: INK }}>¥1440</span>
-              <span style={{ width: 8 }} />
-              <Icon name="chevron-right.svg" size={12} />
-            </button>
-          ))}
+          <div style={{ marginTop: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "0 0 8px", borderBottom: `1px solid ${LINE}` }}>
+              <span style={{ flex: 1.4, fontSize: 12, color: MUTED }}>员工</span>
+              <span style={{ width: 56, textAlign: "right", fontSize: 12, color: MUTED }}>发券</span>
+              <span style={{ width: 56, textAlign: "right", fontSize: 12, color: MUTED }}>核销</span>
+            </div>
+            {MG_TODAY_STAFF.map((r, i) => (
+              <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
+                style={{ appearance: "none", border: "none", borderTop: i ? `1px solid ${LINE}` : "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 0", cursor: "pointer", textAlign: "left" }}>
+                <span style={{ flex: 1.4, fontSize: 14, color: INK }}>{r.phone}</span>
+                <span style={{ width: 56, textAlign: "right", fontSize: 14, fontWeight: 600, color: ORANGE }}>{r.issue}</span>
+                <span style={{ width: 56, textAlign: "right", fontSize: 14, fontWeight: 600, color: INK, marginRight: 8 }}>{r.redeem}</span>
+                <Icon name="chevron-right.svg" size={12} />
+              </button>
+            ))}
+          </div>
         </Card>
       </div>
       <TabBar active="数据统计" />
@@ -911,11 +1108,39 @@ function ManagerDetail({ metric: initMetric, onBack, onOpenDay, onOpenStaff }) {
   const clickable = metric === "被核销";
   const days = MG_FUNNEL_DAY[metric] || [];
   const staffs = MG_FUNNEL_STAFF[metric] || [];
+  const { toast, showCopied } = useCopyToast();
+
+  const buildMgrMarkdown = () => {
+    const lines = [];
+    lines.push(`# 本店明细 · ${MY_STORE}`);
+    lines.push(`筛选：${range} · ${metric} · ${tab}`);
+    lines.push("");
+    if (tab === "按日") {
+      days.forEach((day) => {
+        const amt = withAmt && day.amount != null ? ` · ${fmtAmt(day.amount)}` : "";
+        lines.push(`## ${day.date} · ${day.total}${unit}${amt}`);
+        (day.staff || []).forEach(([phone, n]) => {
+          lines.push(`- ${phone} · ${n}次`);
+        });
+        lines.push("");
+      });
+    } else {
+      staffs.forEach((s) => {
+        const amt = withAmt && s.amount != null ? ` · ${fmtAmt(s.amount)}` : "";
+        lines.push(`## ${s.phone} · ${s.count}${unit}${amt}`);
+        (s.days || []).forEach(([d, n]) => {
+          lines.push(`- ${d} · ${n}次`);
+        });
+        lines.push("");
+      });
+    }
+    return lines.join("\n").trim() + "\n";
+  };
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
       <StatusBar />
-      <TitleBar title="本店明细" subtitle={MY_STORE} onBack={onBack} />
+      <TitleBar title="本店明细" subtitle={MY_STORE} onBack={onBack} onCopy={() => showCopied(buildMgrMarkdown())} />
       <div style={{ display: "flex", justifyContent: "center", gap: 24, background: PAPER, borderBottom: `1px solid ${LINE}` }}>
         {["按日", "按员工"].map((name) => {
           const on = tab === name;
@@ -995,6 +1220,7 @@ function ManagerDetail({ metric: initMetric, onBack, onOpenDay, onOpenStaff }) {
       </div>
       {sheet === "time" ? <Sheet title="选择时间范围" options={TIME_OPTS} value={range} onPick={(v) => { setRange(v); setSheet(null); }} onClose={() => setSheet(null)} /> : null}
       {sheet === "metric" ? <Sheet title="选择漏斗态" options={METRICS} value={metric} onPick={(v) => { setMetric(v); setSheet(null); }} onClose={() => setSheet(null)} /> : null}
+      <Toast message={toast} />
     </div>
   );
 }
@@ -1049,48 +1275,19 @@ function ManagerStaff({ phone, onBack, onOpenOrder }) {
   );
 }
 
-/* —— 23 本店排行 —— */
-function ManagerRank({ onBack, onOpenStaff }) {
-  const [tab, setTab] = useState("亮码榜");
-  const list = tab === "亮码榜" ? MG_RANK_CODE : MG_RANK_REDEEM;
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
-      <StatusBar />
-      <TitleBar title="本店排行" subtitle={`${MY_STORE} · 近7天`} onBack={onBack} />
-      <div style={{ display: "flex", justifyContent: "center", gap: 24, background: PAPER, borderBottom: `1px solid ${LINE}` }}>
-        {["亮码榜", "核销榜"].map((name) => {
-          const on = tab === name;
-          return (
-            <button key={name} type="button" onClick={() => setTab(name)}
-              style={{ appearance: "none", border: "none", background: "transparent", padding: "10px 0 12px", fontSize: 15, fontWeight: on ? 600 : 400, color: on ? ORANGE : MUTED, borderBottom: on ? `2px solid ${ORANGE}` : "2px solid transparent", cursor: "pointer" }}>
-              {name}
-            </button>
-          );
-        })}
-      </div>
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
-        <Card>
-          {list.map((r, i) => (
-            <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
-              style={{ appearance: "none", border: "none", borderTop: i ? `1px solid ${LINE}` : "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", textAlign: "left" }}>
-              <span style={{ width: 28, height: 28, borderRadius: 14, background: i < 3 ? CHIP : PAGE, color: ORANGE, fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
-              <div style={{ flex: 1, marginLeft: 10 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{r.phone}</div>
-                <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>{r.extra}</div>
-              </div>
-              <span style={{ fontSize: 15, fontWeight: 700, color: ORANGE, marginRight: 8 }}>{r.n}{tab === "亮码榜" ? "次" : "人"}</span>
-              <Icon name="chevron-right.svg" size={12} />
-            </button>
-          ))}
-        </Card>
-      </div>
-    </div>
-  );
+function initialRoute() {
+  const q = new URLSearchParams(location.search);
+  const screen = q.get("screen");
+  if (screen === "mgrHome") return { mode: "manager", stack: [{ name: "mgrHome" }] };
+  if (screen === "mgrDetail") return { mode: "manager", stack: [{ name: "mgrDetail", metric: q.get("metric") || "被核销" }] };
+  if (screen === "mgrStaff") return { mode: "manager", stack: [{ name: "mgrStaff", phone: q.get("phone") || "138****1024" }] };
+  return { mode: "alliance", stack: [{ name: "stats" }] };
 }
 
 function App() {
-  const [mode, setMode] = useState("alliance");
-  const [stack, setStack] = useState([{ name: "stats" }]);
+  const boot = initialRoute();
+  const [mode, setMode] = useState(boot.mode);
+  const [stack, setStack] = useState(boot.stack);
   const top = stack[stack.length - 1];
   const push = (frame) => setStack((s) => [...s, frame]);
   const pop = () => setStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
@@ -1118,7 +1315,6 @@ function App() {
         onToggleMode={toggleMode}
         onOpenDetail={(metric) => push({ name: "mgrDetail", metric })}
         onOpenStaff={(phone) => push({ name: "mgrStaff", phone })}
-        onOpenRank={() => push({ name: "mgrRank" })}
       />
     );
   }
@@ -1134,9 +1330,6 @@ function App() {
   }
   if (top.name === "mgrStaff") {
     return <ManagerStaff phone={top.phone} onBack={pop} onOpenOrder={(orderId) => push({ name: "order", orderId })} />;
-  }
-  if (top.name === "mgrRank") {
-    return <ManagerRank onBack={pop} onOpenStaff={(phone) => push({ name: "mgrStaff", phone })} />;
   }
   if (top.name === "day") {
     return (

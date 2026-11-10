@@ -61,21 +61,21 @@ URL 规则：`https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id={node}
 |------|------|---------|------|
 | 10 | 两边账 / 数据 | `91:2` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=91-2) |
 | 10·按门店克隆 | 两边账（按门店子泳道） | `437:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=437-142) |
-| 11-亮 | 每日·亮码 | `169:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=169-17) |
-| 11-扫 | 每日·扫码 | `418:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-142) |
-| 11-领 | 每日·领取 | `418:425` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-425) |
-| 11-亮 | 每日·亮码 | `169:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=169-17) · L2→L3 顾问号 |
-| 11-扫 | 每日·扫码 | `418:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-142) · L2→L3 顾客号 |
-| 11-领 | 每日·领取 | `418:425` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-425) · L2→L3 顾客号 |
-| 11 | 每日·被核销 | `168:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=168-17) · L2→L3 核销员 ›→12 |
-| 11c-亮 | 按门店·亮码 | `433:152` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=433-152) · 店卡→L3 |
-| 11c-扫 | 按门店·扫码 | `433:247` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=433-247) · 店卡→L3 |
-| 11c-领 | 按门店·领取 | `433:342` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=433-342) · 店卡→L3 |
-| 11c | 按门店·被核销 | `178:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=178-17) · L3 ›→12 |
-| 11d | 发来·每日·被核销 | `294:155` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=294-155) |
-| 11e | 发来·按门店·被核销 | `418:330` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-330) |
+| 11-亮 | 每日·亮码 | `169:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=169-17) · 标题右复制报表 |
+| 11-扫 | 每日·扫码 | `418:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-142) · 标题右复制报表 |
+| 11-领 | 每日·领取 | `418:425` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-425) · 标题右复制报表 |
+| 11-亮 | 每日·亮码 | `169:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=169-17) · L2→L3 顾问号 · 标题右复制报表 |
+| 11-扫 | 每日·扫码 | `418:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-142) · L2→L3 顾客号 · 标题右复制报表 |
+| 11-领 | 每日·领取 | `418:425` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-425) · L2→L3 顾客号 · 标题右复制报表 |
+| 11 | 每日·被核销 | `168:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=168-17) · L2→L3 核销员 ›→12 · 标题右复制报表（四态均可） |
+| 11c-亮 | 按门店·亮码 | `433:152` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=433-152) · 店卡→L3 · 标题右复制报表 |
+| 11c-扫 | 按门店·扫码 | `433:247` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=433-247) · 店卡→L3 · 标题右复制报表 |
+| 11c-领 | 按门店·领取 | `433:342` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=433-342) · 店卡→L3 · 标题右复制报表 |
+| 11c | 按门店·被核销 | `178:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=178-17) · L3 ›→12 · 标题右复制报表 |
+| 11d | 发来·每日·被核销 | `294:155` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=294-155) · 标题右复制报表 |
+| 11e | 发来·按门店·被核销 | `418:330` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=418-330) · 标题右复制报表 · chevron 已修 |
 | 12 | 当日详情 | `171:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=171-17) · 自 L3 核销人进入 |
-| 13 | 订单明细 | `172:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=172-17) · 生命周期四人号 |
+| 13 | 订单明细 | `172:17` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=172-17) · 本单人员四人号 |
 | 11-日期 | 日期 Sheet | `247:201` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=247-201) |
 | 11-时间 | 时间范围 Sheet | `432:253` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=432-253) |
 | 11-门店 | 门店 Sheet | `432:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=432-142) |
@@ -85,7 +85,14 @@ URL 规则：`https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id={node}
 
 ## A 向 · 店长模式（数据模块内切换 · 仅店长）
 
-> 20–23 Figma 帧待 HTML 原型确认后再导入。可点原型暂保留交互：[data-prototype.html](../data-prototype.html)
+| 编号 | 名称 | node-id | 路由 |
+|------|------|---------|------|
+| 10m | 两边账 · 店长入口（未进店长模式） | `680:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=680-142) |
+| 20 | 店长看板 | `674:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=674-142) · 今日表点行 → 22；看全部 → 21 |
+| 21 | 本店明细 · 按日 · 被核销 | `673:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=673-142) · 标题右复制报表 |
+| 22 | 员工详情 | `672:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=672-142) |
+
+Section：`A向 · 店长模式`（已删 23 本店排行）。可点原型：[data-prototype.html](../data-prototype.html)（`?screen=mgrHome|mgrDetail|mgrStaff`）
 
 ## B 向 · GANO → 丽妍购卡礼（关键帧）
 

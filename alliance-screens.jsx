@@ -707,7 +707,7 @@ function Feedback() {
           <div style={{ color: "#999999", fontSize: 12, marginTop: 6 }}>凯德晶萃店 · 刚做完</div>
         </div>
         <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
-          <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>生命周期</div>
+          <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>本单人员</div>
           {[
             ["亮码人", "138****1024"],
             ["扫码人", "138****6621"],
