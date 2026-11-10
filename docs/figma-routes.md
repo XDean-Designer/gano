@@ -83,6 +83,17 @@ URL 规则：`https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id={node}
 | 11-漏斗·按门店 | 漏斗筛选 Sheet（按门店） | `437:296` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=437-296) |
 | 11-空态 | 数据空态 | `252:201` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=252-201) |
 
+## A 向 · 店长模式（数据模块内切换 · 仅店长）
+
+| 编号 | 名称 | node-id | 路由 |
+|------|------|---------|------|
+| 20 | 店长看板首页 | `660:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-142) · Hero 右切回联盟对账 |
+| 21 | 本店明细 | `660:183` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-183) · 按日/按员工；被核销→12 |
+| 22 | 员工详情 | `660:206` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-206) · 脱敏号 · 流水 |
+| 23 | 本店排行 | `660:224` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=660-224) · 亮码榜/核销榜 |
+
+可点原型：[data-prototype.html](../data-prototype.html) · [Pages](https://xdean-designer.github.io/gano/data-prototype.html)
+
 ## B 向 · GANO → 丽妍购卡礼（关键帧）
 
 | 编号 | 名称 | node-id | 路由 |

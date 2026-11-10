@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>GANO × 丽妍 · 数据钻取原型（10–13）</title>
+<title>GANO × 丽妍 · 数据钻取 / 店长模式</title>
 <style>
   @font-face{
     font-family:"Noto Sans SC";
@@ -21,15 +21,16 @@
     width:390px;height:844px;max-width:100%;
     background:#F7F7F7;border-radius:28px;overflow:hidden;
     box-shadow:0 16px 48px rgba(0,0,0,.12);
-    border:1px solid #ddd;
-    position:relative;
+    border:1px solid #ddd;position:relative;
   }
   button{font-family:inherit}
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="hint">可点原型 · <b>10 两边账</b> → 漏斗进 <b>11</b> → L2 展开 L3 → 仅「被核销」L3 进 <b>12</b> → 行进 <b>13</b>。试：点「发出 · 被核销」。</div>
+  <div class="hint">
+    <b>联盟对账</b>：点漏斗进 11。<b>店长模式</b>：Hero 右侧切换（仅店长）→ 20–23；被核销复用 12→13。
+  </div>
   <div class="phone" id="root"></div>
 </div>
 <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
@@ -46,6 +47,7 @@ const LINE = "#EEEEEE";
 const PAGE = "#F7F7F7";
 const PAPER = "#FFFFFF";
 const METRICS = ["亮码", "扫码", "领取", "被核销"];
+const MY_STORE = "西岸中环店";
 
 const DAY_DATA = {
   亮码: [
@@ -117,16 +119,19 @@ const STORE_DATA = {
 
 const ORDERS = {
   "11月03日|凯德晶萃店|186****3308": [
-    { id: "o1", customer: "138****6621", shop: "西岸中环店", item: "日本玫丽盼全球化护理", price: 480 },
+    { id: "o1", customer: "138****6621", shop: "西岸中环店", item: "日本玫丽盼全球化护理" },
   ],
   "11月03日|来福士店|139****8810": [
-    { id: "o2", customer: "139****8810", shop: "徐汇店", item: "紫镜嘭弹护理", price: 480 },
+    { id: "o2", customer: "139****8810", shop: "徐汇店", item: "紫镜嘭弹护理" },
   ],
   "11月02日|凯德晶萃店|186****3308": [
-    { id: "o3", customer: "137****4412", shop: "西岸中环店", item: "日本玫丽盼全球化护理", price: 480 },
+    { id: "o3", customer: "137****4412", shop: "西岸中环店", item: "日本玫丽盼全球化护理" },
   ],
   "11月01日|静安嘉里店|150****9090": [
-    { id: "o4", customer: "150****9090", shop: "西岸中环店", item: "日本玫丽盼全球化护理", price: 480 },
+    { id: "o4", customer: "150****9090", shop: "西岸中环店", item: "日本玫丽盼全球化护理" },
+  ],
+  "11月03日|西岸中环店|186****3308": [
+    { id: "o1", customer: "138****6621", shop: "凯德晶萃店", item: "日本玫丽盼全球化护理" },
   ],
 };
 
@@ -160,6 +165,82 @@ const ORDER_DETAIL = {
     fields: [["来源门店", "GANO · 西岸中环店"], ["核销门店", "丽妍 · 静安嘉里店"], ["领券时间", "2026-11-01 12:00"], ["核销时间", "2026-11-01 16:40"], ["丽妍雅集档位", "V6–V10"]],
   },
 };
+
+/* —— 店长本店示意数据 —— */
+const MG_KPI = [
+  { key: "亮码", value: "12", sub: "次" },
+  { key: "扫码", value: "8", sub: "次" },
+  { key: "领取", value: "6", sub: "人" },
+  { key: "被核销", value: "3", sub: "人 · ¥1440" },
+];
+const MG_FUNNEL_DAY = {
+  亮码: [
+    { date: "11月03日", total: 5, amount: null, staff: [["138****1024", 3], ["186****2209", 2]] },
+    { date: "11月02日", total: 4, amount: null, staff: [["138****1024", 2], ["150****9090", 2]] },
+  ],
+  扫码: [
+    { date: "11月03日", total: 3, amount: null, staff: [["138****6621", 2], ["139****8810", 1]] },
+    { date: "11月02日", total: 3, amount: null, staff: [["138****6621", 2], ["137****4412", 1]] },
+  ],
+  领取: [
+    { date: "11月03日", total: 2, amount: 0, staff: [["138****6621", 1], ["139****8810", 1]] },
+    { date: "11月02日", total: 2, amount: 0, staff: [["138****6621", 1], ["137****4412", 1]] },
+  ],
+  被核销: [
+    { date: "11月03日", total: 2, amount: 960, staff: [["186****3308", 2]] },
+    { date: "11月02日", total: 1, amount: 480, staff: [["186****3308", 1]] },
+  ],
+};
+const MG_FUNNEL_STAFF = {
+  亮码: [
+    { phone: "138****1024", count: 5, amount: null, days: [["11月03日", 3], ["11月02日", 2]] },
+    { phone: "186****2209", count: 2, amount: null, days: [["11月03日", 2]] },
+    { phone: "150****9090", count: 2, amount: null, days: [["11月02日", 2]] },
+  ],
+  扫码: [
+    { phone: "138****6621", count: 4, amount: null, days: [["11月03日", 2], ["11月02日", 2]] },
+    { phone: "139****8810", count: 1, amount: null, days: [["11月03日", 1]] },
+    { phone: "137****4412", count: 1, amount: null, days: [["11月02日", 1]] },
+  ],
+  领取: [
+    { phone: "138****6621", count: 2, amount: 0, days: [["11月03日", 1], ["11月02日", 1]] },
+    { phone: "139****8810", count: 1, amount: 0, days: [["11月03日", 1]] },
+    { phone: "137****4412", count: 1, amount: 0, days: [["11月02日", 1]] },
+  ],
+  被核销: [
+    { phone: "186****3308", count: 3, amount: 1440, days: [["11月03日", 2], ["11月02日", 1]] },
+  ],
+};
+const MG_STAFF_DETAIL = {
+  "138****1024": {
+    role: "亮码顾问",
+    kpi: [["亮码", "5次"], ["带来领取", "3人"], ["带来核销", "2人"], ["转化", "40%"]],
+    trend: [["11/01", 1], ["11/02", 2], ["11/03", 3]],
+    logs: [
+      { t: "11/03 14:06", act: "亮码 V6–V10", note: "会话 #A8K" },
+      { t: "11/03 11:18", act: "亮码 V6–V10", note: "会话 #B2M" },
+      { t: "11/02 16:40", act: "亮码 V3–V5", note: "会话 #C9P" },
+    ],
+  },
+  "186****3308": {
+    role: "核销店员",
+    kpi: [["被核销", "3人"], ["金额", "¥1440"], ["满意", "2"], ["一般", "1"]],
+    trend: [["11/01", 0], ["11/02", 1], ["11/03", 2]],
+    logs: [
+      { t: "11/03 15:22", act: "核销完成", note: "订单 o1 · ¥480", orderId: "o1" },
+      { t: "11/03 14:06", act: "核销完成", note: "订单 o1 · ¥480", orderId: "o1" },
+      { t: "11/02 14:06", act: "核销完成", note: "订单 o3 · ¥480", orderId: "o3" },
+    ],
+  },
+};
+const MG_RANK_CODE = [
+  { phone: "138****1024", n: 5, extra: "带来核销 2" },
+  { phone: "186****2209", n: 2, extra: "带来核销 0" },
+  { phone: "150****9090", n: 2, extra: "带来核销 1" },
+];
+const MG_RANK_REDEEM = [
+  { phone: "186****3308", n: 3, extra: "¥1440" },
+];
 
 const TIME_OPTS = ["近7天", "近30天", "本月", "上月"];
 const STORE_OPTS = ["全部门店", "凯德晶萃店", "来福士店", "西岸中环店", "静安嘉里店"];
@@ -198,13 +279,29 @@ function HelpIcon({ size = 16 }) {
   );
 }
 
+/** 人数 / 金额固定栏，避免贴太近 */
+function MetricPair({ count, unit, amount, showAmt, size = 14, countColor = INK }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", flexShrink: 0 }}>
+      <span style={{ minWidth: 52, textAlign: "right", fontSize: size, fontWeight: 700, color: countColor, fontVariantNumeric: "tabular-nums" }}>
+        {count}{unit}
+      </span>
+      {showAmt ? (
+        <span style={{ minWidth: 72, marginLeft: 12, textAlign: "right", fontSize: size, fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>
+          ¥{amount}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 function StatusBar() {
   return <div style={{ height: 44, flexShrink: 0, background: PAPER }} />;
 }
 
 function NavBar({ title, subtitle, right, onBack }) {
   return (
-    <div style={{ flexShrink: 0, background: PAPER, paddingBottom: 8 }}>
+    <div style={{ flexShrink: 0, background: PAPER, paddingBottom: subtitle ? 8 : 0 }}>
       <div style={{ height: 44, display: "flex", alignItems: "center", position: "relative" }}>
         {onBack ? (
           <button type="button" onClick={onBack} style={{ width: 44, height: 44, border: "none", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
@@ -212,10 +309,28 @@ function NavBar({ title, subtitle, right, onBack }) {
           </button>
         ) : <div style={{ width: 44 }} />}
         <div style={{ position: "absolute", left: 56, right: 56, textAlign: "center", fontSize: 17, fontWeight: 600, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
-        {right ? <div style={{ marginLeft: "auto", paddingRight: 14, fontSize: 12, color: MUTED }}>{right}</div> : <div style={{ width: 44 }} />}
+        {right ? <div style={{ marginLeft: "auto", paddingRight: 12 }}>{right}</div> : <div style={{ width: 44 }} />}
       </div>
       {subtitle ? <div style={{ textAlign: "center", fontSize: 12, color: MUTED, marginTop: -2 }}>{subtitle}</div> : null}
     </div>
+  );
+}
+
+function ModeSwitch({ mode, onToggle }) {
+  const isMgr = mode === "manager";
+  return (
+    <button type="button" onClick={onToggle}
+      style={{
+        appearance: "none", border: `1px solid ${isMgr ? ORANGE : "rgba(255,102,51,.35)"}`,
+        background: isMgr ? ORANGE : "rgba(255,255,255,.88)",
+        color: isMgr ? "#fff" : ORANGE,
+        borderRadius: 16, height: 30, padding: "0 10px",
+        fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap",
+        display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0,
+      }}>
+      {isMgr ? "联盟对账" : "店长模式"}
+      <ChevronDown size={10} color={isMgr ? "#fff" : ORANGE} rotate={-90} />
+    </button>
   );
 }
 
@@ -224,7 +339,7 @@ function Sheet({ title, options, value, onPick, onClose }) {
     <>
       <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 40 }} />
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 41, background: PAPER, borderTopLeftRadius: 12, borderTopRightRadius: 12, padding: "16px 16px 28px", maxHeight: "55%", overflow: "auto" }}>
-        <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center", color: INK }}>{title}</div>
+        <div style={{ fontSize: 16, fontWeight: 600, textAlign: "center" }}>{title}</div>
         <div style={{ marginTop: 8 }}>
           {options.map((opt) => {
             const on = opt === value;
@@ -245,7 +360,7 @@ function Sheet({ title, options, value, onPick, onClose }) {
 function FilterChip({ label, active, onClick }) {
   return (
     <button type="button" onClick={onClick}
-      style={{ appearance: "none", border: `1px solid ${active ? ORANGE : "#DDDDDD"}`, background: active ? CHIP : PAPER, color: active ? ORANGE : "#666", borderRadius: 16, height: 30, padding: "0 12px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, cursor: "pointer" }}>
+      style={{ appearance: "none", border: `1px solid ${active ? ORANGE : "#DDD"}`, background: active ? CHIP : PAPER, color: active ? ORANGE : "#666", borderRadius: 16, height: 30, padding: "0 12px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, cursor: "pointer" }}>
       <span>{label}</span>
       <ChevronDown size={10} color={active ? ORANGE : MUTED} />
     </button>
@@ -263,8 +378,18 @@ function TabBar({ active }) {
   );
 }
 
+function Empty() {
+  return (
+    <div style={{ padding: "64px 24px", textAlign: "center" }}>
+      <div style={{ width: 56, height: 56, borderRadius: 28, background: LINE, margin: "0 auto" }} />
+      <div style={{ marginTop: 16, fontSize: 15, fontWeight: 600 }}>该筛选条件下暂无记录</div>
+      <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>试试切换时间或漏斗态</div>
+    </div>
+  );
+}
+
 /* —— 10 两边账 —— */
-function StatsScreen({ onOpenLogs }) {
+function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
   const funnel = (side, items) =>
     items.map(([label, n]) => (
       <button key={label} type="button" onClick={() => onOpenLogs({ side, metric: label })}
@@ -272,7 +397,7 @@ function StatsScreen({ onOpenLogs }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: 13, color: INK }}>{label}</span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: INK }}>{n}</span>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{n}</span>
             <ChevronDown size={12} color="#CCC" rotate={-90} />
           </span>
         </div>
@@ -286,14 +411,18 @@ function StatsScreen({ onOpenLogs }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
       <StatusBar />
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
-        <div style={{ fontSize: 20, fontWeight: 600, color: INK }}>数据</div>
-        <div style={{ marginTop: 12, borderRadius: 12, overflow: "hidden", background: "linear-gradient(135deg,#FFF4EE 0%,#FFE4D2 55%,#F7F7F7 100%)", border: "1px solid #F0F0F0", padding: "16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <div style={{ fontSize: 12, color: "#B86A3C" }}>联盟对账</div>
-              <div style={{ marginTop: 4, fontSize: 18, fontWeight: 600 }}>西岸中环店 · 店长视角</div>
+        <div style={{ fontSize: 20, fontWeight: 600 }}>数据</div>
+        <div style={{ marginTop: 12, borderRadius: 12, overflow: "hidden", background: "linear-gradient(135deg,#FFF4EE 0%,#FFE4D2 55%,#F7F7F7 100%)", border: "1px solid #F0F0F0", padding: "14px 14px 16px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 12, color: "#B86A3C" }}>联盟对账</span>
+                <HelpIcon size={14} />
+              </div>
+              <div style={{ marginTop: 4, fontSize: 17, fontWeight: 600, lineHeight: "24px" }}>{MY_STORE}</div>
+              <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>店长 · 双侧全量</div>
             </div>
-            <HelpIcon size={18} />
+            <ModeSwitch mode={mode} onToggle={onToggleMode} />
           </div>
           <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
             {[["丽妍雅集获客", "9"], ["GANO获客", "4"]].map(([l, n]) => (
@@ -348,38 +477,22 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
   const days = useMemo(() => {
     let list = DAY_DATA[metric] || [];
     if (store !== "全部门店") {
-      list = list.map((d) => ({
-        ...d,
-        stores: d.stores.filter((s) => s.name === store),
-      })).filter((d) => d.stores.length);
+      list = list.map((d) => ({ ...d, stores: d.stores.filter((s) => s.name === store) })).filter((d) => d.stores.length);
     }
     return list;
   }, [metric, store]);
 
   const shops = STORE_DATA[metric] || [];
-
-  const openSheet = (kind) => setSheet(kind);
   const closeSheet = () => setSheet(null);
-
   const toggleL2 = (key) => setOpenStoreL2((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const renderPhones = (phones, ctx) =>
     phones.map(([phone, n]) => (
-      <button
-        key={phone + n}
-        type="button"
-        onClick={() => {
-          if (!clickableL3) return;
-          onOpenDay({ date: ctx.date, shop: ctx.shop, clerk: phone });
-        }}
-        style={{
-          appearance: "none", border: "none", background: clickableL3 ? "transparent" : "transparent",
-          width: "100%", display: "flex", alignItems: "center", padding: "10px 16px 10px 32px",
-          cursor: clickableL3 ? "pointer" : "default", textAlign: "left",
-        }}
-      >
+      <button key={phone + n} type="button"
+        onClick={() => { if (clickableL3) onOpenDay({ date: ctx.date, shop: ctx.shop, clerk: phone }); }}
+        style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "10px 16px 10px 32px", cursor: clickableL3 ? "pointer" : "default", textAlign: "left" }}>
         <span style={{ flex: 1, fontSize: 13, color: "#666" }}>{phone}</span>
-        <span style={{ fontSize: 13, color: INK, marginRight: clickableL3 ? 6 : 0 }}>{n}次</span>
+        <span style={{ fontSize: 13, color: INK, marginRight: clickableL3 ? 8 : 0, fontVariantNumeric: "tabular-nums" }}>{n}次</span>
         {clickableL3 ? <ChevronDown size={12} color="#CCC" rotate={-90} /> : null}
       </button>
     ));
@@ -388,7 +501,7 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
       <StatusBar />
       <NavBar title="数据明细" subtitle={brand} onBack={onBack} />
-      <div style={{ display: "flex", justifyContent: "center", gap: 28, background: PAPER, paddingBottom: 2, borderBottom: `1px solid ${LINE}` }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 28, background: PAPER, borderBottom: `1px solid ${LINE}` }}>
         {["每日", "按门店"].map((name) => {
           const on = tab === name;
           return (
@@ -399,35 +512,30 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
           );
         })}
       </div>
-
       <div style={{ display: "flex", gap: 8, padding: "10px 16px", overflowX: "auto", flexShrink: 0 }}>
         {tab === "每日" ? (
           <>
-            <FilterChip label={timeRange} active onClick={() => openSheet("time")} />
-            <FilterChip label={metric} active onClick={() => openSheet("metric")} />
-            <FilterChip label={store} onClick={() => openSheet("store")} />
+            <FilterChip label={timeRange} active onClick={() => setSheet("time")} />
+            <FilterChip label={metric} active onClick={() => setSheet("metric")} />
+            <FilterChip label={store} onClick={() => setSheet("store")} />
           </>
         ) : (
           <>
-            <FilterChip label={storeDate === "全部" ? "全部日期" : storeDate} active onClick={() => openSheet("date")} />
-            <FilterChip label={metric} active onClick={() => openSheet("metric")} />
+            <FilterChip label={storeDate === "全部" ? "全部日期" : storeDate} active onClick={() => setSheet("date")} />
+            <FilterChip label={metric} active onClick={() => setSheet("metric")} />
           </>
         )}
       </div>
-
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 12px 16px" }}>
         {tab === "每日" ? (
-          days.length === 0 ? (
-            <Empty />
-          ) : days.map((day) => {
+          days.length === 0 ? <Empty /> : days.map((day) => {
             const dayOpen = openDay === day.date;
             return (
               <div key={day.date} style={{ background: PAPER, borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
                 <button type="button" onClick={() => setOpenDay(dayOpen ? "" : day.date)}
-                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer" }}>
+                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", gap: 8 }}>
                   <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left" }}>{day.date}</span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: ORANGE, marginRight: 8 }}>{day.total}{unit}</span>
-                  {withAmt ? <span style={{ fontSize: 15, fontWeight: 700, marginRight: 8 }}>¥{day.amount}</span> : null}
+                  <MetricPair count={day.total} unit={unit} amount={day.amount} showAmt={withAmt} size={15} countColor={ORANGE} />
                   <ChevronDown rotate={dayOpen ? 180 : 0} />
                 </button>
                 {dayOpen ? day.stores.map((s) => {
@@ -436,10 +544,9 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
                   return (
                     <div key={s.name}>
                       <button type="button" onClick={() => toggleL2(key)}
-                        style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px", cursor: "pointer" }}>
+                        style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px", cursor: "pointer", gap: 8 }}>
                         <span style={{ flex: 1, fontSize: 14, textAlign: "left" }}>{s.name}</span>
-                        <span style={{ fontSize: 14, marginRight: 8 }}>{s.count}{unit}</span>
-                        {withAmt && s.amount != null ? <span style={{ fontSize: 14, marginRight: 8 }}>¥{s.amount}</span> : null}
+                        <MetricPair count={s.count} unit={unit} amount={s.amount} showAmt={withAmt && s.amount != null} size={14} />
                         <ChevronDown rotate={expanded ? 180 : -90} />
                       </button>
                       {expanded ? renderPhones(s.phones, { date: day.date, shop: s.name }) : null}
@@ -455,10 +562,10 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
             return (
               <div key={card.shop} style={{ background: PAPER, borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
                 <button type="button" onClick={() => setOpenShop(isOpen ? "" : card.shop)}
-                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer" }}>
+                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", gap: 8 }}>
                   <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left" }}>{card.shop}</span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: ORANGE, marginRight: 8 }}>{card.count}{unit}</span>
-                  {withAmt ? <span style={{ fontSize: 15, fontWeight: 700, marginRight: 8 }}>¥{card.amount}</span> : null}
+                  <MetricPair count={card.count} unit={unit} amount={card.amount} showAmt={withAmt} size={15} countColor={ORANGE} />
+                  {/* 按门店 L1：收起↓ / 展开↑（勿用 ›） */}
                   <ChevronDown rotate={isOpen ? 180 : 0} />
                 </button>
                 {isOpen ? renderPhones(card.phones, { date: storeDate === "全部" ? "11月03日" : storeDate, shop: card.shop }) : null}
@@ -470,7 +577,6 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
           L3：亮码=顾问 · 扫码/领取=顾客 · 被核销=核销员（可点 › 进 12）
         </div>
       </div>
-
       {sheet === "time" ? <Sheet title="选择时间范围" options={TIME_OPTS} value={timeRange} onPick={(v) => { setTimeRange(v); closeSheet(); }} onClose={closeSheet} /> : null}
       {sheet === "metric" ? <Sheet title="选择漏斗态" options={METRICS} value={metric} onPick={(v) => { setMetric(v); closeSheet(); }} onClose={closeSheet} /> : null}
       {sheet === "store" ? <Sheet title="选择门店" options={STORE_OPTS} value={store} onPick={(v) => { setStore(v); closeSheet(); }} onClose={closeSheet} /> : null}
@@ -479,17 +585,7 @@ function LogsScreen({ side, metric: initMetric, onBack, onOpenDay }) {
   );
 }
 
-function Empty() {
-  return (
-    <div style={{ padding: "64px 24px", textAlign: "center" }}>
-      <div style={{ width: 56, height: 56, borderRadius: 28, background: LINE, margin: "0 auto" }} />
-      <div style={{ marginTop: 16, fontSize: 15, fontWeight: 600 }}>该筛选条件下暂无记录</div>
-      <div style={{ marginTop: 8, fontSize: 12, color: MUTED }}>试试切换时间、漏斗态或门店</div>
-    </div>
-  );
-}
-
-/* —— 12 当日详情 —— */
+/* —— 12 / 13 —— */
 function DayDetailScreen({ date, shop, clerk, onBack, onOpenOrder }) {
   const key = `${date}|${shop}|${clerk}`;
   const rows = ORDERS[key] || ORDERS["11月03日|凯德晶萃店|186****3308"];
@@ -515,9 +611,9 @@ function DayDetailScreen({ date, shop, clerk, onBack, onOpenOrder }) {
           {rows.map((row) => (
             <button key={row.id} type="button" onClick={() => onOpenOrder(row.id)}
               style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", textAlign: "left", gap: 8 }}>
-              <span style={{ flex: 1.1, fontSize: 13, color: INK }}>{row.customer}</span>
+              <span style={{ flex: 1.1, fontSize: 13 }}>{row.customer}</span>
               <span style={{ flex: 1, fontSize: 12, color: MUTED }}>{row.shop}</span>
-              <span style={{ flex: 1.4, fontSize: 12, color: INK, textAlign: "right" }}>{row.item}</span>
+              <span style={{ flex: 1.4, fontSize: 12, textAlign: "right" }}>{row.item}</span>
               <ChevronDown size={12} color="#CCC" rotate={-90} />
             </button>
           ))}
@@ -527,7 +623,6 @@ function DayDetailScreen({ date, shop, clerk, onBack, onOpenOrder }) {
   );
 }
 
-/* —— 13 订单明细 —— */
 function OrderDetailScreen({ orderId, onBack }) {
   const d = ORDER_DETAIL[orderId] || ORDER_DETAIL.o1;
   return (
@@ -543,11 +638,11 @@ function OrderDetailScreen({ orderId, onBack }) {
           </div>
         </div>
         <div style={{ marginTop: 10, background: PAPER, borderRadius: 12, padding: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span style={{ fontSize: 14, fontWeight: 600 }}>服务备注</span>
             <span style={{ padding: "2px 8px", borderRadius: 4, background: CHIP, color: ORANGE, fontSize: 12 }}>{d.tag}</span>
           </div>
-          <div style={{ marginTop: 10, fontSize: 13, lineHeight: "20px", color: INK }}>{d.note}</div>
+          <div style={{ marginTop: 10, fontSize: 13, lineHeight: "20px" }}>{d.note}</div>
           <div style={{ marginTop: 6, fontSize: 12, color: MUTED }}>{d.noteMeta}</div>
         </div>
         <div style={{ marginTop: 10, background: PAPER, borderRadius: 12, padding: 16 }}>
@@ -555,7 +650,7 @@ function OrderDetailScreen({ orderId, onBack }) {
           {d.life.map(([k, v]) => (
             <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
               <span style={{ fontSize: 13, color: MUTED }}>{k}</span>
-              <span style={{ fontSize: 14, color: INK }}>{v}</span>
+              <span style={{ fontSize: 14 }}>{v}</span>
             </div>
           ))}
         </div>
@@ -571,7 +666,7 @@ function OrderDetailScreen({ orderId, onBack }) {
           {d.fields.map(([k, v]) => (
             <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 12, paddingTop: 10, borderTop: `1px solid ${LINE}` }}>
               <span style={{ fontSize: 12, color: MUTED }}>{k}</span>
-              <span style={{ fontSize: 13, color: INK }}>{v}</span>
+              <span style={{ fontSize: 13 }}>{v}</span>
             </div>
           ))}
         </div>
@@ -580,31 +675,323 @@ function OrderDetailScreen({ orderId, onBack }) {
   );
 }
 
+/* —— 20 店长看板首页 —— */
+function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff, onOpenRank }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+      <StatusBar />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <div style={{ fontSize: 20, fontWeight: 600 }}>数据</div>
+        <div style={{ marginTop: 12, borderRadius: 12, background: "linear-gradient(135deg,#FFF4EE 0%,#FFE8D8 50%,#F7F7F7 100%)", border: "1px solid #F0F0F0", padding: "14px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, color: "#B86A3C" }}>店长模式 · 本店</div>
+              <div style={{ marginTop: 4, fontSize: 17, fontWeight: 600 }}>{MY_STORE}</div>
+              <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>近7天 · 员工颗粒度</div>
+            </div>
+            <ModeSwitch mode={mode} onToggle={onToggleMode} />
+          </div>
+          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {MG_KPI.map((k) => (
+              <button key={k.key} type="button" onClick={() => onOpenDetail(k.key)}
+                style={{ appearance: "none", border: "none", background: "rgba(255,255,255,.82)", borderRadius: 10, padding: "12px 10px", textAlign: "left", cursor: "pointer" }}>
+                <div style={{ fontSize: 11, color: MUTED }}>{k.key}</div>
+                <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: ORANGE }}>{k.value}</div>
+                <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>{k.sub}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>转化摘要</span>
+            <button type="button" onClick={() => onOpenDetail("被核销")} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer" }}>看明细</button>
+          </div>
+          <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+            {[["亮码→领取", "50%"], ["领取→核销", "50%"], ["亮码→核销", "25%"]].map(([l, v]) => (
+              <div key={l} style={{ flex: 1, background: PAGE, borderRadius: 8, padding: "10px 8px", textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>{v}</div>
+                <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>员工贡献 Top</span>
+            <button type="button" onClick={onOpenRank} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 2 }}>
+              排行 <ChevronDown size={10} color={ORANGE} rotate={-90} />
+            </button>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>亮码顾问</div>
+          {MG_RANK_CODE.slice(0, 2).map((r, i) => (
+            <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
+              style={{ appearance: "none", border: "none", borderTop: i ? `1px solid ${LINE}` : "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 0", cursor: "pointer", textAlign: "left" }}>
+              <span style={{ width: 20, fontSize: 13, color: ORANGE, fontWeight: 700 }}>{i + 1}</span>
+              <span style={{ flex: 1, fontSize: 14 }}>{r.phone}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, marginRight: 8 }}>{r.n}次</span>
+              <ChevronDown size={12} color="#CCC" rotate={-90} />
+            </button>
+          ))}
+          <div style={{ marginTop: 8, fontSize: 11, color: MUTED }}>核销店员</div>
+          {MG_RANK_REDEEM.map((r, i) => (
+            <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
+              style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 0", cursor: "pointer", textAlign: "left" }}>
+              <span style={{ width: 20, fontSize: 13, color: ORANGE, fontWeight: 700 }}>{i + 1}</span>
+              <span style={{ flex: 1, fontSize: 14 }}>{r.phone}</span>
+              <MetricPair count={r.n} unit="人" amount={1440} showAmt size={13} />
+              <span style={{ width: 8 }} />
+              <ChevronDown size={12} color="#CCC" rotate={-90} />
+            </button>
+          ))}
+        </div>
+      </div>
+      <TabBar active="数据统计" />
+    </div>
+  );
+}
+
+/* —— 21 本店漏斗明细 —— */
+function ManagerDetail({ metric: initMetric, onBack, onOpenDay, onOpenStaff }) {
+  const [tab, setTab] = useState("按日");
+  const [metric, setMetric] = useState(initMetric || "被核销");
+  const [range, setRange] = useState("近7天");
+  const [sheet, setSheet] = useState(null);
+  const [openKey, setOpenKey] = useState("11月03日");
+  const unit = unitOf(metric);
+  const withAmt = showAmount(metric);
+  const clickable = metric === "被核销";
+  const days = MG_FUNNEL_DAY[metric] || [];
+  const staffs = MG_FUNNEL_STAFF[metric] || [];
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
+      <StatusBar />
+      <NavBar title="本店明细" subtitle={MY_STORE} onBack={onBack} />
+      <div style={{ display: "flex", justifyContent: "center", gap: 28, background: PAPER, borderBottom: `1px solid ${LINE}` }}>
+        {["按日", "按员工"].map((name) => {
+          const on = tab === name;
+          return (
+            <button key={name} type="button" onClick={() => setTab(name)}
+              style={{ appearance: "none", border: "none", background: "transparent", padding: "10px 0 8px", fontSize: 14, fontWeight: on ? 600 : 400, color: on ? ORANGE : MUTED, borderBottom: on ? `2px solid ${ORANGE}` : "2px solid transparent", cursor: "pointer" }}>
+              {name}
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", gap: 8, padding: "10px 16px" }}>
+        <FilterChip label={range} active onClick={() => setSheet("time")} />
+        <FilterChip label={metric} active onClick={() => setSheet("metric")} />
+      </div>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 12px 16px" }}>
+        {tab === "按日" ? days.map((day) => {
+          const open = openKey === day.date;
+          return (
+            <div key={day.date} style={{ background: PAPER, borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
+              <button type="button" onClick={() => setOpenKey(open ? "" : day.date)}
+                style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", gap: 8 }}>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left" }}>{day.date}</span>
+                <MetricPair count={day.total} unit={unit} amount={day.amount} showAmt={withAmt} size={15} countColor={ORANGE} />
+                <ChevronDown rotate={open ? 180 : 0} />
+              </button>
+              {open ? day.staff.map(([phone, n]) => (
+                <button key={phone} type="button"
+                  onClick={() => {
+                    if (clickable) onOpenDay({ date: day.date, shop: MY_STORE, clerk: phone });
+                    else onOpenStaff(phone);
+                  }}
+                  style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px 12px 28px", cursor: "pointer", textAlign: "left" }}>
+                  <span style={{ flex: 1, fontSize: 13, color: "#666" }}>{phone}</span>
+                  <span style={{ fontSize: 13, marginRight: 8 }}>{n}{unit === "次" ? "次" : "次"}</span>
+                  <ChevronDown size={12} color="#CCC" rotate={-90} />
+                </button>
+              )) : null}
+            </div>
+          );
+        }) : staffs.map((s) => {
+          const open = openKey === s.phone;
+          return (
+            <div key={s.phone} style={{ background: PAPER, borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
+              <button type="button" onClick={() => setOpenKey(open ? "" : s.phone)}
+                style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", gap: 8 }}>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left" }}>{s.phone}</span>
+                <MetricPair count={s.count} unit={unit} amount={s.amount} showAmt={withAmt} size={15} countColor={ORANGE} />
+                <ChevronDown rotate={open ? 180 : 0} />
+              </button>
+              {open ? (
+                <>
+                  {s.days.map(([d, n]) => (
+                    <button key={d} type="button"
+                      onClick={() => {
+                        if (clickable) onOpenDay({ date: d, shop: MY_STORE, clerk: s.phone });
+                      }}
+                      style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px 12px 28px", cursor: clickable ? "pointer" : "default", textAlign: "left" }}>
+                      <span style={{ flex: 1, fontSize: 13, color: "#666" }}>{d}</span>
+                      <span style={{ fontSize: 13, marginRight: clickable ? 8 : 0 }}>{n}次</span>
+                      {clickable ? <ChevronDown size={12} color="#CCC" rotate={-90} /> : null}
+                    </button>
+                  ))}
+                  <button type="button" onClick={() => onOpenStaff(s.phone)}
+                    style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: CHIP, width: "100%", padding: "12px 16px", fontSize: 13, color: ORANGE, fontWeight: 600, cursor: "pointer" }}>
+                    查看员工详情
+                  </button>
+                </>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+      {sheet === "time" ? <Sheet title="选择时间范围" options={TIME_OPTS} value={range} onPick={(v) => { setRange(v); setSheet(null); }} onClose={() => setSheet(null)} /> : null}
+      {sheet === "metric" ? <Sheet title="选择漏斗态" options={METRICS} value={metric} onPick={(v) => { setMetric(v); setSheet(null); }} onClose={() => setSheet(null)} /> : null}
+    </div>
+  );
+}
+
+/* —— 22 员工详情 —— */
+function ManagerStaff({ phone, onBack, onOpenOrder }) {
+  const d = MG_STAFF_DETAIL[phone] || MG_STAFF_DETAIL["138****1024"];
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+      <StatusBar />
+      <NavBar title="员工详情" subtitle={MY_STORE} onBack={onBack} />
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <div style={{ background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 18, fontWeight: 600 }}>{phone}</div>
+          <div style={{ marginTop: 4, fontSize: 12, color: MUTED }}>{d.role} · 近7天</div>
+          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {d.kpi.map(([k, v]) => (
+              <div key={k} style={{ background: PAGE, borderRadius: 8, padding: "10px 8px" }}>
+                <div style={{ fontSize: 11, color: MUTED }}>{k}</div>
+                <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: ORANGE }}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginTop: 12, background: PAPER, borderRadius: 12, padding: 16 }}>
+          <div style={{ fontSize: 14, fontWeight: 600 }}>近3日趋势</div>
+          <div style={{ marginTop: 12, display: "flex", alignItems: "flex-end", gap: 16, height: 80 }}>
+            {d.trend.map(([lab, n]) => (
+              <div key={lab} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
+                <div style={{ width: "100%", maxWidth: 36, height: `${Math.max(12, n * 22)}px`, background: ORANGE, borderRadius: 4 }} />
+                <div style={{ marginTop: 6, fontSize: 11, color: MUTED }}>{lab}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginTop: 12, background: PAPER, borderRadius: 12, padding: "4px 16px 8px" }}>
+          <div style={{ padding: "12px 0 4px", fontSize: 14, fontWeight: 600 }}>操作流水</div>
+          {d.logs.map((log, i) => (
+            <button key={log.t + i} type="button"
+              onClick={() => { if (log.orderId) onOpenOrder(log.orderId); }}
+              style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", padding: "12px 0", display: "flex", alignItems: "center", cursor: log.orderId ? "pointer" : "default", textAlign: "left" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{log.act}</div>
+                <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>{log.t} · {log.note}</div>
+              </div>
+              {log.orderId ? <ChevronDown size={12} color="#CCC" rotate={-90} /> : null}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* —— 23 本店排行 —— */
+function ManagerRank({ onBack, onOpenStaff }) {
+  const [tab, setTab] = useState("亮码榜");
+  const list = tab === "亮码榜" ? MG_RANK_CODE : MG_RANK_REDEEM;
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
+      <StatusBar />
+      <NavBar title="本店排行" subtitle={`${MY_STORE} · 近7天`} onBack={onBack} />
+      <div style={{ display: "flex", justifyContent: "center", gap: 28, background: PAPER, borderBottom: `1px solid ${LINE}` }}>
+        {["亮码榜", "核销榜"].map((name) => {
+          const on = tab === name;
+          return (
+            <button key={name} type="button" onClick={() => setTab(name)}
+              style={{ appearance: "none", border: "none", background: "transparent", padding: "10px 0 8px", fontSize: 14, fontWeight: on ? 600 : 400, color: on ? ORANGE : MUTED, borderBottom: on ? `2px solid ${ORANGE}` : "2px solid transparent", cursor: "pointer" }}>
+              {name}
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
+        <div style={{ background: PAPER, borderRadius: 12, overflow: "hidden" }}>
+          {list.map((r, i) => (
+            <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
+              style={{ appearance: "none", border: "none", borderTop: i ? `1px solid ${LINE}` : "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "14px 16px", cursor: "pointer", textAlign: "left" }}>
+              <span style={{ width: 28, height: 28, borderRadius: 14, background: i < 3 ? CHIP : PAGE, color: ORANGE, fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+              <div style={{ flex: 1, marginLeft: 10 }}>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{r.phone}</div>
+                <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>{r.extra}</div>
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 700, color: ORANGE, marginRight: 8 }}>{r.n}{tab === "亮码榜" ? "次" : "人"}</span>
+              <ChevronDown size={12} color="#CCC" rotate={-90} />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
+  const [mode, setMode] = useState("alliance"); // alliance | manager
   const [stack, setStack] = useState([{ name: "stats" }]);
   const top = stack[stack.length - 1];
   const push = (frame) => setStack((s) => [...s, frame]);
   const pop = () => setStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
 
+  const toggleMode = () => {
+    if (mode === "alliance") {
+      setMode("manager");
+      setStack([{ name: "mgrHome" }]);
+    } else {
+      setMode("alliance");
+      setStack([{ name: "stats" }]);
+    }
+  };
+
   if (top.name === "stats") {
-    return <StatsScreen onOpenLogs={({ side, metric }) => push({ name: "logs", side, metric })} />;
+    return <StatsScreen mode={mode} onToggleMode={toggleMode} onOpenLogs={({ side, metric }) => push({ name: "logs", side, metric })} />;
   }
   if (top.name === "logs") {
+    return <LogsScreen side={top.side} metric={top.metric} onBack={pop} onOpenDay={(ctx) => push({ name: "day", ...ctx })} />;
+  }
+  if (top.name === "mgrHome") {
     return (
-      <LogsScreen
-        side={top.side}
+      <ManagerHome
+        mode={mode}
+        onToggleMode={toggleMode}
+        onOpenDetail={(metric) => push({ name: "mgrDetail", metric })}
+        onOpenStaff={(phone) => push({ name: "mgrStaff", phone })}
+        onOpenRank={() => push({ name: "mgrRank" })}
+      />
+    );
+  }
+  if (top.name === "mgrDetail") {
+    return (
+      <ManagerDetail
         metric={top.metric}
         onBack={pop}
         onOpenDay={(ctx) => push({ name: "day", ...ctx })}
+        onOpenStaff={(phone) => push({ name: "mgrStaff", phone })}
       />
     );
+  }
+  if (top.name === "mgrStaff") {
+    return <ManagerStaff phone={top.phone} onBack={pop} onOpenOrder={(orderId) => push({ name: "order", orderId })} />;
+  }
+  if (top.name === "mgrRank") {
+    return <ManagerRank onBack={pop} onOpenStaff={(phone) => push({ name: "mgrStaff", phone })} />;
   }
   if (top.name === "day") {
     return (
       <DayDetailScreen
-        date={top.date}
-        shop={top.shop}
-        clerk={top.clerk}
+        date={top.date} shop={top.shop} clerk={top.clerk}
         onBack={pop}
         onOpenOrder={(orderId) => push({ name: "order", orderId })}
       />

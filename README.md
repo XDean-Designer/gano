@@ -21,7 +21,7 @@
 
 | 文件 | 说明 |
 |------|------|
-| **[data-prototype.html](./data-prototype.html)** | **数据钻取可点原型（10→11→12→13）** · [GitHub Pages](https://xdean-designer.github.io/gano/data-prototype.html) |
+| **[data-prototype.html](./data-prototype.html)** | **数据钻取 + 店长模式（10–13 / 20–23）** · [GitHub Pages](https://xdean-designer.github.io/gano/data-prototype.html) |
 | `alliance-flow-A-storyboard-spec.html` | A 向故事板（规范版） |
 | `alliance-flow-A-storyboard.html` | A 向故事板 |
 | `alliance-flow-B-catalog.html` | B 向目录 |
