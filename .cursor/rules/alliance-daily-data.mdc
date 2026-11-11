@@ -1,0 +1,23 @@
+---
+description: Alliance daily report data must be verified backend snapshots only
+globs: alliance-daily-report.html,data/alliance-daily-snapshot.json,_sync-live-snapshot.mjs,_patch-snapshot-boot.mjs
+alwaysApply: false
+---
+
+# 联盟日报数据更新规则
+
+## 根因（已踩坑，禁止再犯）
+
+页面曾用虚构 `demoPayload` 券行冒充日结。人工核对后台时会对不上（例如演示里丽妍有发券/核销，后台当日丽妍有效发券为 0）。
+
+## 必须遵守
+
+1. **唯一真源**：`data/alliance-daily-snapshot.json`（由后台 `staff/page` + `coupon/issued` + `coupon/quotas` 写入）。
+2. 改完快照后运行：`node _sync-live-snapshot.mjs`，同步嵌入 `#live-snapshot`。
+3. **禁止**手写虚构券、禁止「演示数据」作为对外日结来源。
+4. `source` 必须以 `后台已核对快照` 开头。
+5. 更新后自检：
+   - 作废张数 + 有效张数 = 总张数
+   - 当日有效发券侧别与后台一致
+   - `购卡满 5000` 等 `claimedCount` 与有效领取对齐
+6. 亮码/扫码仅改 `FUNNEL_MANUAL`（运营手工数），不得为此编造券行。

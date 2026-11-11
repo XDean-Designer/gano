@@ -80,52 +80,70 @@
   }
   .logo.liyan{height:22px;width:auto}
   .logo.gano{height:18px;width:auto}
-  .logo.lg.liyan{height:28px}
-  .logo.lg.gano{height:24px}
+  .logo.lg.liyan{height:32px}
+  .logo.lg.gano{height:28px}
+  .logo.xl.liyan{height:36px}
+  .logo.xl.gano{height:30px}
+  .section-head{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    margin:0 0 12px;
+  }
+  .section-head .eyebrow{
+    margin:0;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ink);
+  }
+  .section-head .hint{font-size:12px;color:var(--muted)}
+  .section-head .chip{
+    display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;
+    background:#111827;color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;
+  }
+  .band{
+    border-radius:10px;padding:16px 16px 18px;margin-bottom:8px;
+  }
+  .band-total{
+    background:linear-gradient(180deg,#eef2f7 0%,#f8fafc 100%);
+    border:1px solid #d8dee8;
+  }
+  .band-day{
+    background:#fff;
+    border:1px solid var(--line);
+    box-shadow:0 1px 0 rgba(0,0,0,.03);
+    margin-top:8px;
+  }
+  .band-day .section-head{margin-top:0}
+  .band + .band{margin-top:20px}
+  .funnel-warn{
+    margin:0 0 12px;padding:10px 12px;border-radius:6px;
+    background:#FFF8E7;border:1px solid var(--warn-bd);
+    font-size:12px;line-height:1.5;color:#6b5a1e;
+  }
   .brand-head{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    margin-bottom:14px;
-  }
-  .brand-head .titles{min-width:0}
-  .brand-head .brand-name{
-    margin:0;font-size:20px;font-weight:800;letter-spacing:.02em;line-height:1.2;
-  }
-  .brand-head .brand-name.liyan{color:var(--liyan)}
-  .brand-head .brand-name.gano{color:var(--gano)}
-  .brand-head .brand-sub{
-    margin-top:2px;font-size:12px;color:var(--muted);font-weight:500;
+    display:flex;align-items:center;margin-bottom:16px;min-height:32px;
   }
   .guest-hero{
-    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
-    margin-bottom:12px;padding:12px 14px;border-radius:6px;border:1px solid var(--line);
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    margin-bottom:16px;padding:14px 16px;border-radius:6px;border:1px solid var(--line);
   }
   .guest-hero.liyan{background:var(--liyan-soft);border-color:var(--liyan-line)}
   .guest-hero.gano{background:var(--gano-soft);border-color:var(--gano-line)}
-  .guest-hero .lab{font-size:13px;font-weight:700}
-  .guest-hero.liyan .lab{color:var(--liyan)}
-  .guest-hero.gano .lab{color:var(--gano)}
+  .guest-hero .lab{
+    font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;
+  }
   .guest-hero .n{
-    font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;
+    font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;
   }
   .guest-hero.liyan .n{color:var(--liyan)}
   .guest-hero.gano .n{color:var(--gano)}
-  .guest-hero .hint{font-size:11px;color:var(--muted);margin-top:4px}
+  .card.total-card{padding:20px 18px}
+  .card.total-card .guest-hero{padding:16px 18px;margin-bottom:18px}
+  .card.total-card .guest-hero .n{font-size:40px}
+  .card.total-card .kpi .n{font-size:24px}
+  .card.total-card .kpi .n.sm{font-size:18px}
   .controls{display:flex;flex-direction:column;gap:8px;align-items:flex-end;min-width:240px}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
   label.field{font-size:12px;color:var(--muted)}
-  input[type="date"], input[type="password"], input[type="text"]{
+  input[type="date"]{
     height:34px;border:1px solid #d1d5db;border-radius:6px;
     background:#fff;padding:0 10px;font:inherit;color:var(--ink);
-  }
-  .btn{
-    appearance:none;border:1px solid #111827;cursor:pointer;font:inherit;
-    height:36px;padding:0 16px;border-radius:6px;
-    background:#111827;color:#fff;font-weight:600;font-size:13px;
-  }
-  .btn:active{opacity:.9}
-  .btn:disabled{opacity:.55;cursor:wait}
-  .btn.ghost{
-    background:#fff;color:var(--ink);border:1px solid #d1d5db;
   }
   .meta-line{
     font-size:12px;color:var(--muted);text-align:right;line-height:1.45;
@@ -163,15 +181,39 @@
   }
   .pill.liyan{color:var(--liyan);background:var(--liyan-soft)}
   .pill.gano{color:var(--gano);background:var(--gano-soft)}
-  .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .kpi{
-    background:#f9fafb;border:1px solid var(--line);border-radius:6px;
-    padding:12px 10px;text-align:center;
+  .kpi-groups{display:flex;flex-direction:column;gap:12px}
+  .kpi-group{
+    display:grid;gap:10px;
+    padding:12px;
+    border-radius:8px;
+    background:#f3f4f6;
+    border:1px solid var(--line);
   }
-  .kpi .n{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .kpi-group.g4{grid-template-columns:repeat(4,1fr)}
+  .kpi-group.g3{grid-template-columns:repeat(3,1fr)}
+  .kpi-group.g2{grid-template-columns:repeat(2,1fr)}
+  .kpi-group.g1{grid-template-columns:1fr}
+  @media (max-width:720px){
+    .kpi-group.g4{grid-template-columns:repeat(2,1fr)}
+    .kpi-group.g3{grid-template-columns:1fr}
+  }
+  .kpi{
+    background:#fff;border:1px solid var(--line);border-radius:6px;
+    padding:14px 12px;text-align:center;
+  }
+  .kpi .n{
+    font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;
+    line-height:1.15;color:var(--ink);
+  }
+  .kpi .n.sm{font-size:17px;letter-spacing:-.01em}
   .kpi.liyan .n{color:var(--liyan)}
   .kpi.gano .n{color:var(--gano)}
-  .kpi .l{margin-top:4px;font-size:11px;color:var(--muted)}
+  .kpi .l{
+    margin-top:8px;font-size:12px;font-weight:400;color:var(--muted);
+    line-height:1.35;letter-spacing:.02em;
+  }
+  .card.total-card .kpi-group .kpi .n{font-size:22px}
+  .card.total-card .kpi-group .kpi .n.sm{font-size:17px}
   .compare{
     margin-top:14px;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;
   }
@@ -186,13 +228,11 @@
   .side.gano{background:var(--gano-soft);border-color:var(--gano-line)}
   .side.liyan .name{color:var(--liyan)}
   .side.gano .name{color:var(--gano)}
-  .side .guest-line{
-    font-size:14px;font-weight:700;margin-bottom:6px;
+  .side .metric{
+    font-size:13px;line-height:1.65;color:var(--muted);
   }
-  .side.liyan .guest-line{color:var(--liyan)}
-  .side.gano .guest-line{color:var(--gano)}
+  .side .metric b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
   .meter{margin-top:8px}
-  .meter .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
   .bar{height:8px;border-radius:4px;background:#eef2f7;overflow:hidden}
   .bar>i{display:block;height:100%;border-radius:4px}
   .bar.liyan>i{background:var(--liyan)}
@@ -214,18 +254,6 @@
     margin-top:16px;padding-top:12px;border-top:1px solid var(--line);
     font-size:11px;color:var(--muted);line-height:1.6;
   }
-  .toast{
-    position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
-    background:#111827;color:#fff;padding:10px 16px;border-radius:6px;
-    font-size:13px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s;
-  }
-  .toast.show{opacity:1}
-  .settings{
-    margin:12px 28px 0;padding:12px 14px;border-radius:6px;
-    background:#f9fafb;border:1px solid var(--line);font-size:12px;
-  }
-  .settings summary{cursor:pointer;color:var(--muted);font-weight:600}
-  .settings .box{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
 </style>
 </head>
@@ -246,7 +274,6 @@
         <div class="row">
           <label class="field" for="day">统计日</label>
           <input type="date" id="day" />
-          <button type="button" class="btn" id="btnRefresh">更新数据</button>
         </div>
         <div class="meta-line" id="captureMeta">数据截取时间：—</div>
         <div class="meta-line" id="sourceMeta">数据来源：—</div>
@@ -258,44 +285,31 @@
       当前未到当日 22:00 截断点，下列数字为截至「数据截取时间」的滚动结果，不宜当作日结终值。
     </div>
 
-    <details class="settings">
-      <summary>数据源设置（更新时使用）</summary>
-      <div class="box">
-        <label class="field">Admin-Token</label>
-        <input type="password" id="token" placeholder="从后台 Cookie Admin-Token 粘贴" style="min-width:260px" />
-        <button type="button" class="btn ghost" id="btnDemo">载入演示数据</button>
-      </div>
-      <div class="box" style="margin-top:6px;color:var(--muted)">
-        API：<code>/api2/rts/base/alliance/staff/page</code> ·
-        <code>/api2/rts/base/alliance/coupon/issued</code> ·
-        <code>/api2/rts/base/alliance/coupon/quotas</code>
-        （若跨域失败，请用演示数据或在可访问后台的环境打开本页）
-      </div>
-    </details>
-
     <div class="body" id="report">
       <div class="empty">正在准备报表…</div>
     </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
 
+<script type="application/json" id="live-snapshot">
+{"ver":5,"kind":"live-snapshot","capturedAt":"2026-11-11 16:24:41","source":"后台已核对快照 · 2026-11-11 16:24:41","staff":[{"brandName":"丽妍雅集","brandType":"1","mobile":"13651785726","roleName":"运营","roleType":"3","shopId":"860000000000000205","shopName":"丽妍雅集Rubis SPA·长宁来福士广场店","staffId":"1317839042477305856","staffName":"连宏坤","phone":"13651785726","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13761181173","roleName":"店员","roleType":"2","shopId":"860000000000000213","shopName":"丽妍雅集Rubis SPA·宝杨宝龙广场店","staffId":"1317570548157575168","staffName":"魏彩霞","phone":"13761181173","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·宝杨宝龙广场店"},{"brandName":"GANO","brandType":"2","mobile":"15121161412","roleName":"店员","roleType":"2","shopId":"860000000000000102","shopName":"GANO HAIR·北外滩来福士店","staffId":"1317522405894320128","staffName":"北外滩客服","phone":"15121161412","companyName":"GANO","storeName":"GANO HAIR·北外滩来福士店"},{"brandName":"GANO","brandType":"2","mobile":"13611685176","roleName":"店员","roleType":"2","shopId":"860000000000000102","shopName":"GANO HAIR·北外滩来福士店","staffId":"1317522174872055808","staffName":"北外滩康秀","phone":"13611685176","companyName":"GANO","storeName":"GANO HAIR·北外滩来福士店"},{"brandName":"GANO","brandType":"2","mobile":"17511629368","roleName":"店员","roleType":"2","shopId":"860000000000000107","shopName":"GANO HAIR·荟聚店","staffId":"1317520757075668992","staffName":"荟聚客服","phone":"17511629368","companyName":"GANO","storeName":"GANO HAIR·荟聚店"},{"brandName":"GANO","brandType":"2","mobile":"18726231810","roleName":"店员","roleType":"2","shopId":"860000000000000106","shopName":"GANO HAIR·长宁来福士店","staffId":"1317520754303234048","staffName":"长宁店：孙慧","phone":"18726231810","companyName":"GANO","storeName":"GANO HAIR·长宁来福士店"},{"brandName":"GANO","brandType":"2","mobile":"18549922246","roleName":"店员","roleType":"2","shopId":"860000000000000101","shopName":"GANO HAIR·凯德晶萃店","staffId":"1317520751291723776","staffName":"夏夏","phone":"18549922246","companyName":"GANO","storeName":"GANO HAIR·凯德晶萃店"},{"brandName":"GANO","brandType":"2","mobile":"15000051391","roleName":"店员","roleType":"2","shopId":"860000000000000107","shopName":"GANO HAIR·荟聚店","staffId":"1317520747760119808","staffName":"荟聚 胡斌","phone":"15000051391","companyName":"GANO","storeName":"GANO HAIR·荟聚店"},{"brandName":"GANO","brandType":"2","mobile":"17602158348","roleName":"店员","roleType":"2","shopId":"860000000000000103","shopName":"GANO HAIR+奈造型设计·虹桥天地店","staffId":"1317518998546608128","staffName":"康康","phone":"17602158348","companyName":"GANO","storeName":"GANO HAIR+奈造型设计·虹桥天地店"},{"brandName":"GANO","brandType":"2","mobile":"15838169796","roleName":"店员","roleType":"2","shopId":"860000000000000101","shopName":"GANO HAIR·凯德晶萃店","staffId":"1317518996050997248","staffName":"晶萃店umi","phone":"15838169796","companyName":"GANO","storeName":"GANO HAIR·凯德晶萃店"},{"brandName":"GANO","brandType":"2","mobile":"19705110259","roleName":"店员","roleType":"2","shopId":"860000000000000109","shopName":"GANO HAIR+奈造型设计·仁恒仓街店","staffId":"1317518993282756608","staffName":"小乐","phone":"19705110259","companyName":"GANO","storeName":"GANO HAIR+奈造型设计·仁恒仓街店"},{"brandName":"GANO","brandType":"2","mobile":"15156723898","roleName":"店员","roleType":"2","shopId":"860000000000000103","shopName":"GANO HAIR+奈造型设计·虹桥天地店","staffId":"1317518990552264704","staffName":"音音","phone":"15156723898","companyName":"GANO","storeName":"GANO HAIR+奈造型设计·虹桥天地店"},{"brandName":"GANO","brandType":"2","mobile":"17621710751","roleName":"店员","roleType":"2","shopId":"860000000000000106","shopName":"GANO HAIR·长宁来福士店","staffId":"1317518986647367680","staffName":"长宁来福士行政柚柚","phone":"17621710751","companyName":"GANO","storeName":"GANO HAIR·长宁来福士店"},{"brandName":"GANO","brandType":"2","mobile":"17521791529","roleName":"店员","roleType":"2","shopId":"860000000000000105","shopName":"GANO HAIR·上海来福士人民广场店","staffId":"1317518983992373248","staffName":"GANO人广客服","phone":"17521791529","companyName":"GANO","storeName":"GANO HAIR·上海来福士人民广场店"},{"brandName":"GANO","brandType":"2","mobile":"15896063551","roleName":"店员","roleType":"2","shopId":"860000000000000108","shopName":"GANO hair 造型·苏州中心店","staffId":"1317518980821479424","staffName":"王颖","phone":"15896063551","companyName":"GANO","storeName":"GANO hair 造型·苏州中心店"},{"brandName":"GANO","brandType":"2","mobile":"17621879827","roleName":"店员","roleType":"2","shopId":"860000000000000105","shopName":"GANO HAIR·上海来福士人民广场店","staffId":"1317518977176629248","staffName":"人广管家客服","phone":"17621879827","companyName":"GANO","storeName":"GANO HAIR·上海来福士人民广场店"},{"brandName":"GANO","brandType":"2","mobile":"17701566517","roleName":"店员","roleType":"2","shopId":"860000000000000108","shopName":"GANO hair 造型·苏州中心店","staffId":"1317518974303531008","staffName":"苏州中店客服经理","phone":"17701566517","companyName":"GANO","storeName":"GANO hair 造型·苏州中心店"},{"brandName":"GANO","brandType":"2","mobile":"18018848162","roleName":"店员","roleType":"2","shopId":"860000000000000104","shopName":"GANO HAIR Salon·凯德虹口商业中心店","staffId":"1317518971535290368","staffName":"陆陆","phone":"18018848162","companyName":"GANO","storeName":"GANO HAIR Salon·凯德虹口商业中心店"},{"brandName":"GANO","brandType":"2","mobile":"18913069517","roleName":"店员","roleType":"2","shopId":"860000000000000109","shopName":"GANO HAIR+奈造型设计·仁恒仓街店","staffId":"1317518968179847168","staffName":"客服","phone":"18913069517","companyName":"GANO","storeName":"GANO HAIR+奈造型设计·仁恒仓街店"},{"brandName":"GANO","brandType":"2","mobile":"16621577708","roleName":"店员","roleType":"2","shopId":"860000000000000104","shopName":"GANO HAIR Salon·凯德虹口商业中心店","staffId":"1317518958256123904","staffName":"虹口前台","phone":"16621577708","companyName":"GANO","storeName":"GANO HAIR Salon·凯德虹口商业中心店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18017383837","roleName":"店员","roleType":"2","shopId":"860000000000000205","shopName":"丽妍雅集Rubis SPA·长宁来福士广场店","staffId":"1317518150806466560","staffName":"长宁来福士李春玲","phone":"18017383837","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13524102313","roleName":"店员","roleType":"2","shopId":"860000000000000208","shopName":"丽妍雅集Rubis SPA·凯德LuOne店","staffId":"1317497668212289536","staffName":"店务Ada","phone":"13524102313","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·凯德LuOne店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13761253359","roleName":"店员","roleType":"2","shopId":"860000000000000203","shopName":"丽妍雅集Rubis SPA·北外滩来福士店","staffId":"1317497665821536256","staffName":"宋艳勤","phone":"13761253359","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·北外滩来福士店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18702169501","roleName":"店员","roleType":"2","shopId":"860000000000000204","shopName":"丽妍雅集Rubis SPA·瑞虹太阳宫店","staffId":"1317497662843580416","staffName":"太阳宫-前台 陆爱明","phone":"18702169501","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·瑞虹太阳宫店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"15961588921","roleName":"店员","roleType":"2","shopId":"860000000000000215","shopName":"丽妍雅集Rubis SPA·久光百货店","staffId":"1317472981369417728","staffName":"李嫚嫚","phone":"15961588921","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·久光百货店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13472765801","roleName":"店员","roleType":"2","shopId":"860000000000000201","shopName":"丽妍雅集Rubis SPA·西岸中环店","staffId":"1317466953705664512","staffName":"姚晨莉","phone":"13472765801","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·西岸中环店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13962171430","roleName":"店员","roleType":"2","shopId":"860000000000000216","shopName":"丽妍雅集Rubis SPA·美罗百货店","staffId":"1317456349472477184","staffName":"苏州美罗前台武培培","phone":"13962171430","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·美罗百货店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18217336386","roleName":"店员","roleType":"2","shopId":"860000000000000209","shopName":"丽妍雅集Rubis SPA·虹桥新天地店","staffId":"1317258073074814976","staffName":"杨玉玲","phone":"18217336386","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·虹桥新天地店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17623630120","roleName":"店员","roleType":"2","shopId":"860000000000000201","shopName":"丽妍雅集Rubis SPA·西岸中环店","staffId":"1317258065730588672","staffName":"西岸中环前台Lisa","phone":"17623630120","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·西岸中环店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13122010372","roleName":"店员","roleType":"2","shopId":"860000000000000213","shopName":"丽妍雅集Rubis SPA·宝杨宝龙广场店","staffId":"1317235964122484736","staffName":"陈璟珏 Nora","phone":"13122010372","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·宝杨宝龙广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13812670134","roleName":"店员","roleType":"2","shopId":"860000000000000215","shopName":"丽妍雅集Rubis SPA·久光百货店","staffId":"1317235960758652928","staffName":"袁玉林","phone":"13812670134","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·久光百货店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18012838689","roleName":"店员","roleType":"2","shopId":"860000000000000214","shopName":"丽妍雅集Rubis SPA·苏州中心广场店","staffId":"1317225298040967168","staffName":"邹楹","phone":"18012838689","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·苏州中心广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"15073341662","roleName":"店员","roleType":"2","shopId":"860000000000000207","shopName":"丽妍雅集Rubis SPA·七宝领展广场店","staffId":"1317225294668746752","staffName":"汪水玲","phone":"15073341662","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·七宝领展广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18206853717","roleName":"店员","roleType":"2","shopId":"860000000000000211","shopName":"丽妍雅集Rubis SPA·浦东嘉里城店","staffId":"1317225291644653568","staffName":"李志净","phone":"18206853717","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·浦东嘉里城店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13501419147","roleName":"店员","roleType":"2","shopId":"860000000000000207","shopName":"丽妍雅集Rubis SPA·七宝领展广场店","staffId":"1317224679381127168","staffName":"蔡玉惠","phone":"13501419147","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·七宝领展广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13761102602","roleName":"店员","roleType":"2","shopId":"860000000000000208","shopName":"丽妍雅集Rubis SPA·凯德LuOne店","staffId":"1317224459339550720","staffName":"Jolin","phone":"13761102602","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·凯德LuOne店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17621869703","roleName":"店员","roleType":"2","shopId":"860000000000000203","shopName":"丽妍雅集Rubis SPA·北外滩来福士店","staffId":"1317223730742808576","staffName":"陈春翠","phone":"17621869703","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·北外滩来福士店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"15801857972","roleName":"店员","roleType":"2","shopId":"860000000000000205","shopName":"丽妍雅集Rubis SPA·长宁来福士广场店","staffId":"1317223059578671104","staffName":"徐齐美","phone":"15801857972","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13262262756","roleName":"店员","roleType":"2","shopId":"860000000000000210","shopName":"丽妍雅集Rubis SPA·蟠龙新天地店","staffId":"1317223056906899456","staffName":"蟠龙前台王远婷","phone":"13262262756","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·蟠龙新天地店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13916945430","roleName":"店员","roleType":"2","shopId":"860000000000000212","shopName":"丽妍雅集Rubis SPA·LU1885陆里店","staffId":"1317220035963637760","staffName":"盛仲艳","phone":"13916945430","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·LU1885陆里店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"15850184093","roleName":"店员","roleType":"2","shopId":"860000000000000216","shopName":"丽妍雅集Rubis SPA·美罗百货店","staffId":"1317218495215423488","staffName":"张娟","phone":"15850184093","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·美罗百货店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17602131262","roleName":"店员","roleType":"2","shopId":"860000000000000204","shopName":"丽妍雅集Rubis SPA·瑞虹太阳宫店","staffId":"1317218492405239808","staffName":"张舒","phone":"17602131262","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·瑞虹太阳宫店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18305231607","roleName":"店员","roleType":"2","shopId":"860000000000000210","shopName":"丽妍雅集Rubis SPA·蟠龙新天地店","staffId":"1317217495800860672","staffName":"王远婷","phone":"18305231607","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·蟠龙新天地店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17717603850","roleName":"店员","roleType":"2","shopId":"860000000000000206","shopName":"丽妍雅集Rubis SPA·仲盛世界商城店","staffId":"1317217492772573184","staffName":"单晟姝","phone":"17717603850","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·仲盛世界商城店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17501616706","roleName":"店员","roleType":"2","shopId":"860000000000000217","shopName":"丽妍雅集Rubis SPA·芮欧百货店","staffId":"1317214373649043456","staffName":"卢慧","phone":"17501616706","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·芮欧百货店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18019351390","roleName":"店员","roleType":"2","shopId":"860000000000000207","shopName":"丽妍雅集Rubis SPA·七宝领展广场店","staffId":"1317207452024033280","staffName":"洪井芝","phone":"18019351390","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·七宝领展广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13801877835","roleName":"店员","roleType":"2","shopId":"860000000000000213","shopName":"丽妍雅集Rubis SPA·宝杨宝龙广场店","staffId":"1317206721753763840","staffName":"秦炜敏","phone":"13801877835","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·宝杨宝龙广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13122698939","roleName":"店员","roleType":"2","shopId":"860000000000000206","shopName":"丽妍雅集Rubis SPA·仲盛世界商城店","staffId":"1317205925859414016","staffName":"崔小芳","phone":"13122698939","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·仲盛世界商城店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18169696012","roleName":"店员","roleType":"2","shopId":"860000000000000214","shopName":"丽妍雅集Rubis SPA·苏州中心广场店","staffId":"1317205923170865152","staffName":"yoyo","phone":"18169696012","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·苏州中心广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13661420957","roleName":"店员","roleType":"2","shopId":"860000000000000203","shopName":"丽妍雅集Rubis SPA·北外滩来福士店","staffId":"1317205258293989376","staffName":"北外滩","phone":"13661420957","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·北外滩来福士店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18678632818","roleName":"店员","roleType":"2","shopId":"860000000000000212","shopName":"丽妍雅集Rubis SPA·LU1885陆里店","staffId":"1317205255538331648","staffName":"郭金","phone":"18678632818","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·LU1885陆里店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17739598138","roleName":"店员","roleType":"2","shopId":"860000000000000202","shopName":"丽妍雅集Rubis SPA·光启城时尚购物中心店","staffId":"1317203797061390336","staffName":"许珊珊","phone":"17739598138","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·光启城时尚购物中心店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13312045309","roleName":"店员","roleType":"2","shopId":"860000000000000209","shopName":"丽妍雅集Rubis SPA·虹桥新天地店","staffId":"1317203794293149696","staffName":"汪晨mido","phone":"13312045309","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·虹桥新天地店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13816737102","roleName":"店员","roleType":"2","shopId":"860000000000000204","shopName":"丽妍雅集Rubis SPA·瑞虹太阳宫店","staffId":"1317202550975614976","staffName":"管玉玲","phone":"13816737102","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·瑞虹太阳宫店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18217240512","roleName":"店员","roleType":"2","shopId":"860000000000000210","shopName":"丽妍雅集Rubis SPA·蟠龙新天地店","staffId":"1317202548211568640","staffName":"夏宇彤","phone":"18217240512","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·蟠龙新天地店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"17274584101","roleName":"店员","roleType":"2","shopId":"860000000000000202","shopName":"丽妍雅集Rubis SPA·光启城时尚购物中心店","staffId":"1317202544013070336","staffName":"李梦园","phone":"17274584101","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·光启城时尚购物中心店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13681625396","roleName":"运营","roleType":"3","shopId":"860000000000000205","shopName":"丽妍雅集Rubis SPA·长宁来福士广场店","staffId":"1317136364711694336","staffName":"本次活动-产品","phone":"13681625396","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"13901756477","roleName":"运营","roleType":"3","shopId":"860000000000000205","shopName":"丽妍雅集Rubis SPA·长宁来福士广场店","staffId":"1317103642895175680","staffName":"Danny","phone":"13901756477","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店"},{"brandName":"丽妍雅集","brandType":"1","mobile":"18580709927","roleName":"运营","roleType":"3","shopId":"860000000000000205","shopName":"丽妍雅集Rubis SPA·长宁来福士广场店","staffId":"1317102982866915328","staffName":"丽妍雅集运营","phone":"18580709927","companyName":"丽妍雅集","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店"},{"brandName":"GANO","brandType":"2","mobile":"17621400094","roleName":"运营","roleType":"3","shopId":"860000000000000106","shopName":"GANO HAIR·长宁来福士店","staffId":"1317102837655916544","staffName":"GANO运营","phone":"17621400094","companyName":"GANO","storeName":"GANO HAIR·长宁来福士店"}],"coupons":[{"claimTime":"2026-11-11 15:32","couponId":"1317916802545627136","couponName":"购卡满 5000","couponNo":"RXVA7VDDWDQY","couponPrice":"980","couponStatus":"2","couponType":"3","customerMobile":"15000626713","customerNickname":"12+","issueBrandType":"2","issueShopName":"GANO HAIR·北外滩来福士店","issueTime":"2026-11-11 15:31","issuerMobile":"15121161412","issuerNickname":"","issuerStaffName":"北外滩客服","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"","voidReason":"","voidTime":"","status":"2","price":"980","storeName":"GANO HAIR·北外滩来福士店","issuerPhone":"15121161412"},{"claimTime":"2026-11-11 13:27","couponId":"1317885444427362304","couponName":"购卡满 5000","couponNo":"SEBJYJUG5WJU","couponPrice":"980","couponStatus":"2","couponType":"3","customerMobile":"13918550531","customerNickname":"ʚNICOɞ","issueBrandType":"2","issueShopName":"GANO HAIR·北外滩来福士店","issueTime":"2026-11-11 13:27","issuerMobile":"15121161412","issuerNickname":"","issuerStaffName":"北外滩客服","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"","voidReason":"","voidTime":"","status":"2","price":"980","storeName":"GANO HAIR·北外滩来福士店","issuerPhone":"15121161412"},{"claimTime":"2026-11-10 16:49","couponId":"1317573928363945984","couponName":"购卡满 5000","couponNo":"6MTRTJEK3SCP","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"17621557896","customerNickname":"t","issueBrandType":"2","issueShopName":"GANO HAIR·长宁来福士店","issueTime":"2026-11-10 16:49","issuerMobile":"18726231810","issuerNickname":"","issuerStaffName":"长宁店：孙慧","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR·长宁来福士店","issuerPhone":"18726231810"},{"claimTime":"2026-11-10 16:30","couponId":"1317569219397873664","couponName":"丽妍雅集 V3–V5","couponNo":"FU38AWX8TR92","couponPrice":"218","couponStatus":"5","couponType":"1","customerMobile":"15026644597","customerNickname":"anne","issueBrandType":"1","issueShopName":"丽妍雅集Rubis SPA·长宁来福士广场店","issueTime":"2026-11-10 16:30","issuerMobile":"18580709927","issuerNickname":"微信用户","issuerStaffName":"丽妍雅集运营","projectName":"首席设计师洗剪吹或法式头皮减压","redeemBrandType":"2","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"218","storeName":"丽妍雅集Rubis SPA·长宁来福士广场店","issuerPhone":"18580709927"},{"claimTime":"2026-11-10 16:24","couponId":"1317567554213048320","couponName":"购卡满 5000","couponNo":"R74BZGVZ4EV7","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"18321280116","customerNickname":"","issueBrandType":"2","issueShopName":"GANO HAIR Salon·凯德虹口商业中心店","issueTime":"2026-11-10 16:24","issuerMobile":"16621577708","issuerNickname":"","issuerStaffName":"虹口前台","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR Salon·凯德虹口商业中心店","issuerPhone":"16621577708"},{"claimTime":"2026-11-10 15:58","couponId":"1317560923068755968","couponName":"购卡满 5000","couponNo":"BKBHZGZ626WR","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"17538493637","customerNickname":"微信用户","issueBrandType":"2","issueShopName":"GANO HAIR·凯德晶萃店","issueTime":"2026-11-10 15:57","issuerMobile":"18549922246","issuerNickname":"","issuerStaffName":"夏夏","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR·凯德晶萃店","issuerPhone":"18549922246"},{"claimTime":"2026-11-10 15:37","couponId":"1317555716842778624","couponName":"购卡满 5000","couponNo":"V568ERB4FSU3","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"18738207313","customerNickname":"","issueBrandType":"2","issueShopName":"GANO HAIR Salon·凯德虹口商业中心店","issueTime":"2026-11-10 15:37","issuerMobile":"16621577708","issuerNickname":"","issuerStaffName":"虹口前台","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR Salon·凯德虹口商业中心店","issuerPhone":"16621577708"},{"claimTime":"2026-11-10 14:25","couponId":"1317537562972319744","couponName":"购卡满 5000","couponNo":"UG3ENN7BEK4G","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"13877390991","customerNickname":"没","issueBrandType":"2","issueShopName":"GANO HAIR+奈造型设计·虹桥天地店","issueTime":"2026-11-10 14:24","issuerMobile":"15156723898","issuerNickname":"","issuerStaffName":"音音","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR+奈造型设计·虹桥天地店","issuerPhone":"15156723898"},{"claimTime":"2026-11-10 13:55","couponId":"1317529971412103168","couponName":"购卡满 5000","couponNo":"X6GUYBZP3UKJ","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"15121161412","customerNickname":"","issueBrandType":"2","issueShopName":"GANO HAIR·北外滩来福士店","issueTime":"2026-11-10 13:54","issuerMobile":"13611685176","issuerNickname":"","issuerStaffName":"北外滩康秀","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR·北外滩来福士店","issuerPhone":"13611685176"},{"claimTime":"2026-11-10 13:48","couponId":"1317528268558233600","couponName":"购卡满 5000","couponNo":"MX8QE863N75X","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"13262798348","customerNickname":"GANO 虹桥店客服经理","issueBrandType":"2","issueShopName":"GANO HAIR+奈造型设计·虹桥天地店","issueTime":"2026-11-10 13:48","issuerMobile":"15156723898","issuerNickname":"","issuerStaffName":"音音","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR+奈造型设计·虹桥天地店","issuerPhone":"15156723898"},{"claimTime":"2026-11-10 13:42","couponId":"1317526361366261760","couponName":"购卡满 5000","couponNo":"VMWECMRBYVY5","couponPrice":"980","couponStatus":"5","couponType":"3","customerMobile":"17706892372","customerNickname":"傈娜","issueBrandType":"2","issueShopName":"GANO HAIR·荟聚店","issueTime":"2026-11-10 13:40","issuerMobile":"15000051391","issuerNickname":"","issuerStaffName":"荟聚 胡斌","projectName":"紫镜嘭弾护理一次","redeemBrandType":"1","redeemMobile":"","redeemNickname":"","redeemShopName":"","redeemStaffName":"","redeemTime":"","voidOperatorName":"安珊珊","voidReason":"gano 门店测试，不是真实顾客产生","voidTime":"2026-11-11 09:28","status":"5","price":"980","storeName":"GANO HAIR·荟聚店","issuerPhone":"15000051391"}],"quotas":[{"claimedCount":"0","couponName":"丽妍雅集 V3–V5","couponType":"1","issueBrandName":"丽妍雅集","projectName":"首席设计师洗剪吹或法式头皮减压","redeemBrandName":"GANO","remain":"1000","totalLimit":"1000"},{"claimedCount":"0","couponName":"丽妍雅集 V6–V10","couponType":"2","issueBrandName":"丽妍雅集","projectName":"日本玫丽盼全球化护理一次","redeemBrandName":"GANO","remain":"1000","totalLimit":"1000"},{"claimedCount":"2","couponName":"购卡满 5000","couponType":"3","issueBrandName":"GANO","projectName":"紫镜嘭弾护理一次","redeemBrandName":"丽妍雅集","remain":"998","totalLimit":"1000"},{"claimedCount":"0","couponName":"购卡满 10000","couponType":"4","issueBrandName":"GANO","projectName":"紫镜嘭弾护理 + 归元暖腹体验","redeemBrandName":"丽妍雅集","remain":"1000","totalLimit":"1000"}]}
+</script>
 <script>
 (function () {
-  const API_BASE = "https://nrta-pfm.jiyong.vip";
   const DAY_CUTOFF_HOUR = 22;
   const TZ = "Asia/Shanghai";
+  /* 亮码/扫码：按运营提供的当日手工数；仅作用于「当日」卡（后续由 agent 更新） */
+  const FUNNEL_MANUAL = {
+    liyan: { light: 2, scan: 0 },
+    gano: { light: 10, scan: 3 },
+  };
 
   const $ = (id) => document.getElementById(id);
   const dayInput = $("day");
-  const toastEl = $("toast");
   const reportEl = $("report");
   const incompleteBanner = $("incompleteBanner");
   const captureMeta = $("captureMeta");
   const sourceMeta = $("sourceMeta");
-  const tokenInput = $("token");
-  const btnRefresh = $("btnRefresh");
-  const btnDemo = $("btnDemo");
 
   let state = {
     captureAt: null,
@@ -305,13 +319,6 @@
     coupons: [],
     quotas: null,
   };
-
-  function toast(msg) {
-    toastEl.textContent = msg;
-    toastEl.classList.add("show");
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => toastEl.classList.remove("show"), 2400);
-  }
 
   function pad(n) { return String(n).padStart(2, "0"); }
 
@@ -355,9 +362,19 @@
     return "other";
   }
 
+  /* 发券侧别：优先后台 brandType（1=丽妍 2=GANO），避免店名误判 */
+  function issueSideOf(c) {
+    const bt = String(c.issueBrandType ?? c.brandType ?? "");
+    if (bt === "1" || /丽妍/i.test(bt)) return "liyan";
+    if (bt === "2" || /GANO/i.test(bt)) return "gano";
+    return sideOfStore(issueStore(c));
+  }
+
   function isVoid(c) {
+    if (c.voidTime) return true;
     const st = String(c.status || c.state || c.couponStatus || "");
-    return /作废|void|cancel|revoked|invalid/i.test(st);
+    /* 后台码：5=作废；也兼容中文/英文态 */
+    return st === "5" || /作废|void|cancel|revoked|invalid/i.test(st);
   }
 
   const LOGO = {
@@ -367,9 +384,11 @@
   const BRAND = { liyan: "丽妍雅集", gano: "GANO HAIR" };
 
   function isRedeemed(c) {
+    if (isVoid(c)) return false;
     if (c.redeemTime || c.usedTime || c.verifyTime) return true;
     const st = String(c.status || c.state || c.couponStatus || "");
-    return /已核销|已使用|used|redeem/i.test(st) && !isVoid(c);
+    /* 后台码常见：3/4=已核销（以 redeemTime 为准；码表兜底） */
+    return st === "3" || st === "4" || /已核销|已使用|used|redeem/i.test(st);
   }
 
   function issueTime(c) {
@@ -385,7 +404,7 @@
   }
 
   function redeemStore(c) {
-    return c.redeemStoreName || c.usedStoreName || c.verifyStoreName || c.redeemStore || "—";
+    return c.redeemStoreName || c.redeemShopName || c.usedStoreName || c.verifyStoreName || c.redeemStore || "—";
   }
 
   function priceOf(c) {
@@ -414,41 +433,30 @@
       .slice(0, limit);
   }
 
-  function analyze(day) {
-    const staff = state.staff || [];
-    const coupons = (state.coupons || []).filter((c) => !isVoid(c));
+  function sideBucket() {
+    return {
+      lightCount: 0, scanCount: 0,
+      issueCount: 0, issueAmount: 0,
+      redeemedOwnCount: 0, redeemedOwnAmount: 0,
+      redeemCount: 0, redeemAmount: 0,
+      guestCount: 0, guestAmount: 0,
+      activeStaff: new Set(),
+      issueStores: {},
+      redeemStores: {},
+      products: {},
+    };
+  }
 
-    const covered = { liyan: 0, gano: 0, other: 0 };
-    staff.forEach((s) => {
-      const side = sideOfCompany(s.companyName || s.company || s.orgName) || sideOfStore(s.storeName || s.shopName);
-      covered[side] = (covered[side] || 0) + 1;
-    });
+  function bumpStore(bag, store, amount) {
+    if (!bag[store]) bag[store] = { count: 0, amount: 0 };
+    bag[store].count += 1;
+    bag[store].amount += amount;
+  }
 
-    const dayCoupons = coupons.filter((c) => dayKey(issueTime(c)) === day);
-    const dayRedeems = coupons.filter((c) => isRedeemed(c) && dayKey(redeemTime(c)) === day);
-
-    function sideBucket() {
-      return {
-        issueCount: 0, issueAmount: 0,
-        redeemCount: 0, redeemAmount: 0,
-        guestCount: 0, guestAmount: 0,
-        activeStaff: new Set(),
-        issueStores: {},
-        redeemStores: {},
-        products: {},
-      };
-    }
-    const sides = { liyan: sideBucket(), gano: sideBucket(), other: sideBucket() };
-
-    function bumpStore(bag, store, amount) {
-      if (!bag[store]) bag[store] = { count: 0, amount: 0 };
-      bag[store].count += 1;
-      bag[store].amount += amount;
-    }
-
-    dayCoupons.forEach((c) => {
+  function accumulateIssues(sides, coupons) {
+    coupons.forEach((c) => {
       const store = issueStore(c);
-      const side = sideOfStore(store);
+      const side = issueSideOf(c);
       const b = sides[side] || sides.other;
       const price = priceOf(c);
       b.issueCount += 1;
@@ -460,12 +468,13 @@
       if (!b.products[pname]) b.products[pname] = { issue: 0, redeem: 0, price };
       b.products[pname].issue += 1;
     });
+  }
 
-    dayRedeems.forEach((c) => {
+  function accumulateRedeems(sides, coupons) {
+    coupons.forEach((c) => {
       const store = redeemStore(c);
-      const issuedAt = issueStore(c);
       const redeemSide = sideOfStore(store);
-      const issueSide = sideOfStore(issuedAt);
+      const issueSide = issueSideOf(c);
       const side = redeemSide !== "other" ? redeemSide : issueSide;
       const b = sides[side] || sides.other;
       const price = priceOf(c);
@@ -475,6 +484,10 @@
       const pname = c.couponName || c.name || c.productName || "未命名券";
       if (!b.products[pname]) b.products[pname] = { issue: 0, redeem: 0, price };
       b.products[pname].redeem += 1;
+      /* 被核销 = 本侧发出且已核销（按核销日计入） */
+      const own = sides[issueSide] || sides.other;
+      own.redeemedOwnCount += 1;
+      own.redeemedOwnAmount += price;
       /* 获客 = 对方发出、在本侧门店核销（跨品牌到店新客） */
       if (redeemSide === "liyan" && issueSide === "gano") {
         sides.liyan.guestCount += 1;
@@ -484,107 +497,114 @@
         sides.gano.guestAmount += price;
       }
     });
-
-    const coldStaff = staff.filter((s) => {
-      const phone = String(s.phone || s.mobile || "");
-      return phone && ![...sides.liyan.activeStaff, ...sides.gano.activeStaff].includes(phone);
-    }).length;
-
-    return { covered, sides, dayCoupons, dayRedeems, coldStaff, staffTotal: staff.length };
   }
 
-  function buildInsights(day, a) {
-    const L = a.sides.liyan;
-    const G = a.sides.gano;
-    const out = [];
-
-    const lRate = L.issueCount ? L.redeemCount / L.issueCount : 0;
-    const gRate = G.issueCount ? G.redeemCount / G.issueCount : 0;
-
-    if (L.issueCount + G.issueCount === 0) {
-      out.push({ tag: "冷启动", text: `统计日 ${day} 两侧均无有效发券（已排除作废）。请检查店员是否亮码、顾客是否领取，以及是否大量作废冲减。` });
-    } else {
-      if (L.issueCount >= G.issueCount * 1.4) {
-        out.push({ tag: "供给倾斜", text: `丽妍发券 ${L.issueCount} 张，显著高于 GANO ${G.issueCount} 张。若目标是双边获客，需拉动 GANO 侧亮码/发券动作。` });
-      } else if (G.issueCount >= L.issueCount * 1.4) {
-        out.push({ tag: "供给倾斜", text: `GANO 发券 ${G.issueCount} 张，高于丽妍 ${L.issueCount} 张。关注丽妍顾问出勤与话术执行。` });
-      }
-
-      if (L.issueCount && lRate + 0.15 < gRate) {
-        out.push({ tag: "转化落差", text: `丽妍当日核销率 ${pct(L.redeemCount, L.issueCount)}，低于 GANO ${pct(G.redeemCount, G.issueCount)}。优先排查丽妍发出券的到店引导与对面核销承接。` });
-      } else if (G.issueCount && gRate + 0.15 < lRate) {
-        out.push({ tag: "转化落差", text: `GANO 当日核销率 ${pct(G.redeemCount, G.issueCount)}，低于丽妍 ${pct(L.redeemCount, L.issueCount)}。检查高客单券（如购卡礼）是否发得出、核得掉。` });
-      }
-
-      const topL = rankMap(L.issueStores, 1)[0];
-      const topG = rankMap(G.issueStores, 1)[0];
-      if (topL && L.issueCount >= 3 && topL[1].count / L.issueCount >= 0.5) {
-        out.push({ tag: "集中度", text: `丽妍发券半数以上来自「${topL[0]}」（${topL[1].count}/${L.issueCount}）。建议复制该店话术到冷门店，降低单店依赖。` });
-      }
-      if (topG && G.issueCount >= 3 && topG[1].count / G.issueCount >= 0.5) {
-        out.push({ tag: "集中度", text: `GANO 发券半数以上来自「${topG[0]}」（${topG[1].count}/${G.issueCount}）。可组织标杆店带教。` });
-      }
-    }
-
-    const coveredActive = (L.activeStaff.size + G.activeStaff.size);
-    if (a.staffTotal > 0 && coveredActive / a.staffTotal < 0.25 && (L.issueCount + G.issueCount) > 0) {
-      out.push({ tag: "覆盖空转", text: `已授权 ${a.staffTotal} 人，当日有发券行为约 ${coveredActive} 人（${pct(coveredActive, a.staffTotal)}）。授权未转化为动作，建议按店催发与抽查亮码。` });
-    }
-
-    const hi = [...Object.entries(L.products), ...Object.entries(G.products)]
-      .filter(([, v]) => v.price >= 500);
-    if (hi.length) {
-      const issue = hi.reduce((s, [, v]) => s + v.issue, 0);
-      const redeem = hi.reduce((s, [, v]) => s + v.redeem, 0);
-      out.push({ tag: "高客单", text: `高客单券（≥¥500）当日发券 ${issue}、核销 ${redeem}，核销率 ${pct(redeem, issue)}。若发而不核，活动账面价值会被高估。` });
-    }
-
-    if (!out.length) {
-      out.push({ tag: "稳态", text: "两侧发券与核销暂未出现显著失衡；继续盯门店排行尾部与作废率即可。" });
-    }
-    return out.slice(0, 4);
+  function applyManualFunnel(sides, day) {
+    const today = nowInShanghai().date;
+    if (day !== today) return;
+    ["liyan", "gano"].forEach((k) => {
+      const f = FUNNEL_MANUAL[k];
+      if (!f) return;
+      sides[k].lightCount = f.light;
+      sides[k].scanCount = f.scan;
+    });
   }
 
-  function renderSideCard(cls, side, covered) {
-    const rate = pct(side.redeemCount, side.issueCount);
-    const issueMax = Math.max(side.issueCount, 1);
-    const redeemMax = Math.max(side.issueCount, side.redeemCount, 1);
-    const guestHint = cls === "liyan"
-      ? "对方发券 · 到丽妍核销"
-      : "对方发券 · 到 GANO 核销";
+  function analyze(day) {
+    const staff = state.staff || [];
+    const raw = state.coupons || [];
+    const voided = raw.filter((c) => isVoid(c));
+    /* 当日/累计发券·核销·获客一律先剔除作废（voidTime / status=5 / 作废文案） */
+    const coupons = raw.filter((c) => !isVoid(c));
+
+    const covered = { liyan: 0, gano: 0, other: 0 };
+    staff.forEach((s) => {
+      const side = sideOfCompany(s.companyName || s.company || s.orgName) || sideOfStore(s.storeName || s.shopName);
+      covered[side] = (covered[side] || 0) + 1;
+    });
+
+    const dayRaw = raw.filter((c) => dayKey(issueTime(c)) === day);
+    const dayVoided = dayRaw.filter((c) => isVoid(c));
+    const dayCoupons = coupons.filter((c) => dayKey(issueTime(c)) === day);
+    const dayRedeems = coupons.filter((c) => isRedeemed(c) && dayKey(redeemTime(c)) === day);
+    const allRedeems = coupons.filter((c) => isRedeemed(c));
+
+    const sides = { liyan: sideBucket(), gano: sideBucket(), other: sideBucket() };
+    const totals = { liyan: sideBucket(), gano: sideBucket(), other: sideBucket() };
+
+    accumulateIssues(sides, dayCoupons);
+    accumulateRedeems(sides, dayRedeems);
+    accumulateIssues(totals, coupons);
+    accumulateRedeems(totals, allRedeems);
+    applyManualFunnel(sides, day);
+
+    return {
+      covered,
+      sides,
+      totals,
+      dayCoupons,
+      dayRedeems,
+      staffTotal: staff.length,
+      voidTotal: voided.length,
+      dayVoided: dayVoided.length,
+      dayRawCount: dayRaw.length,
+    };
+  }
+
+  function renderTotalCard(cls, side) {
+    const redeemedRate = pct(side.redeemedOwnCount, side.issueCount);
+    return `
+      <div class="card ${cls}-card total-card">
+        <div class="brand-head">
+          <img class="logo xl ${cls}" src="${LOGO[cls]}" alt="${BRAND[cls]}" />
+        </div>
+        <div class="guest-hero ${cls}">
+          <div class="lab">获客</div>
+          <div class="n">${side.guestCount}</div>
+        </div>
+        <div class="kpi-groups">
+          <div class="kpi-group g2">
+            <div class="kpi ${cls}"><div class="n">${side.issueCount}</div><div class="l">发券</div></div>
+            <div class="kpi ${cls}"><div class="n">${side.redeemedOwnCount}</div><div class="l">被核销</div></div>
+          </div>
+          <div class="kpi-group g1">
+            <div class="kpi ${cls}"><div class="n">${side.redeemCount}</div><div class="l">核销</div></div>
+          </div>
+          <div class="kpi-group g3">
+            <div class="kpi ${cls}"><div class="n sm">${redeemedRate}</div><div class="l">被核销率</div></div>
+            <div class="kpi ${cls}"><div class="n">${side.activeStaff.size}</div><div class="l">发券员工</div></div>
+            <div class="kpi ${cls}"><div class="n sm">${yen(side.issueAmount)}</div><div class="l">发券金额</div></div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderSideCard(cls, side) {
+    const redeemedRate = pct(side.redeemedOwnCount, side.issueCount);
     return `
       <div class="card ${cls}-card">
         <div class="brand-head">
-          <div class="titles">
-            <div class="brand-name ${cls}">${BRAND[cls]}</div>
-            <div class="brand-sub">当日看板</div>
-          </div>
           <img class="logo lg ${cls}" src="${LOGO[cls]}" alt="${BRAND[cls]}" />
         </div>
         <div class="guest-hero ${cls}">
-          <div>
-            <div class="lab">获客</div>
-            <div class="hint">${guestHint}</div>
-          </div>
+          <div class="lab">获客</div>
           <div class="n">${side.guestCount}</div>
         </div>
-        <div class="kpi-row">
-          <div class="kpi ${cls}"><div class="n">${covered}</div><div class="l">覆盖店员</div></div>
-          <div class="kpi ${cls}"><div class="n">${side.issueCount}</div><div class="l">当日发券</div></div>
-          <div class="kpi ${cls}"><div class="n">${side.redeemCount}</div><div class="l">当日核销</div></div>
-        </div>
-        <div class="kpi-row" style="margin-top:8px">
-          <div class="kpi ${cls}"><div class="n" style="font-size:16px">${yen(side.issueAmount)}</div><div class="l">发券金额</div></div>
-          <div class="kpi ${cls}"><div class="n" style="font-size:16px">${yen(side.redeemAmount)}</div><div class="l">核销金额</div></div>
-          <div class="kpi ${cls}"><div class="n" style="font-size:16px">${rate}</div><div class="l">核销率</div></div>
-        </div>
-        <div class="meter">
-          <div class="lab"><span>发券进度（相对本侧当日发券）</span><span>${side.issueCount}</span></div>
-          <div class="bar ${cls}"><i style="width:${Math.min(100, (side.issueCount / issueMax) * 100)}%"></i></div>
-        </div>
-        <div class="meter">
-          <div class="lab"><span>核销相对发券</span><span>${side.redeemCount}/${side.issueCount || 0}</span></div>
-          <div class="bar ${cls}"><i style="width:${Math.min(100, (side.redeemCount / redeemMax) * 100)}%"></i></div>
+        <div class="kpi-groups">
+          <div class="kpi-group g4">
+            <div class="kpi ${cls}"><div class="n">${side.lightCount}</div><div class="l">亮码</div></div>
+            <div class="kpi ${cls}"><div class="n">${side.scanCount}</div><div class="l">扫码</div></div>
+            <div class="kpi ${cls}"><div class="n">${side.issueCount}</div><div class="l">发券</div></div>
+            <div class="kpi ${cls}"><div class="n">${side.redeemedOwnCount}</div><div class="l">被核销</div></div>
+          </div>
+          <div class="kpi-group g1">
+            <div class="kpi ${cls}"><div class="n">${side.redeemCount}</div><div class="l">核销</div></div>
+          </div>
+          <div class="kpi-group g3">
+            <div class="kpi ${cls}"><div class="n sm">${redeemedRate}</div><div class="l">被核销率</div></div>
+            <div class="kpi ${cls}"><div class="n">${side.activeStaff.size}</div><div class="l">发券员工</div></div>
+            <div class="kpi ${cls}"><div class="n sm">${yen(side.issueAmount)}</div><div class="l">发券金额</div></div>
+          </div>
         </div>
       </div>`;
   }
@@ -621,227 +641,110 @@
     sourceMeta.textContent = `数据来源：${state.source}`;
 
     const a = analyze(day);
-    const insights = buildInsights(day, a);
     const L = a.sides.liyan;
     const G = a.sides.gano;
+    const TL = a.totals.liyan;
+    const TG = a.totals.gano;
 
-    const cmpIssue = L.issueCount === G.issueCount ? "持平" : (L.issueCount > G.issueCount ? "丽妍发券领先" : "GANO 发券领先");
-    const cmpRedeem = L.redeemCount === G.redeemCount ? "持平" : (L.redeemCount > G.redeemCount ? "丽妍核销领先" : "GANO 核销领先");
-    const cmpGuest = L.guestCount === G.guestCount ? "获客持平" : (L.guestCount > G.guestCount ? "丽妍获客领先" : "GANO 获客领先");
+    const funnelWarns = [];
+    if (L.lightCount > 0 && L.issueCount > L.lightCount) {
+      funnelWarns.push(`丽妍：亮码 ${L.lightCount} &lt; 发券 ${L.issueCount}（漏斗异常，请核对亮码手工数或发券归属）`);
+    }
+    if (G.lightCount > 0 && G.issueCount > G.lightCount) {
+      funnelWarns.push(`GANO：亮码 ${G.lightCount} &lt; 发券 ${G.issueCount}（漏斗异常，请核对亮码手工数或发券归属）`);
+    }
 
     reportEl.innerHTML = `
-      <div class="grid-2">
-        ${renderSideCard("liyan", L, a.covered.liyan)}
-        ${renderSideCard("gano", G, a.covered.gano)}
-      </div>
+      <section class="band band-total">
+        <div class="section-head">
+          <h2 class="eyebrow">活动累计</h2>
+          <div class="hint">不随统计日切换 · 已排除作废 ${a.voidTotal} 张</div>
+        </div>
+        <div class="grid-2">
+          ${renderTotalCard("liyan", TL)}
+          ${renderTotalCard("gano", TG)}
+        </div>
+      </section>
 
-      <div class="card" style="margin-top:14px">
-        <h2>双边对照</h2>
-        <div class="compare">
-          <div class="side liyan">
-            <div class="name-row">
-              <img class="logo liyan" src="${LOGO.liyan}" alt="丽妍雅集" />
-              <div class="name">丽妍雅集</div>
-            </div>
-            <div class="guest-line">获客 ${L.guestCount}</div>
-            <div>发券 ${L.issueCount} · ${yen(L.issueAmount)}</div>
-            <div>核销 ${L.redeemCount} · ${yen(L.redeemAmount)}</div>
-            <div>核销率 ${pct(L.redeemCount, L.issueCount)}</div>
-            <div>活跃发券店员 ${L.activeStaff.size}</div>
-          </div>
-          <div class="vs">VS</div>
-          <div class="side gano">
-            <div class="name-row">
-              <img class="logo gano" src="${LOGO.gano}" alt="GANO HAIR" />
-              <div class="name">GANO HAIR</div>
-            </div>
-            <div class="guest-line">获客 ${G.guestCount}</div>
-            <div>发券 ${G.issueCount} · ${yen(G.issueAmount)}</div>
-            <div>核销 ${G.redeemCount} · ${yen(G.redeemAmount)}</div>
-            <div>核销率 ${pct(G.redeemCount, G.issueCount)}</div>
-            <div>活跃发券店员 ${G.activeStaff.size}</div>
-          </div>
+      <section class="band band-day">
+        <div class="section-head">
+          <h2 class="eyebrow"><span class="chip">当日 · ${day}</span></h2>
+          <div class="hint">领取日原始 ${a.dayRawCount} · 作废已剔 ${a.dayVoided} · 有效发券 ${a.dayCoupons.length} · 授权 ${a.staffTotal}</div>
         </div>
-        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
-          结论速览：<strong style="color:var(--ink)">${cmpGuest}</strong>；
-          <strong style="color:var(--ink)">${cmpIssue}</strong>；
-          <strong style="color:var(--ink)">${cmpRedeem}</strong>。
-          授权合计 ${a.staffTotal} 人（丽妍 ${a.covered.liyan} / GANO ${a.covered.gano}）。
+        ${funnelWarns.length ? `<div class="funnel-warn">${funnelWarns.join("<br>")}</div>` : ""}
+        <div class="grid-2">
+          ${renderSideCard("liyan", L)}
+          ${renderSideCard("gano", G)}
         </div>
-      </div>
 
-      <div class="grid-2" style="margin-top:14px">
-        ${renderRankTable("丽妍 · 发券门店 Top", rankMap(L.issueStores, 5), "liyan")}
-        ${renderRankTable("GANO · 发券门店 Top", rankMap(G.issueStores, 5), "gano")}
-        ${renderRankTable("丽妍 · 核销门店 Top", rankMap(L.redeemStores, 5), "liyan")}
-        ${renderRankTable("GANO · 核销门店 Top", rankMap(G.redeemStores, 5), "gano")}
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h2>运营洞察</h2>
-        <div class="insights">
-          ${insights.map((x) => `<div class="insight"><span class="tag">${x.tag}</span>${x.text}</div>`).join("")}
+        <div class="section-head" style="margin-top:18px">
+          <h2 class="eyebrow">当日门店排行</h2>
         </div>
-        <div class="foot">
-          口径：获客=对方发出且在本侧门店当日核销成功的张数（跨品牌到店新客）；发券=领取成功且未作废（按领取日）；核销=已核销（按核销日）；金额=券价合计；覆盖店员=授权已通过。
-          作废券（含作废/void/cancel/REVOKED/INVALID）不计入发券/核销/获客。门店侧别按名称识别「丽妍/Rubis」与「GANO」。
+        <div class="grid-2">
+          ${renderRankTable("丽妍 · 发券门店 Top", rankMap(L.issueStores, 5), "liyan")}
+          ${renderRankTable("GANO · 发券门店 Top", rankMap(G.issueStores, 5), "gano")}
+          ${renderRankTable("丽妍 · 核销门店 Top", rankMap(L.redeemStores, 5), "liyan")}
+          ${renderRankTable("GANO · 核销门店 Top", rankMap(G.redeemStores, 5), "gano")}
         </div>
-      </div>
+      </section>
     `;
   }
 
-  function demoPayload() {
-    /* 基于后台可见结构的示意样本，便于无 Token 时演示 */
-    const staff = [
-      { phone: "13651785726", company: "丽妍雅集", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店" },
-      { phone: "13761181173", company: "丽妍雅集", storeName: "丽妍雅集Rubis SPA·宝杨宝龙广场店" },
-      { phone: "18580709927", company: "丽妍雅集", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店" },
-      { phone: "15121161412", company: "GANO", storeName: "GANO HAIR·北外滩来福士店" },
-      { phone: "13611685176", company: "GANO", storeName: "GANO HAIR·北外滩来福士店" },
-      { phone: "18549922246", company: "GANO", storeName: "GANO HAIR·凯德晶萃店" },
-      { phone: "18726231810", company: "GANO", storeName: "GANO HAIR·长宁来福士店" },
-      { phone: "15000051391", company: "GANO", storeName: "GANO HAIR·荟聚店" },
-    ];
-    const today = nowInShanghai().date;
-    const y = new Date(today + "T12:00:00+08:00");
-    y.setDate(y.getDate() - 1);
-    const yday = y.toISOString().slice(0, 10);
-
-    const coupons = [
-      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "待使用", storeName: "GANO HAIR·北外滩来福士店", issuerPhone: "15121161412", claimTime: today + " 13:27:00" },
-      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "已核销", storeName: "GANO HAIR·凯德晶萃店", issuerPhone: "18549922246", claimTime: today + " 11:10:00", redeemStoreName: "丽妍雅集Rubis SPA·长宁来福士广场店", redeemTime: today + " 15:40:00" },
-      { couponName: "丽妍雅集 V3–V5|首席设计师洗剪吹或法式头皮减压", price: 218, status: "已核销", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店", issuerPhone: "18580709927", claimTime: today + " 10:05:00", redeemStoreName: "GANO HAIR·凯德晶萃店", redeemTime: today + " 16:20:00" },
-      { couponName: "丽妍雅集 V3–V5|首席设计师洗剪吹或法式头皮减压", price: 218, status: "待使用", storeName: "丽妍雅集Rubis SPA·宝杨宝龙广场店", issuerPhone: "13761181173", claimTime: today + " 12:18:00" },
-      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "已核销", storeName: "GANO HAIR·荟聚店", issuerPhone: "15000051391", claimTime: yday + " 14:00:00", redeemStoreName: "丽妍雅集Rubis SPA·长宁来福士广场店", redeemTime: today + " 11:30:00" },
-      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "已作废", storeName: "GANO HAIR·长宁来福士店", issuerPhone: "18726231810", claimTime: yday + " 16:49:00" },
-      { couponName: "丽妍雅集 V6–V10|日本玫丽盼全球化护理", price: 480, status: "已核销", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店", issuerPhone: "13651785726", claimTime: today + " 09:40:00", redeemStoreName: "GANO HAIR·北外滩来福士店", redeemTime: today + " 14:10:00" },
-      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "待使用", storeName: "GANO HAIR·凯德晶萃店", issuerPhone: "18549922246", claimTime: today + " 17:02:00" },
-    ];
-
-    /* expand covered count toward observed ~60 without listing all */
-    for (let i = 0; i < 26; i++) staff.push({ phone: "1380000" + pad(i), company: "丽妍雅集", storeName: "丽妍雅集·示意店" + (i % 5) });
-    for (let i = 0; i < 26; i++) staff.push({ phone: "1390000" + pad(i), company: "GANO", storeName: "GANO HAIR·示意店" + (i % 6) });
-
+  /* DATA UPDATE PROTOCOL（以后更新必须遵守）
+   * 1. 只能写入后台真数：staff/page + coupon/issued + coupon/quotas
+   * 2. 覆盖 data/alliance-daily-snapshot.json，再运行 node _patch-snapshot-boot.mjs 同步 #live-snapshot
+   * 3. 禁止虚构券行 / 禁止用「演示数据」冒充日结
+   * 4. 更新后自检：作废+有效=总张数；当日有效侧别与 quotas.claimed 对齐
+   * 5. source 必须含「后台已核对快照」字样
+   */
+  function loadEmbeddedSnapshot() {
+    const el = document.getElementById("live-snapshot");
+    if (!el || !el.textContent.trim()) throw new Error("缺少 #live-snapshot 真数快照");
+    const s = JSON.parse(el.textContent);
+    if (!s || !Array.isArray(s.coupons)) throw new Error("快照无 coupons");
+    if (/^演示数据|结构对齐后台/.test(s.source || "")) throw new Error("拒绝演示数据快照");
     return {
-      staff,
-      coupons,
-      quotas: { total: 4000, issued: 1, remain: 3999 },
-      source: "演示数据（结构对齐后台券/员工字段）",
+      staff: s.staff || [],
+      coupons: s.coupons || [],
+      quotas: s.quotas,
+      source: s.source || ("后台已核对快照 · " + (s.capturedAt || "")),
+      captureAt: s.capturedAt || null,
     };
   }
 
-  function applyData({ staff, coupons, quotas, source }) {
+  function applyData({ staff, coupons, quotas, source, captureAt }) {
+    if (/^演示数据|结构对齐后台/.test(String(source || ""))) {
+      throw new Error("拒绝写入演示数据");
+    }
     state.staff = staff || [];
     state.coupons = coupons || [];
     state.quotas = quotas;
     state.source = source || "—";
-    state.captureAt = nowInShanghai().label;
+    state.captureAt = captureAt || nowInShanghai().label;
     try {
       localStorage.setItem("allianceDailyReport.cache", JSON.stringify({
-        at: state.captureAt, source: state.source, staff: state.staff, coupons: state.coupons, quotas: state.quotas,
+        ver: 5,
+        at: state.captureAt,
+        source: state.source,
+        staff: state.staff,
+        coupons: state.coupons,
+        quotas: state.quotas,
       }));
     } catch (e) {}
     render();
   }
 
-  async function apiGet(path, token) {
-    const headers = { Accept: "application/json" };
-    if (token) {
-      headers["Admin-Token"] = token;
-      headers["X-Token"] = token;
-      headers["token"] = token;
-    }
-    const res = await fetch(API_BASE + path, { credentials: "include", headers });
-    const json = await res.json();
-    if (json && (json.ret === "TokenExpired" || /登录失效/.test(json.msg || ""))) {
-      throw new Error("登录失效，请更新 Admin-Token");
-    }
-    if (json && json.success === "0" && json.msg) throw new Error(json.msg);
-    return json;
-  }
-
-  function pickList(json) {
-    const d = json && json.data;
-    if (!d) return { total: 0, list: [] };
-    if (Array.isArray(d)) return { total: d.length, list: d };
-    return { total: d.total || d.count || 0, list: d.list || d.records || d.rows || [] };
-  }
-
-  async function fetchAllIssued(token) {
-    const first = await apiGet("/api2/rts/base/alliance/coupon/issued?page=1&size=100", token);
-    const { total, list } = pickList(first);
-    let all = list.slice();
-    const pages = Math.max(1, Math.ceil((total || list.length) / 100));
-    for (let p = 2; p <= Math.min(pages, 30); p++) {
-      const j = await apiGet(`/api2/rts/base/alliance/coupon/issued?page=${p}&size=100`, token);
-      all = all.concat(pickList(j).list);
-    }
-    return all;
-  }
-
-  async function fetchAllStaff(token) {
-    const first = await apiGet("/api2/rts/base/alliance/staff/page?page=1&size=100", token);
-    const { total, list } = pickList(first);
-    let all = list.slice();
-    const pages = Math.max(1, Math.ceil((total || list.length) / 100));
-    for (let p = 2; p <= Math.min(pages, 20); p++) {
-      const j = await apiGet(`/api2/rts/base/alliance/staff/page?page=${p}&size=100`, token);
-      all = all.concat(pickList(j).list);
-    }
-    return all;
-  }
-
-  async function refreshFromApi() {
-    const token = (tokenInput.value || localStorage.getItem("allianceDailyReport.token") || "").trim();
-    if (token) localStorage.setItem("allianceDailyReport.token", token);
-    btnRefresh.disabled = true;
-    try {
-      const [staff, coupons, quotas] = await Promise.all([
-        fetchAllStaff(token),
-        fetchAllIssued(token),
-        apiGet("/api2/rts/base/alliance/coupon/quotas", token).catch(() => null),
-      ]);
-      applyData({
-        staff,
-        coupons,
-        quotas: quotas && quotas.data,
-        source: `后台接口实时拉取（${API_BASE}）`,
-      });
-      toast("数据已更新");
-    } catch (e) {
-      console.error(e);
-      toast("更新失败：" + (e.message || e) + " · 已保留当前数据");
-    } finally {
-      btnRefresh.disabled = false;
-    }
-  }
-
-  function loadDemo() {
-    const d = demoPayload();
-    applyData(d);
-    toast("已载入演示数据");
-  }
-
   function boot() {
     const now = nowInShanghai();
     dayInput.value = now.date;
-    tokenInput.value = localStorage.getItem("allianceDailyReport.token") || "";
+    /* 始终以嵌入真数快照为准，避免 localStorage 里残留演示/旧错数覆盖 */
     try {
-      const cache = JSON.parse(localStorage.getItem("allianceDailyReport.cache") || "null");
-      if (cache && cache.coupons) {
-        state.captureAt = cache.at;
-        applyData(cache);
-      } else {
-        loadDemo();
-      }
-    } catch (e) {
-      loadDemo();
-    }
+      localStorage.removeItem("allianceDailyReport.cache");
+    } catch (e) {}
+    applyData(loadEmbeddedSnapshot());
   }
 
   dayInput.addEventListener("change", render);
-  btnRefresh.addEventListener("click", refreshFromApi);
-  btnDemo.addEventListener("click", loadDemo);
   boot();
 })();
 </script>
