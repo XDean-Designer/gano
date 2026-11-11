@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>剑琅美遇 · 联盟活动日报</title>
+<style>
+  @font-face{
+    font-family:"Noto Sans SC";
+    src:url("./fonts/NotoSansSC-VF.ttf") format("truetype");
+    font-weight:100 900;
+    font-style:normal;
+    font-display:swap;
+  }
+  :root{
+    --ink:#1a1a1a;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --page:#f3f4f6;
+    --card:#ffffff;
+    --liyan:#C62828;
+    --liyan-soft:#FDECEC;
+    --liyan-line:#F5C2C2;
+    --gano:#1565C0;
+    --gano-soft:#E8F1FB;
+    --gano-line:#B6D0F0;
+    --warn-bg:#FFF8E7;
+    --warn-bd:#E6C35C;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:var(--page);
+    padding:24px 16px 48px;
+  }
+  .desk{max-width:1080px;margin:0 auto}
+  .sheet{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .brand-bar{
+    display:flex;height:4px;
+  }
+  .brand-bar i{flex:1;display:block}
+  .brand-bar .liyan{background:var(--liyan)}
+  .brand-bar .gano{background:var(--gano)}
+  .topbar{
+    display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;
+    justify-content:space-between;
+    padding:24px 28px 18px;
+    border-bottom:1px solid var(--line);
+    background:#fff;
+  }
+  .brand-block h1{
+    margin:0;font-size:22px;letter-spacing:.02em;font-weight:700;color:var(--ink);
+  }
+  .brand-block .sub{
+    margin-top:6px;font-size:13px;color:var(--muted);line-height:1.5;
+  }
+  .legend{
+    display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;align-items:center;
+  }
+  .legend span{
+    display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;
+  }
+  .legend i.swatch{
+    width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;
+  }
+  .legend .liyan{color:var(--liyan)}
+  .legend .liyan i.swatch{background:var(--liyan)}
+  .legend .gano{color:var(--gano)}
+  .legend .gano i.swatch{background:var(--gano)}
+  .logo{
+    display:block;object-fit:contain;object-position:left center;
+  }
+  .logo.liyan{height:22px;width:auto}
+  .logo.gano{height:18px;width:auto}
+  .logo.lg.liyan{height:28px}
+  .logo.lg.gano{height:24px}
+  .brand-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-bottom:14px;
+  }
+  .brand-head .titles{min-width:0}
+  .brand-head .brand-name{
+    margin:0;font-size:20px;font-weight:800;letter-spacing:.02em;line-height:1.2;
+  }
+  .brand-head .brand-name.liyan{color:var(--liyan)}
+  .brand-head .brand-name.gano{color:var(--gano)}
+  .brand-head .brand-sub{
+    margin-top:2px;font-size:12px;color:var(--muted);font-weight:500;
+  }
+  .guest-hero{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    margin-bottom:12px;padding:12px 14px;border-radius:6px;border:1px solid var(--line);
+  }
+  .guest-hero.liyan{background:var(--liyan-soft);border-color:var(--liyan-line)}
+  .guest-hero.gano{background:var(--gano-soft);border-color:var(--gano-line)}
+  .guest-hero .lab{font-size:13px;font-weight:700}
+  .guest-hero.liyan .lab{color:var(--liyan)}
+  .guest-hero.gano .lab{color:var(--gano)}
+  .guest-hero .n{
+    font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;
+  }
+  .guest-hero.liyan .n{color:var(--liyan)}
+  .guest-hero.gano .n{color:var(--gano)}
+  .guest-hero .hint{font-size:11px;color:var(--muted);margin-top:4px}
+  .controls{display:flex;flex-direction:column;gap:8px;align-items:flex-end;min-width:240px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  label.field{font-size:12px;color:var(--muted)}
+  input[type="date"], input[type="password"], input[type="text"]{
+    height:34px;border:1px solid #d1d5db;border-radius:6px;
+    background:#fff;padding:0 10px;font:inherit;color:var(--ink);
+  }
+  .btn{
+    appearance:none;border:1px solid #111827;cursor:pointer;font:inherit;
+    height:36px;padding:0 16px;border-radius:6px;
+    background:#111827;color:#fff;font-weight:600;font-size:13px;
+  }
+  .btn:active{opacity:.9}
+  .btn:disabled{opacity:.55;cursor:wait}
+  .btn.ghost{
+    background:#fff;color:var(--ink);border:1px solid #d1d5db;
+  }
+  .meta-line{
+    font-size:12px;color:var(--muted);text-align:right;line-height:1.45;
+  }
+  .meta-line strong{color:var(--ink);font-weight:600}
+  .warn{
+    margin:16px 28px 0;
+    background:var(--warn-bg);border:1px solid var(--warn-bd);
+    border-radius:6px;padding:10px 14px;font-size:13px;line-height:1.5;
+  }
+  .body{padding:18px 28px 28px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:860px){.grid-2{grid-template-columns:1fr}}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px;
+  }
+  .card.liyan-card{border-top:3px solid var(--liyan)}
+  .card.gano-card{border-top:3px solid var(--gano)}
+  .card h2{
+    margin:0 0 12px;font-size:14px;letter-spacing:.02em;font-weight:700;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+  .side .name-row{
+    display:flex;align-items:center;gap:10px;margin-bottom:10px;
+  }
+  .side .name{
+    font-size:16px;font-weight:800;letter-spacing:.02em;
+  }
+  .pill{
+    font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;
+    border:1px solid currentColor;
+  }
+  .pill.liyan{color:var(--liyan);background:var(--liyan-soft)}
+  .pill.gano{color:var(--gano);background:var(--gano-soft)}
+  .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .kpi{
+    background:#f9fafb;border:1px solid var(--line);border-radius:6px;
+    padding:12px 10px;text-align:center;
+  }
+  .kpi .n{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .kpi.liyan .n{color:var(--liyan)}
+  .kpi.gano .n{color:var(--gano)}
+  .kpi .l{margin-top:4px;font-size:11px;color:var(--muted)}
+  .compare{
+    margin-top:14px;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;
+  }
+  .vs{
+    align-self:center;width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;border:1px solid var(--line);
+    font-size:12px;font-weight:700;color:var(--muted);
+  }
+  .side{padding:12px;border-radius:6px;border:1px solid transparent}
+  .side.liyan{background:var(--liyan-soft);border-color:var(--liyan-line)}
+  .side.gano{background:var(--gano-soft);border-color:var(--gano-line)}
+  .side.liyan .name{color:var(--liyan)}
+  .side.gano .name{color:var(--gano)}
+  .side .guest-line{
+    font-size:14px;font-weight:700;margin-bottom:6px;
+  }
+  .side.liyan .guest-line{color:var(--liyan)}
+  .side.gano .guest-line{color:var(--gano)}
+  .meter{margin-top:8px}
+  .meter .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .bar{height:8px;border-radius:4px;background:#eef2f7;overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:4px}
+  .bar.liyan>i{background:var(--liyan)}
+  .bar.gano>i{background:var(--gano)}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-weight:600}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .insights{display:grid;gap:8px}
+  .insight{
+    padding:12px 14px;border-radius:6px;background:#f9fafb;border:1px solid var(--line);
+    font-size:13px;line-height:1.55;
+  }
+  .insight .tag{
+    display:inline-block;font-size:11px;padding:2px 6px;border-radius:4px;margin-right:6px;
+    background:#111827;color:#fff;font-weight:600;
+  }
+  .foot{
+    margin-top:16px;padding-top:12px;border-top:1px solid var(--line);
+    font-size:11px;color:var(--muted);line-height:1.6;
+  }
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+    background:#111827;color:#fff;padding:10px 16px;border-radius:6px;
+    font-size:13px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .toast.show{opacity:1}
+  .settings{
+    margin:12px 28px 0;padding:12px 14px;border-radius:6px;
+    background:#f9fafb;border:1px solid var(--line);font-size:12px;
+  }
+  .settings summary{cursor:pointer;color:var(--muted);font-weight:600}
+  .settings .box{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="desk">
+  <div class="sheet">
+    <div class="brand-bar" aria-hidden="true"><i class="liyan"></i><i class="gano"></i></div>
+    <div class="topbar">
+      <div class="brand-block">
+        <h1>联盟活动日报</h1>
+        <div class="sub">剑琅美遇 · 运营日报 · 按自然日（Asia/Shanghai）</div>
+        <div class="legend">
+          <span class="liyan"><i class="swatch"></i><img class="logo liyan" src="./assets/brand/logo-liyan.svg" alt="丽妍雅集" /></span>
+          <span class="gano"><i class="swatch"></i><img class="logo gano" src="./assets/brand/logo-gano.svg" alt="GANO HAIR" /></span>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="row">
+          <label class="field" for="day">统计日</label>
+          <input type="date" id="day" />
+          <button type="button" class="btn" id="btnRefresh">更新数据</button>
+        </div>
+        <div class="meta-line" id="captureMeta">数据截取时间：—</div>
+        <div class="meta-line" id="sourceMeta">数据来源：—</div>
+      </div>
+    </div>
+
+    <div class="warn" id="incompleteBanner" hidden>
+      <strong>当日数据尚未统计完成。</strong>
+      当前未到当日 22:00 截断点，下列数字为截至「数据截取时间」的滚动结果，不宜当作日结终值。
+    </div>
+
+    <details class="settings">
+      <summary>数据源设置（更新时使用）</summary>
+      <div class="box">
+        <label class="field">Admin-Token</label>
+        <input type="password" id="token" placeholder="从后台 Cookie Admin-Token 粘贴" style="min-width:260px" />
+        <button type="button" class="btn ghost" id="btnDemo">载入演示数据</button>
+      </div>
+      <div class="box" style="margin-top:6px;color:var(--muted)">
+        API：<code>/api2/rts/base/alliance/staff/page</code> ·
+        <code>/api2/rts/base/alliance/coupon/issued</code> ·
+        <code>/api2/rts/base/alliance/coupon/quotas</code>
+        （若跨域失败，请用演示数据或在可访问后台的环境打开本页）
+      </div>
+    </details>
+
+    <div class="body" id="report">
+      <div class="empty">正在准备报表…</div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  const API_BASE = "https://nrta-pfm.jiyong.vip";
+  const DAY_CUTOFF_HOUR = 22;
+  const TZ = "Asia/Shanghai";
+
+  const $ = (id) => document.getElementById(id);
+  const dayInput = $("day");
+  const toastEl = $("toast");
+  const reportEl = $("report");
+  const incompleteBanner = $("incompleteBanner");
+  const captureMeta = $("captureMeta");
+  const sourceMeta = $("sourceMeta");
+  const tokenInput = $("token");
+  const btnRefresh = $("btnRefresh");
+  const btnDemo = $("btnDemo");
+
+  let state = {
+    captureAt: null,
+    source: "—",
+    day: null,
+    staff: [],
+    coupons: [],
+    quotas: null,
+  };
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toastEl.classList.remove("show"), 2400);
+  }
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function nowInShanghai() {
+    const fmt = new Intl.DateTimeFormat("en-CA", {
+      timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+    });
+    const parts = Object.fromEntries(fmt.formatToParts(new Date()).map((p) => [p.type, p.value]));
+    return {
+      date: `${parts.year}-${parts.month}-${parts.day}`,
+      hour: Number(parts.hour),
+      minute: Number(parts.minute),
+      second: Number(parts.second),
+      label: `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`,
+    };
+  }
+
+  function formatCapture(isoOrDate) {
+    if (!isoOrDate) return "—";
+    if (typeof isoOrDate === "string" && /^\d{4}-\d{2}-\d{2} /.test(isoOrDate)) return isoOrDate;
+    const d = isoOrDate instanceof Date ? isoOrDate : new Date(isoOrDate);
+    const fmt = new Intl.DateTimeFormat("sv-SE", {
+      timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+    });
+    return fmt.format(d).replace("T", " ");
+  }
+
+  function sideOfStore(name) {
+    const s = String(name || "");
+    if (/丽妍|Rubis|雅集/i.test(s)) return "liyan";
+    if (/GANO|奈造型/i.test(s)) return "gano";
+    return "other";
+  }
+
+  function sideOfCompany(c) {
+    const s = String(c || "");
+    if (/丽妍/i.test(s)) return "liyan";
+    if (/GANO/i.test(s)) return "gano";
+    return "other";
+  }
+
+  function isVoid(c) {
+    const st = String(c.status || c.state || c.couponStatus || "");
+    return /作废|void|cancel|revoked|invalid/i.test(st);
+  }
+
+  const LOGO = {
+    liyan: "./assets/brand/logo-liyan.svg",
+    gano: "./assets/brand/logo-gano.svg",
+  };
+  const BRAND = { liyan: "丽妍雅集", gano: "GANO HAIR" };
+
+  function isRedeemed(c) {
+    if (c.redeemTime || c.usedTime || c.verifyTime) return true;
+    const st = String(c.status || c.state || c.couponStatus || "");
+    return /已核销|已使用|used|redeem/i.test(st) && !isVoid(c);
+  }
+
+  function issueTime(c) {
+    return String(c.claimTime || c.receiveTime || c.issueTime || c.issuedAt || c.grantTime || c.createTime || "");
+  }
+
+  function redeemTime(c) {
+    return String(c.redeemTime || c.usedTime || c.verifyTime || "");
+  }
+
+  function issueStore(c) {
+    return c.issueStoreName || c.issueShopName || c.fromStoreName || c.storeName || c.issueStore || "未知门店";
+  }
+
+  function redeemStore(c) {
+    return c.redeemStoreName || c.usedStoreName || c.verifyStoreName || c.redeemStore || "—";
+  }
+
+  function priceOf(c) {
+    const p = c.price ?? c.couponPrice ?? c.amount ?? c.facePrice;
+    const n = Number(p);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function dayKey(ts) {
+    return String(ts || "").slice(0, 10);
+  }
+
+  function yen(n) {
+    return "¥" + Math.round(n).toLocaleString("zh-CN");
+  }
+
+  function pct(a, b) {
+    if (!b) return "—";
+    return (Math.round((a / b) * 1000) / 10) + "%";
+  }
+
+  function rankMap(map, limit) {
+    return Object.entries(map)
+      .filter(([k]) => k && k !== "—")
+      .sort((a, b) => b[1].count - a[1].count || b[1].amount - a[1].amount)
+      .slice(0, limit);
+  }
+
+  function analyze(day) {
+    const staff = state.staff || [];
+    const coupons = (state.coupons || []).filter((c) => !isVoid(c));
+
+    const covered = { liyan: 0, gano: 0, other: 0 };
+    staff.forEach((s) => {
+      const side = sideOfCompany(s.companyName || s.company || s.orgName) || sideOfStore(s.storeName || s.shopName);
+      covered[side] = (covered[side] || 0) + 1;
+    });
+
+    const dayCoupons = coupons.filter((c) => dayKey(issueTime(c)) === day);
+    const dayRedeems = coupons.filter((c) => isRedeemed(c) && dayKey(redeemTime(c)) === day);
+
+    function sideBucket() {
+      return {
+        issueCount: 0, issueAmount: 0,
+        redeemCount: 0, redeemAmount: 0,
+        guestCount: 0, guestAmount: 0,
+        activeStaff: new Set(),
+        issueStores: {},
+        redeemStores: {},
+        products: {},
+      };
+    }
+    const sides = { liyan: sideBucket(), gano: sideBucket(), other: sideBucket() };
+
+    function bumpStore(bag, store, amount) {
+      if (!bag[store]) bag[store] = { count: 0, amount: 0 };
+      bag[store].count += 1;
+      bag[store].amount += amount;
+    }
+
+    dayCoupons.forEach((c) => {
+      const store = issueStore(c);
+      const side = sideOfStore(store);
+      const b = sides[side] || sides.other;
+      const price = priceOf(c);
+      b.issueCount += 1;
+      b.issueAmount += price;
+      const phone = c.issuerPhone || c.issueStaffPhone || c.staffPhone || "";
+      if (phone) b.activeStaff.add(phone);
+      bumpStore(b.issueStores, store, price);
+      const pname = c.couponName || c.name || c.productName || "未命名券";
+      if (!b.products[pname]) b.products[pname] = { issue: 0, redeem: 0, price };
+      b.products[pname].issue += 1;
+    });
+
+    dayRedeems.forEach((c) => {
+      const store = redeemStore(c);
+      const issuedAt = issueStore(c);
+      const redeemSide = sideOfStore(store);
+      const issueSide = sideOfStore(issuedAt);
+      const side = redeemSide !== "other" ? redeemSide : issueSide;
+      const b = sides[side] || sides.other;
+      const price = priceOf(c);
+      b.redeemCount += 1;
+      b.redeemAmount += price;
+      bumpStore(b.redeemStores, store, price);
+      const pname = c.couponName || c.name || c.productName || "未命名券";
+      if (!b.products[pname]) b.products[pname] = { issue: 0, redeem: 0, price };
+      b.products[pname].redeem += 1;
+      /* 获客 = 对方发出、在本侧门店核销（跨品牌到店新客） */
+      if (redeemSide === "liyan" && issueSide === "gano") {
+        sides.liyan.guestCount += 1;
+        sides.liyan.guestAmount += price;
+      } else if (redeemSide === "gano" && issueSide === "liyan") {
+        sides.gano.guestCount += 1;
+        sides.gano.guestAmount += price;
+      }
+    });
+
+    const coldStaff = staff.filter((s) => {
+      const phone = String(s.phone || s.mobile || "");
+      return phone && ![...sides.liyan.activeStaff, ...sides.gano.activeStaff].includes(phone);
+    }).length;
+
+    return { covered, sides, dayCoupons, dayRedeems, coldStaff, staffTotal: staff.length };
+  }
+
+  function buildInsights(day, a) {
+    const L = a.sides.liyan;
+    const G = a.sides.gano;
+    const out = [];
+
+    const lRate = L.issueCount ? L.redeemCount / L.issueCount : 0;
+    const gRate = G.issueCount ? G.redeemCount / G.issueCount : 0;
+
+    if (L.issueCount + G.issueCount === 0) {
+      out.push({ tag: "冷启动", text: `统计日 ${day} 两侧均无有效发券（已排除作废）。请检查店员是否亮码、顾客是否领取，以及是否大量作废冲减。` });
+    } else {
+      if (L.issueCount >= G.issueCount * 1.4) {
+        out.push({ tag: "供给倾斜", text: `丽妍发券 ${L.issueCount} 张，显著高于 GANO ${G.issueCount} 张。若目标是双边获客，需拉动 GANO 侧亮码/发券动作。` });
+      } else if (G.issueCount >= L.issueCount * 1.4) {
+        out.push({ tag: "供给倾斜", text: `GANO 发券 ${G.issueCount} 张，高于丽妍 ${L.issueCount} 张。关注丽妍顾问出勤与话术执行。` });
+      }
+
+      if (L.issueCount && lRate + 0.15 < gRate) {
+        out.push({ tag: "转化落差", text: `丽妍当日核销率 ${pct(L.redeemCount, L.issueCount)}，低于 GANO ${pct(G.redeemCount, G.issueCount)}。优先排查丽妍发出券的到店引导与对面核销承接。` });
+      } else if (G.issueCount && gRate + 0.15 < lRate) {
+        out.push({ tag: "转化落差", text: `GANO 当日核销率 ${pct(G.redeemCount, G.issueCount)}，低于丽妍 ${pct(L.redeemCount, L.issueCount)}。检查高客单券（如购卡礼）是否发得出、核得掉。` });
+      }
+
+      const topL = rankMap(L.issueStores, 1)[0];
+      const topG = rankMap(G.issueStores, 1)[0];
+      if (topL && L.issueCount >= 3 && topL[1].count / L.issueCount >= 0.5) {
+        out.push({ tag: "集中度", text: `丽妍发券半数以上来自「${topL[0]}」（${topL[1].count}/${L.issueCount}）。建议复制该店话术到冷门店，降低单店依赖。` });
+      }
+      if (topG && G.issueCount >= 3 && topG[1].count / G.issueCount >= 0.5) {
+        out.push({ tag: "集中度", text: `GANO 发券半数以上来自「${topG[0]}」（${topG[1].count}/${G.issueCount}）。可组织标杆店带教。` });
+      }
+    }
+
+    const coveredActive = (L.activeStaff.size + G.activeStaff.size);
+    if (a.staffTotal > 0 && coveredActive / a.staffTotal < 0.25 && (L.issueCount + G.issueCount) > 0) {
+      out.push({ tag: "覆盖空转", text: `已授权 ${a.staffTotal} 人，当日有发券行为约 ${coveredActive} 人（${pct(coveredActive, a.staffTotal)}）。授权未转化为动作，建议按店催发与抽查亮码。` });
+    }
+
+    const hi = [...Object.entries(L.products), ...Object.entries(G.products)]
+      .filter(([, v]) => v.price >= 500);
+    if (hi.length) {
+      const issue = hi.reduce((s, [, v]) => s + v.issue, 0);
+      const redeem = hi.reduce((s, [, v]) => s + v.redeem, 0);
+      out.push({ tag: "高客单", text: `高客单券（≥¥500）当日发券 ${issue}、核销 ${redeem}，核销率 ${pct(redeem, issue)}。若发而不核，活动账面价值会被高估。` });
+    }
+
+    if (!out.length) {
+      out.push({ tag: "稳态", text: "两侧发券与核销暂未出现显著失衡；继续盯门店排行尾部与作废率即可。" });
+    }
+    return out.slice(0, 4);
+  }
+
+  function renderSideCard(cls, side, covered) {
+    const rate = pct(side.redeemCount, side.issueCount);
+    const issueMax = Math.max(side.issueCount, 1);
+    const redeemMax = Math.max(side.issueCount, side.redeemCount, 1);
+    const guestHint = cls === "liyan"
+      ? "对方发券 · 到丽妍核销"
+      : "对方发券 · 到 GANO 核销";
+    return `
+      <div class="card ${cls}-card">
+        <div class="brand-head">
+          <div class="titles">
+            <div class="brand-name ${cls}">${BRAND[cls]}</div>
+            <div class="brand-sub">当日看板</div>
+          </div>
+          <img class="logo lg ${cls}" src="${LOGO[cls]}" alt="${BRAND[cls]}" />
+        </div>
+        <div class="guest-hero ${cls}">
+          <div>
+            <div class="lab">获客</div>
+            <div class="hint">${guestHint}</div>
+          </div>
+          <div class="n">${side.guestCount}</div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi ${cls}"><div class="n">${covered}</div><div class="l">覆盖店员</div></div>
+          <div class="kpi ${cls}"><div class="n">${side.issueCount}</div><div class="l">当日发券</div></div>
+          <div class="kpi ${cls}"><div class="n">${side.redeemCount}</div><div class="l">当日核销</div></div>
+        </div>
+        <div class="kpi-row" style="margin-top:8px">
+          <div class="kpi ${cls}"><div class="n" style="font-size:16px">${yen(side.issueAmount)}</div><div class="l">发券金额</div></div>
+          <div class="kpi ${cls}"><div class="n" style="font-size:16px">${yen(side.redeemAmount)}</div><div class="l">核销金额</div></div>
+          <div class="kpi ${cls}"><div class="n" style="font-size:16px">${rate}</div><div class="l">核销率</div></div>
+        </div>
+        <div class="meter">
+          <div class="lab"><span>发券进度（相对本侧当日发券）</span><span>${side.issueCount}</span></div>
+          <div class="bar ${cls}"><i style="width:${Math.min(100, (side.issueCount / issueMax) * 100)}%"></i></div>
+        </div>
+        <div class="meter">
+          <div class="lab"><span>核销相对发券</span><span>${side.redeemCount}/${side.issueCount || 0}</span></div>
+          <div class="bar ${cls}"><i style="width:${Math.min(100, (side.redeemCount / redeemMax) * 100)}%"></i></div>
+        </div>
+      </div>`;
+  }
+
+  function renderRankTable(title, rows, cls) {
+    const cardCls = cls ? `card ${cls}-card` : "card";
+    if (!rows.length) return `<div class="${cardCls}"><h2>${title}</h2><div class="empty">暂无排行数据</div></div>`;
+    const body = rows.map((r, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${r[0]}</td>
+        <td class="num">${r[1].count}</td>
+        <td class="num">${yen(r[1].amount)}</td>
+      </tr>`).join("");
+    return `<div class="${cardCls}"><h2>${title}</h2>
+      <table><thead><tr><th>#</th><th>门店</th><th class="num">张数</th><th class="num">金额</th></tr></thead>
+      <tbody>${body}</tbody></table></div>`;
+  }
+
+  function render() {
+    const day = dayInput.value || nowInShanghai().date;
+    state.day = day;
+    const now = nowInShanghai();
+    const isToday = day === now.date;
+    const incomplete = isToday && now.hour < DAY_CUTOFF_HOUR;
+    incompleteBanner.hidden = !incomplete;
+
+    captureMeta.innerHTML = `数据截取时间：<strong>${formatCapture(state.captureAt)}</strong>`;
+    if (incomplete) {
+      captureMeta.innerHTML += ` · 日结截断点 <strong>${day} ${DAY_CUTOFF_HOUR}:00:00</strong>（尚未到达）`;
+    } else if (isToday) {
+      captureMeta.innerHTML += ` · 已过 <strong>${day} ${DAY_CUTOFF_HOUR}:00</strong>，可作当日参考日结`;
+    }
+    sourceMeta.textContent = `数据来源：${state.source}`;
+
+    const a = analyze(day);
+    const insights = buildInsights(day, a);
+    const L = a.sides.liyan;
+    const G = a.sides.gano;
+
+    const cmpIssue = L.issueCount === G.issueCount ? "持平" : (L.issueCount > G.issueCount ? "丽妍发券领先" : "GANO 发券领先");
+    const cmpRedeem = L.redeemCount === G.redeemCount ? "持平" : (L.redeemCount > G.redeemCount ? "丽妍核销领先" : "GANO 核销领先");
+    const cmpGuest = L.guestCount === G.guestCount ? "获客持平" : (L.guestCount > G.guestCount ? "丽妍获客领先" : "GANO 获客领先");
+
+    reportEl.innerHTML = `
+      <div class="grid-2">
+        ${renderSideCard("liyan", L, a.covered.liyan)}
+        ${renderSideCard("gano", G, a.covered.gano)}
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h2>双边对照</h2>
+        <div class="compare">
+          <div class="side liyan">
+            <div class="name-row">
+              <img class="logo liyan" src="${LOGO.liyan}" alt="丽妍雅集" />
+              <div class="name">丽妍雅集</div>
+            </div>
+            <div class="guest-line">获客 ${L.guestCount}</div>
+            <div>发券 ${L.issueCount} · ${yen(L.issueAmount)}</div>
+            <div>核销 ${L.redeemCount} · ${yen(L.redeemAmount)}</div>
+            <div>核销率 ${pct(L.redeemCount, L.issueCount)}</div>
+            <div>活跃发券店员 ${L.activeStaff.size}</div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="side gano">
+            <div class="name-row">
+              <img class="logo gano" src="${LOGO.gano}" alt="GANO HAIR" />
+              <div class="name">GANO HAIR</div>
+            </div>
+            <div class="guest-line">获客 ${G.guestCount}</div>
+            <div>发券 ${G.issueCount} · ${yen(G.issueAmount)}</div>
+            <div>核销 ${G.redeemCount} · ${yen(G.redeemAmount)}</div>
+            <div>核销率 ${pct(G.redeemCount, G.issueCount)}</div>
+            <div>活跃发券店员 ${G.activeStaff.size}</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+          结论速览：<strong style="color:var(--ink)">${cmpGuest}</strong>；
+          <strong style="color:var(--ink)">${cmpIssue}</strong>；
+          <strong style="color:var(--ink)">${cmpRedeem}</strong>。
+          授权合计 ${a.staffTotal} 人（丽妍 ${a.covered.liyan} / GANO ${a.covered.gano}）。
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:14px">
+        ${renderRankTable("丽妍 · 发券门店 Top", rankMap(L.issueStores, 5), "liyan")}
+        ${renderRankTable("GANO · 发券门店 Top", rankMap(G.issueStores, 5), "gano")}
+        ${renderRankTable("丽妍 · 核销门店 Top", rankMap(L.redeemStores, 5), "liyan")}
+        ${renderRankTable("GANO · 核销门店 Top", rankMap(G.redeemStores, 5), "gano")}
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h2>运营洞察</h2>
+        <div class="insights">
+          ${insights.map((x) => `<div class="insight"><span class="tag">${x.tag}</span>${x.text}</div>`).join("")}
+        </div>
+        <div class="foot">
+          口径：获客=对方发出且在本侧门店当日核销成功的张数（跨品牌到店新客）；发券=领取成功且未作废（按领取日）；核销=已核销（按核销日）；金额=券价合计；覆盖店员=授权已通过。
+          作废券（含作废/void/cancel/REVOKED/INVALID）不计入发券/核销/获客。门店侧别按名称识别「丽妍/Rubis」与「GANO」。
+        </div>
+      </div>
+    `;
+  }
+
+  function demoPayload() {
+    /* 基于后台可见结构的示意样本，便于无 Token 时演示 */
+    const staff = [
+      { phone: "13651785726", company: "丽妍雅集", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店" },
+      { phone: "13761181173", company: "丽妍雅集", storeName: "丽妍雅集Rubis SPA·宝杨宝龙广场店" },
+      { phone: "18580709927", company: "丽妍雅集", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店" },
+      { phone: "15121161412", company: "GANO", storeName: "GANO HAIR·北外滩来福士店" },
+      { phone: "13611685176", company: "GANO", storeName: "GANO HAIR·北外滩来福士店" },
+      { phone: "18549922246", company: "GANO", storeName: "GANO HAIR·凯德晶萃店" },
+      { phone: "18726231810", company: "GANO", storeName: "GANO HAIR·长宁来福士店" },
+      { phone: "15000051391", company: "GANO", storeName: "GANO HAIR·荟聚店" },
+    ];
+    const today = nowInShanghai().date;
+    const y = new Date(today + "T12:00:00+08:00");
+    y.setDate(y.getDate() - 1);
+    const yday = y.toISOString().slice(0, 10);
+
+    const coupons = [
+      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "待使用", storeName: "GANO HAIR·北外滩来福士店", issuerPhone: "15121161412", claimTime: today + " 13:27:00" },
+      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "已核销", storeName: "GANO HAIR·凯德晶萃店", issuerPhone: "18549922246", claimTime: today + " 11:10:00", redeemStoreName: "丽妍雅集Rubis SPA·长宁来福士广场店", redeemTime: today + " 15:40:00" },
+      { couponName: "丽妍雅集 V3–V5|首席设计师洗剪吹或法式头皮减压", price: 218, status: "已核销", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店", issuerPhone: "18580709927", claimTime: today + " 10:05:00", redeemStoreName: "GANO HAIR·凯德晶萃店", redeemTime: today + " 16:20:00" },
+      { couponName: "丽妍雅集 V3–V5|首席设计师洗剪吹或法式头皮减压", price: 218, status: "待使用", storeName: "丽妍雅集Rubis SPA·宝杨宝龙广场店", issuerPhone: "13761181173", claimTime: today + " 12:18:00" },
+      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "已核销", storeName: "GANO HAIR·荟聚店", issuerPhone: "15000051391", claimTime: yday + " 14:00:00", redeemStoreName: "丽妍雅集Rubis SPA·长宁来福士广场店", redeemTime: today + " 11:30:00" },
+      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "已作废", storeName: "GANO HAIR·长宁来福士店", issuerPhone: "18726231810", claimTime: yday + " 16:49:00" },
+      { couponName: "丽妍雅集 V6–V10|日本玫丽盼全球化护理", price: 480, status: "已核销", storeName: "丽妍雅集Rubis SPA·长宁来福士广场店", issuerPhone: "13651785726", claimTime: today + " 09:40:00", redeemStoreName: "GANO HAIR·北外滩来福士店", redeemTime: today + " 14:10:00" },
+      { couponName: "购卡满 5000|紫镜嘭弹护理一次", price: 980, status: "待使用", storeName: "GANO HAIR·凯德晶萃店", issuerPhone: "18549922246", claimTime: today + " 17:02:00" },
+    ];
+
+    /* expand covered count toward observed ~60 without listing all */
+    for (let i = 0; i < 26; i++) staff.push({ phone: "1380000" + pad(i), company: "丽妍雅集", storeName: "丽妍雅集·示意店" + (i % 5) });
+    for (let i = 0; i < 26; i++) staff.push({ phone: "1390000" + pad(i), company: "GANO", storeName: "GANO HAIR·示意店" + (i % 6) });
+
+    return {
+      staff,
+      coupons,
+      quotas: { total: 4000, issued: 1, remain: 3999 },
+      source: "演示数据（结构对齐后台券/员工字段）",
+    };
+  }
+
+  function applyData({ staff, coupons, quotas, source }) {
+    state.staff = staff || [];
+    state.coupons = coupons || [];
+    state.quotas = quotas;
+    state.source = source || "—";
+    state.captureAt = nowInShanghai().label;
+    try {
+      localStorage.setItem("allianceDailyReport.cache", JSON.stringify({
+        at: state.captureAt, source: state.source, staff: state.staff, coupons: state.coupons, quotas: state.quotas,
+      }));
+    } catch (e) {}
+    render();
+  }
+
+  async function apiGet(path, token) {
+    const headers = { Accept: "application/json" };
+    if (token) {
+      headers["Admin-Token"] = token;
+      headers["X-Token"] = token;
+      headers["token"] = token;
+    }
+    const res = await fetch(API_BASE + path, { credentials: "include", headers });
+    const json = await res.json();
+    if (json && (json.ret === "TokenExpired" || /登录失效/.test(json.msg || ""))) {
+      throw new Error("登录失效，请更新 Admin-Token");
+    }
+    if (json && json.success === "0" && json.msg) throw new Error(json.msg);
+    return json;
+  }
+
+  function pickList(json) {
+    const d = json && json.data;
+    if (!d) return { total: 0, list: [] };
+    if (Array.isArray(d)) return { total: d.length, list: d };
+    return { total: d.total || d.count || 0, list: d.list || d.records || d.rows || [] };
+  }
+
+  async function fetchAllIssued(token) {
+    const first = await apiGet("/api2/rts/base/alliance/coupon/issued?page=1&size=100", token);
+    const { total, list } = pickList(first);
+    let all = list.slice();
+    const pages = Math.max(1, Math.ceil((total || list.length) / 100));
+    for (let p = 2; p <= Math.min(pages, 30); p++) {
+      const j = await apiGet(`/api2/rts/base/alliance/coupon/issued?page=${p}&size=100`, token);
+      all = all.concat(pickList(j).list);
+    }
+    return all;
+  }
+
+  async function fetchAllStaff(token) {
+    const first = await apiGet("/api2/rts/base/alliance/staff/page?page=1&size=100", token);
+    const { total, list } = pickList(first);
+    let all = list.slice();
+    const pages = Math.max(1, Math.ceil((total || list.length) / 100));
+    for (let p = 2; p <= Math.min(pages, 20); p++) {
+      const j = await apiGet(`/api2/rts/base/alliance/staff/page?page=${p}&size=100`, token);
+      all = all.concat(pickList(j).list);
+    }
+    return all;
+  }
+
+  async function refreshFromApi() {
+    const token = (tokenInput.value || localStorage.getItem("allianceDailyReport.token") || "").trim();
+    if (token) localStorage.setItem("allianceDailyReport.token", token);
+    btnRefresh.disabled = true;
+    try {
+      const [staff, coupons, quotas] = await Promise.all([
+        fetchAllStaff(token),
+        fetchAllIssued(token),
+        apiGet("/api2/rts/base/alliance/coupon/quotas", token).catch(() => null),
+      ]);
+      applyData({
+        staff,
+        coupons,
+        quotas: quotas && quotas.data,
+        source: `后台接口实时拉取（${API_BASE}）`,
+      });
+      toast("数据已更新");
+    } catch (e) {
+      console.error(e);
+      toast("更新失败：" + (e.message || e) + " · 已保留当前数据");
+    } finally {
+      btnRefresh.disabled = false;
+    }
+  }
+
+  function loadDemo() {
+    const d = demoPayload();
+    applyData(d);
+    toast("已载入演示数据");
+  }
+
+  function boot() {
+    const now = nowInShanghai();
+    dayInput.value = now.date;
+    tokenInput.value = localStorage.getItem("allianceDailyReport.token") || "";
+    try {
+      const cache = JSON.parse(localStorage.getItem("allianceDailyReport.cache") || "null");
+      if (cache && cache.coupons) {
+        state.captureAt = cache.at;
+        applyData(cache);
+      } else {
+        loadDemo();
+      }
+    } catch (e) {
+      loadDemo();
+    }
+  }
+
+  dayInput.addEventListener("change", render);
+  btnRefresh.addEventListener("click", refreshFromApi);
+  btnDemo.addEventListener("click", loadDemo);
+  boot();
+})();
+</script>
+</body>
+</html>

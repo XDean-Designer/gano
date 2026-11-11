@@ -241,7 +241,7 @@
         <p class="lead">L2 展开手机号 L3 · 被核销再点人进 12 · 本单人员 · 本文写职责、状态机、权限、统计口径与接口契约</p>
         <dl class="meta">
           <dt>产品</dt><dd>微信小程序「剑琅美遇」</dd>
-          <dt>版本</dt><dd>v1.20（2026-11-10：20「今日」行进 22）</dd>
+          <dt>版本</dt><dd>v1.22（2026-11-10：12 表头核销门店）</dd>
           <dt>读者</dt><dd>前端 / 后端 / 测试</dd>
           <dt>UI 源</dt><dd>Figma <code>gYtPZtAsGCSg3c2pUdtnGT</code>（①顾问 ②顾客 ③店员 ④异常 ⑤经营·对账与明细）</dd>
           <dt>原型</dt><dd><a href="../alliance-flow-A-storyboard-spec.html">alliance-flow-A-storyboard-spec.html</a></dd>
@@ -276,7 +276,7 @@
               <tr><td>16S</td><td>10 顶区获客</td><td>「丽妍雅集 获客」= 对方发来且在本品牌核销成功人数；「GANO 获客」= 本侧发出且在 GANO 核销成功人数；v1 只读</td></tr>
               <tr><td>17H</td><td>核销后首页</td><td>券 USED（不必评价）后杀进程再进 → 线上常规首页；已领未核仍可按活动规则找回券</td></tr>
               <tr><td>18O</td><td>团购活动订单</td><td>仅「已使用」；核销成功落库；下单时间=核销时间；实付 0；活动金额=档位记账价</td></tr>
-              <tr><td>19D</td><td>经营钻取</td><td>四态 L1→L2→L3；亮码顾问/扫码顾客/领取顾客/被核销核销员；被核销 L3→12→13</td></tr>
+              <tr><td>19D</td><td>经营钻取</td><td>四态 L1→L2→L3；L3 一律门店人（亮码/扫码/领取=顾问；被核销=核销员）；顾客号仅 12；被核销 L3→12→13</td></tr>
               <tr><td>24R</td><td>漏斗末态文案</td><td>第四态展示名「<strong>被核销</strong>」；每卡=同一来源码从亮码到被核销的全过程</td></tr>
               <tr><td>25L</td><td>本单人员四人号</td><td>13：亮码人/扫码人/领取人/核销人</td></tr>
               <tr><td>26C</td><td>可点 ›</td><td>L2 展开用 ∨/›；被核销 L3 与 12 行右 ›</td></tr>
@@ -645,7 +645,7 @@ flowchart TD
             <tr><td>11-时间</td><td>时间范围 Sheet</td><td><code>432:253</code></td><td>「选择时间范围」；近7天等四项；仅每日</td></tr>
             <tr><td>11-门店</td><td>门店 Sheet</td><td><code>432:142</code></td><td>「选择门店」；全部+店列表；仅每日</td></tr>
             <tr><td>11-漏斗</td><td>漏斗筛选 Sheet</td><td><code>251:201</code> / <code>437:296</code></td><td>「选择漏斗态」；四态；选中「已选」</td></tr>
-            <tr><td>12</td><td>当日详情</td><td><code>171:17</code></td><td>表头顾客·发券门店·项目；点行 → 13</td></tr>
+            <tr><td>12</td><td>当日详情</td><td><code>171:17</code></td><td>表头顾客·核销门店·项目（对面核销店）；点行 → 13</td></tr>
             <tr><td>13</td><td>订单明细</td><td><code>172:17</code></td><td>单笔；Hero 留价；订单卡无金额行</td></tr>
           </tbody>
         </table></div>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>联盟操作手册 · GANO 侧</title>
+<style>
+  @font-face{
+    font-family:"Noto Sans SC";
+    src:url("../fonts/NotoSansSC-VF.ttf") format("truetype");
+    font-weight:100 900;
+    font-display:swap;
+  }
+  :root{
+    --brand:#FF6002;
+    --brand-soft:#FFF3EC;
+    --ink:#171717;
+    --sub:#5f5f5f;
+    --muted:#8a8a8a;
+    --line:#e9e9e9;
+    --soft:#f7f7f7;
+    --warn:#d93025;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:#fbfbfb;color:var(--ink);
+    font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:900px;margin:0 auto;background:#fff;padding:52px 60px 72px;box-shadow:0 0 0 1px var(--line)}
+  .cover{padding-bottom:26px;border-bottom:1px solid var(--line);margin-bottom:30px}
+  .eyebrow{font-size:12px;letter-spacing:.16em;color:var(--brand);font-weight:700}
+  h1{font-size:34px;line-height:1.3;margin:10px 0 8px;letter-spacing:-.01em}
+  .toc{margin:0 0 40px}
+  .toc-hd{font-size:12px;letter-spacing:.16em;color:var(--muted);font-weight:700;margin-bottom:12px}
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .toc a{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 14px;border:1px solid var(--line);border-radius:11px;
+    color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;
+    background:#fff;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+  }
+  .toc a .no{
+    flex:none;display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:7px;
+    background:var(--brand-soft);color:var(--brand);
+    font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;
+    transition:background .18s ease,color .18s ease;
+  }
+  .toc a:hover{border-color:#ffc7a8;box-shadow:0 3px 12px rgba(255,96,2,.10);transform:translateY(-1px)}
+  .toc a:hover .no{background:var(--brand);color:#fff}
+  section{margin:0 0 40px;scroll-margin-top:16px}
+  h2.sec{display:flex;align-items:center;gap:10px;font-size:21px;margin:0 0 4px}
+  h2.sec .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;font-size:13px;font-weight:700;flex:none}
+  .sec-sub{color:var(--muted);font-size:13px;margin:0 0 16px 36px}
+  h3{font-size:16px;margin:24px 0 8px}
+  p{margin:8px 0}
+  ul,ol{padding-left:22px;margin:8px 0}
+  li{margin:4px 0}
+  strong{font-weight:650}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em;background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .warn{background:#FDF2F1;border-left:3px solid var(--warn);border-radius:8px;padding:11px 15px;margin:14px 0;font-size:14px;line-height:1.7}
+  .warn b{color:#8d2f27}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{text-align:left;vertical-align:top;padding:9px 11px;border-bottom:1px solid var(--line)}
+  th{background:var(--soft);font-weight:600;color:var(--sub);font-size:12.5px;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .steps{list-style:none;padding:0;margin:14px 0;counter-reset:s}
+  .steps>li{position:relative;padding:0 0 18px 46px;counter-increment:s;border-left:1px solid var(--line);margin-left:13px}
+  .steps>li:last-child{border-left-color:transparent;padding-bottom:0}
+  .steps>li::before{content:counter(s);position:absolute;left:-13px;top:0;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .steps>li b{display:block;font-size:15.5px;margin-bottom:1px}
+  .steps>li p{margin:1px 0;font-size:14.5px;color:var(--sub);line-height:1.7}
+  .script{border-left:2px solid var(--line);padding:2px 0 2px 14px;margin:10px 0}
+  .script .when{font-size:12px;color:var(--muted);letter-spacing:.05em}
+  .script p{margin:2px 0;font-size:14.5px}
+  .dont li{color:#8d2f27;font-size:14.5px}
+  .print-btn{position:fixed;right:22px;bottom:22px;background:var(--brand);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 8px 22px rgba(255,96,2,.32)}
+  @media (max-width:780px){
+    .page{padding:32px 20px 56px}
+    h1{font-size:27px}
+    .toc-grid{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff;font-size:10.5pt}
+    .page{box-shadow:none;padding:0 0 8mm;max-width:none}
+    .print-btn{display:none}
+    section{margin-bottom:8mm}
+    h2.sec{page-break-after:avoid}
+    a{color:inherit;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="cover">
+    <span class="eyebrow">GANO × 丽妍雅集 · 联盟礼遇</span>
+    <h1>联盟操作手册<br><span style="color:var(--brand)">GANO 侧</span></h1>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-hd">目录</div>
+    <div class="toc-grid">
+      <a href="#s1"><span class="no">01</span>谁做什么</a>
+      <a href="#s2"><span class="no">02</span>活动规则</a>
+      <a href="#s3"><span class="no">03</span>开跑前检查</a>
+      <a href="#s4"><span class="no">04</span>顾问：发码</a>
+      <a href="#s5"><span class="no">05</span>店员：核销</a>
+      <a href="#s6"><span class="no">06</span>顾客侧</a>
+      <a href="#s7"><span class="no">07</span>异常处置</a>
+      <a href="#s8"><span class="no">08</span>数据（仅店长 / 运营）</a>
+      <a href="#s9"><span class="no">09</span>话术与禁忌</a>
+      <a href="#s10"><span class="no">10</span>FAQ</a>
+    </div>
+  </nav>
+
+  <section id="s1">
+    <h2 class="sec"><span class="n">1</span>谁做什么</h2>
+    <p class="sec-sub">认领自己的角色，直接跳对应章节。</p>
+    <table>
+      <thead><tr><th>角色</th><th>做什么</th><th>看第几节</th></tr></thead>
+      <tbody>
+        <tr><td><b>GANO 顾问</b></td><td>按顾客购卡金额选档、亮码，请顾客当场扫码领取。不核销。</td><td>4</td></tr>
+        <tr><td><b>GANO 店员</b></td><td>扫顾客核销码、确认资格、完成核销、按券面服务。不发券。</td><td>5</td></tr>
+        <tr><td><b>店长 / 运营</b></td><td>看双边发券与核销量、金额，下钻到当日详情与订单明细。</td><td>8</td></tr>
+        <tr><td><b>顾客</b></td><td>扫码领券、到店出示核销码、核销后评价。</td><td>6</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s2">
+    <h2 class="sec"><span class="n">2</span>活动规则</h2>
+    <p class="sec-sub">两家店互相送新客，用「会员礼遇」结算，不对接会员系统。</p>
+    <table>
+      <thead><tr><th>方向</th><th>谁发码</th><th>谁核销</th><th>GANO 侧要做的</th></tr></thead>
+      <tbody>
+        <tr><td><b>A 向</b> 丽妍 → GANO</td><td>丽妍顾问</td><td><b>GANO 店员</b></td><td>顾客拿券来店，扫码核销、按券面服务</td></tr>
+        <tr><td><b>B 向</b> GANO → 丽妍</td><td><b>GANO 顾问</b></td><td>丽妍门店</td><td>按购卡金额选档亮码，请顾客扫码领券</td></tr>
+      </tbody>
+    </table>
+
+    <h3>B 向两档（顾问发码用）</h3>
+    <table>
+      <thead><tr><th>档位</th><th>顾客得到</th><th>记账金额</th></tr></thead>
+      <tbody>
+        <tr><td><b>购卡满 ¥5,000</b></td><td>¥980 紫镜嘭弾护理（单项）</td><td class="num">¥980 / 笔</td></tr>
+        <tr><td><b>购卡满 ¥10,000</b></td><td>¥980 紫镜嘭弾 + ¥380 归元暖腹，<b>两项均享</b></td><td class="num">¥1,360 / 笔</td></tr>
+      </tbody>
+    </table>
+    <p>每档首批 <b>1,000</b> 份，后续视情况追加；本批发完即止。券有效期 <b>三个自然月</b>，须提前 <b>3 天</b>电话预约，每人限 <b>1 次</b>且一次用完。全程「会员礼遇」，不涉及补差价。</p>
+  </section>
+
+  <section id="s3">
+    <h2 class="sec"><span class="n">3</span>开跑前检查</h2>
+    <ul>
+      <li><b>手机号已录入。</b>发码顾问、核销店员的号码必须预录并标明门店；未录入的打开小程序只会被当顾客。</li>
+      <li><b>门店与项目已配好。</b>GANO 门店、礼遇项目、券面文案与海报已就绪。</li>
+      <li><b>档位与首批总量已核对。</b>两档权益、金额、首批每档 1,000 份；选档页能看到「剩余 x/1000」。</li>
+      <li><b>数据权限已分配。</b>明确哪些账号是店长 / 运营，一线不开入口。</li>
+      <li><b>全员知道：</b>核销前必过「非会员确认」弹窗；领券页有截图提示；活动码都能用微信扫一扫拉起小程序。</li>
+    </ul>
+  </section>
+
+  <section id="s4">
+    <h2 class="sec"><span class="n">4</span>GANO 顾问：发码</h2>
+    <p class="sec-sub">顾客在 GANO 购卡满额，你把这单的丽妍礼遇送出去。</p>
+    <ol class="steps">
+      <li><b>打开剑琅美遇，确认身份</b>
+        <p>微信搜「剑琅美遇」或扫小程序码。号码在名单里会直接进「联盟合作」获客页，跳过首页是正常的。</p></li>
+      <li><b>按购卡金额选档</b>
+        <p>选档页顶部写「请依据顾客本次在 GANO 的购卡金额选择档位」，两张卡：满 5,000 / 满 10,000。剩余 0 时整卡不可点。</p></li>
+      <li><b>亮出联盟礼遇码</b>
+        <p>券面有权益、金额、项目与「请顾客用微信扫码领取」，底部「仅限现场扫码 · 请勿转发」。二维码每 <b>3 分钟</b>自动换新，不用手动操作。</p></li>
+      <li><b>请顾客当场扫码领取</b>
+        <p>顾客用微信「扫一扫」即可，没装过也会直接拉起。领完券进顾客手机，同时同步到丽妍雅集。</p></li>
+      <li><b>交代三句话，收工</b>
+        <p>三个月内有效、去之前提前 3 天电话预约、仅限本人一次用完。后续由顾客自行到店，你不参与核销。</p></li>
+    </ol>
+    <div class="warn">
+      <b>发码别错这三处</b>　① 满 10,000 不是二选一，是<b>两项都做</b>；② 已是丽妍会员的顾客不发券；③ 不要把码截图发给顾客或让其转发，转发无效也不计你的业绩。
+    </div>
+  </section>
+
+  <section id="s5">
+    <h2 class="sec"><span class="n">5</span>GANO 店员：核销</h2>
+    <p class="sec-sub">顾客拿丽妍发的联盟券到店，你核对、核销、安排服务。</p>
+    <ol class="steps">
+      <li><b>接券，先看清档位</b>
+        <p>顾客出示核销码（手机或截图均可）。先看券面项目与金额，心里有数再扫。</p></li>
+      <li><b>扫码</b>
+        <p>底栏「扫码核销」进摄像头；或用微信「扫一扫」直接扫核销码，同样进核销流程。</p></li>
+      <li><b>过「核销前确认」弹窗</b>
+        <p>弹窗正文：「请确认该顾客为本店非会员，且符合本次活动参与条件。确认后将完成核销。」按钮「取消核销 / 确认核销」。确认前先口头问一句。</p></li>
+      <li><b>核销成功，核对档案</b>
+        <p>成功页显示券信息与顾客档案：脱敏手机、券号、丽妍雅集档位、领券与核销时间。档位仅店员可见，<b>不要念给顾客听</b>。</p></li>
+      <li><b>按券面权益服务</b>
+        <p>V3–V5 档由顾客口头说做哪一项（¥198 洗剪吹 或 ¥218 法式头皮减压洗），系统不记录选项。V6–V10 档为日本玫丽盼全球化护理。</p></li>
+      <li><b>可选填服务备注，点「确认并返回」</b>
+        <p>备注写服务情况，不是顾客评价。评价由顾客自己在手机上完成，<b>店员不能代写</b>。</p></li>
+    </ol>
+    <div class="warn">
+      <b>弹窗出现时不要直接确认</b>　系统不对接会员库，确认责任在你。顾客若已是本店会员或资格存疑，点「取消核销」先核实；取消后重扫即可，不产生记录。
+    </div>
+  </section>
+
+  <section id="s6">
+    <h2 class="sec"><span class="n">6</span>顾客侧</h2>
+    <ul>
+      <li><b>扫码：</b>微信扫礼遇码直接拉起小程序，登录后进活动页。</li>
+      <li><b>领券：</b>券页有金额、项目、有效期、核销码与券号；码下有「可将核销码截图保存，到店出示即可」。</li>
+      <li><b>到店：</b>出示核销码，核销后券变已核销，顾客直接接受服务。</li>
+      <li><b>评价：</b>核销后出现评分卡（1–5 星 + 选填文字），保存后回到找券页；评价只读同步到订单明细。</li>
+      <li><b>订单：</b>落在「我的订单 → 团购活动 → 已使用」，实付 ¥0。</li>
+    </ul>
+  </section>
+
+  <section id="s7">
+    <h2 class="sec"><span class="n">7</span>异常处置</h2>
+    <p class="sec-sub">现场照表处理，不要自行变通。</p>
+    <table>
+      <thead><tr><th>情况</th><th>你会看到</th><th>怎么处理</th></tr></thead>
+      <tbody>
+        <tr><td>券已过期</td><td>08c 过期不可核</td><td>系统不核销。仍要接待就进 09c 手记，<b>不落库、不计统计</b>，别当核销</td></tr>
+        <tr><td>券已核销</td><td>Toast「已核销」</td><td>不重复服务；怀疑重复领券报运营查明细</td></tr>
+        <tr><td>领取码失效</td><td>04b 领取码失效</td><td>让顾问重新亮码（3 分钟失效属正常）再扫</td></tr>
+        <tr><td>档位已发完</td><td>选档卡剩余 0、不可点</td><td>停发，联系运营后台调量；不手写、不截图补券</td></tr>
+        <tr><td>资格说不清</td><td>08x 弹窗</td><td>点「取消核销」先口头核实，确认后重扫</td></tr>
+        <tr><td>顾客扫不开</td><td>微信提示无法打开</td><td>确认用的是微信「扫一扫」；仍失败就重新亮码</td></tr>
+        <tr><td>要求转让 / 代领</td><td>—</td><td>拒绝。每人 1 次，仅限现场扫码</td></tr>
+        <tr><td>服务出错或投诉</td><td>—</td><td>券不可回滚。按店内客诉流程处理，报运营在订单明细留档</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s8">
+    <h2 class="sec"><span class="n">8</span>数据（仅店长 / 运营）</h2>
+    <div class="warn">
+      <b>权限</b>　只有<b>店长</b>与<b>品牌运营</b>能进「数据统计」，看到联盟双边全量数据。
+    </div>
+
+    <h3>两块漏斗怎么看</h3>
+    <table>
+      <thead><tr><th>块名</th><th>实际含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>丽妍雅集 发出</b></td><td>丽妍发券、到 <b>GANO 核销</b>——我们门店接待的那一半</td></tr>
+        <tr><td><b>GANO 发来</b></td><td><b>GANO 自己发出</b>的券、到丽妍核销——我们顾问发出去的那一半</td></tr>
+      </tbody>
+    </table>
+    <p>块名固定不随登录方变化。认「到××核销」和副标题（发出侧「丽妍雅集」、发来侧「GANO HAIR」）就不会看反。顶部两个获客数＝到对应门店核销成功的人数，只读。</p>
+
+    <h3>下钻</h3>
+    <table>
+      <thead><tr><th>视角</th><th>筛选</th><th>能做什么</th></tr></thead>
+      <tbody>
+        <tr><td><b>每日</b></td><td>时间 / 四态 / 全部门店</td><td>亮码·扫码·领取<b>只读</b>；核销：日卡 → 店铺行 → 12 → 订单 → 13</td></tr>
+        <tr><td><b>按门店</b></td><td>日期 / 四态（无门店筛）</td><td>亮码·扫码·领取只读；核销店卡展开订单行，点行直接进 13</td></tr>
+      </tbody>
+    </table>
+    <p>12 表头「顾客 · 核销门店 · 项目」（对面核销店），手机号脱敏；13 为单笔详情 + 评价只读，核销员 / 店长 / 运营可点头像拨完整手机号。</p>
+
+    <h3>金额口径</h3>
+    <table>
+      <thead><tr><th>项</th><th>口径</th></tr></thead>
+      <tbody>
+        <tr><td>亮码 / 扫码</td><td>按「次」，无金额</td></tr>
+        <tr><td>领取 / 核销</td><td>按「人」，金额＝档位记账价</td></tr>
+        <tr><td>A 向 V3–V5 / V6–V10</td><td class="num">¥218 / ¥480（V3–V5 取最高价）</td></tr>
+        <tr><td>B 向 满 5,000 / 满 10,000</td><td class="num">¥980 / ¥1,360（980+380，不拆分）</td></tr>
+        <tr><td>日切</td><td>Asia/Shanghai 自然日</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2 class="sec"><span class="n">9</span>话术与禁忌</h2>
+
+    <h3>顾问发码</h3>
+    <div class="script">
+      <div class="when">满 5,000</div>
+      <p>「您今天的购卡金额符合我们和丽妍雅集的联合礼遇，送您一次紫镜嘭弾护理，价值 ¥980。券我帮您领到手机里，到丽妍雅集出示就能用。三个月内有效，去之前提前 3 天打电话预约。」</p>
+    </div>
+    <div class="script">
+      <div class="when">满 10,000</div>
+      <p>「您这次两项都可以做：紫镜嘭弾护理和归元暖腹体验，都在丽妍雅集。一次预约可以一起安排，不用二选一。」</p>
+    </div>
+
+    <h3>店员核销</h3>
+    <div class="script">
+      <div class="when">弹窗前</div>
+      <p>「跟您确认一下，您目前还不是我们店的会员，对吧？这项礼遇是给新客的，确认后我就帮您核销。」</p>
+    </div>
+    <div class="script">
+      <div class="when">核销后</div>
+      <p>「已经核销好了。您今天想做洗剪吹还是法式头皮减压洗？」</p>
+    </div>
+
+    <h3>禁忌</h3>
+    <ul class="dont">
+      <li><b>不说档位名。</b>「V3–V5」「V6–V10」只存在内部系统。</li>
+      <li><b>不说「免费」。</b>统一说「会员礼遇」「本次权益」。</li>
+      <li><b>不对满 10,000 的顾客说「二选一」。</b></li>
+      <li><b>不承诺券外的东西。</b>不加项目、不延期、不折现、不换项、不补差价。</li>
+      <li><b>不让拍照、转发、代领。</b>仅限现场扫码。</li>
+      <li><b>不代写评价、不手写核销、不补录核销。</b></li>
+    </ul>
+  </section>
+
+  <section id="s10">
+    <h2 class="sec"><span class="n">10</span>FAQ</h2>
+    <h3>顾客问</h3>
+    <ul>
+      <li><b>没装过小程序能扫吗？</b>能，微信「扫一扫」会直接拉起，再登录。</li>
+      <li><b>能领两张 / 给朋友一张吗？</b>不能，每人 1 次，仅限现场扫码。</li>
+      <li><b>券过期了还能用吗？</b>不能。系统不核销，门店另接待不进统计。</li>
+    </ul>
+    <h3>员工问</h3>
+    <ul>
+      <li><b>打开怎么直接进获客页？</b>可获客顾问冷启动直达，正常。</li>
+      <li><b>底栏为什么没有「数据统计」？</b>一线按设计隐藏，只有店长 / 运营可见。</li>
+      <li><b>能先服务、事后补核销吗？</b>不能。核销须在服务前完成，补录会破坏对账。</li>
+    </ul>
+  </section>
+
+</div>
+
+<button class="print-btn" onclick="window.print()">打印 / 存 PDF</button>
+</body>
+</html>
