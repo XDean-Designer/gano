@@ -1,0 +1,7 @@
+{
+  "host": "YOUR_HOST",
+  "port": 33306,
+  "user": "read_xxx",
+  "password": "YOUR_PASSWORD",
+  "database": "rts_base"
+}

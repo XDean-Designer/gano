@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * Local static server + /api2 reverse proxy for alliance-daily-report.html
+ * Local static server + live snapshot API for alliance-daily-report.html
  * Usage: node serve-daily-report.mjs
  * Then open http://127.0.0.1:8787/alliance-daily-report.html
+ *
+ * Live API: GET /api/alliance-live-snapshot  （读生产只读库，仅本机服务）
  */
 import http from "node:http";
 import https from "node:https";
@@ -10,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
+import { buildLiveSnapshot, loadDbConfig } from "./_alliance-live-snapshot.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = __dirname;
@@ -47,6 +50,13 @@ function safeJoin(root, reqPath) {
 function send(res, status, body, headers = {}) {
   res.writeHead(status, headers);
   res.end(body);
+}
+
+function sendJson(res, status, obj) {
+  send(res, status, JSON.stringify(obj), {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+  });
 }
 
 function proxyApi(req, res) {
@@ -89,7 +99,9 @@ function handleOptions(req, res) {
     "access-control-allow-origin": req.headers.origin || "*",
     "access-control-allow-credentials": "true",
     "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-    "access-control-allow-headers": req.headers["access-control-request-headers"] || "Admin-Token,X-Token,token,Content-Type,Accept",
+    "access-control-allow-headers":
+      req.headers["access-control-request-headers"] ||
+      "Admin-Token,X-Token,token,Content-Type,Accept",
     "access-control-max-age": "86400",
   });
   res.end();
@@ -103,7 +115,9 @@ function serveStatic(req, res) {
 
   fs.stat(filePath, (err, st) => {
     if (err || !st.isFile()) {
-      return send(res, 404, "Not found: " + reqPath, { "content-type": "text/plain; charset=utf-8" });
+      return send(res, 404, "Not found: " + reqPath, {
+        "content-type": "text/plain; charset=utf-8",
+      });
     }
     const ext = path.extname(filePath).toLowerCase();
     const type = MIME[ext] || "application/octet-stream";
@@ -112,12 +126,40 @@ function serveStatic(req, res) {
   });
 }
 
+let liveInFlight = null;
+async function handleLiveSnapshot(res) {
+  try {
+    if (!liveInFlight) {
+      liveInFlight = buildLiveSnapshot(loadDbConfig()).finally(() => {
+        liveInFlight = null;
+      });
+    }
+    const snap = await liveInFlight;
+    return sendJson(res, 200, snap);
+  } catch (err) {
+    return sendJson(res, 500, {
+      ok: false,
+      error: String(err && err.message ? err.message : err),
+    });
+  }
+}
+
 const server = http.createServer((req, res) => {
   const url = req.url || "/";
-  if (req.method === "OPTIONS" && url.startsWith("/api2")) {
+  const pathname = url.split("?")[0];
+
+  if (req.method === "OPTIONS" && (pathname.startsWith("/api2") || pathname.startsWith("/api/"))) {
     return handleOptions(req, res);
   }
-  if (url.startsWith("/api2")) {
+
+  if (pathname === "/api/alliance-live-snapshot") {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      return send(res, 405, "Method Not Allowed");
+    }
+    return handleLiveSnapshot(res);
+  }
+
+  if (pathname.startsWith("/api2")) {
     return proxyApi(req, res);
   }
   if (req.method !== "GET" && req.method !== "HEAD") {
@@ -129,10 +171,10 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, "127.0.0.1", () => {
   const url = `http://127.0.0.1:${PORT}${OPEN_PATH}`;
   console.log("");
-  console.log("联盟日报本地预览已启动");
+  console.log("联盟日报本地预览已启动（含实时快照 API）");
   console.log("  " + url);
+  console.log("  GET /api/alliance-live-snapshot");
   console.log("");
-  console.log("数据由 agent 手工维护；本服务仅用于本地静态预览");
   console.log("停止：Ctrl+C");
   console.log("");
   openBrowser(url);
