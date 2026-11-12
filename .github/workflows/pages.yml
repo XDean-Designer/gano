@@ -25,7 +25,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site/fonts _site/assets/brand
-          cp index.html data-prototype.html alliance-daily-report.html .nojekyll _site/
+          cp index.html data-prototype.html alliance-daily-report.html alliance-activity-mobile.html .nojekyll _site/
           if [ -f fonts/NotoSansSC-VF.ttf ]; then cp fonts/NotoSansSC-VF.ttf _site/fonts/; fi
           if [ -d assets/brand ]; then cp -r assets/brand/. _site/assets/brand/; fi
       - name: Setup Pages
