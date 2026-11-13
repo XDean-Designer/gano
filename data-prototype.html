@@ -476,17 +476,19 @@ function startOfWeekMon(d) {
   const dow = (x.getDay() + 6) % 7; // Mon=0
   return addDays(x, -dow);
 }
-function fmtShort(s) {
-  const d = parseYmd(s);
-  if (!d) return s || "";
-  return `${d.getMonth() + 1}/${d.getDate()}`;
+function rangeDays(start, end) {
+  const a = parseYmd(start);
+  const b = parseYmd(end);
+  if (!a || !b) return 0;
+  return Math.max(1, Math.round((b - a) / 86400000) + 1);
 }
-function rangeLabel(range) {
-  if (!range) return "全部";
-  if (range.preset === "custom" && range.start && range.end) {
-    return `${fmtShort(range.start)}–${fmtShort(range.end)}`;
-  }
-  return range.preset || "全部";
+/** 当前筛选项的区间摘要：区间文案 + 含天数（全部时为 null） */
+function rangeSummary(range) {
+  const b = resolveRangeBounds(range);
+  if (!b.start || !b.end) return { text: "全部时间", days: 0 };
+  const days = rangeDays(b.start, b.end);
+  const text = b.start === b.end ? fmtDayCn(b.start) : `${fmtDayCn(b.start)} – ${fmtDayCn(b.end)}`;
+  return { text, days };
 }
 function defaultRange() {
   return { preset: "全部" };
@@ -563,36 +565,73 @@ function fmtDayCn(s) {
   return `${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
-function CalendarIcon({ size = 18, color = HERO_TITLE }) {
+/* 顶部筛选栏：5 个预设合成分段胶囊（中间细分隔线）+ 右侧独立「自定义」胶囊（带日历图标）；
+   区间与天数摘要以小字右对齐显示在「自定义」下方 */
+function CalendarIcon({ size = 15, color = ORANGE }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="3" y="5" width="18" height="16" rx="3" stroke={color} strokeWidth="2" />
-      <path d="M3 10.5h18" stroke={color} strokeWidth="2" />
-      <path d="M8 3v4.5M16 3v4.5" stroke={color} strokeWidth="2" strokeLinecap="round" />
-      <rect x="7" y="13" width="3" height="3" rx="0.8" fill={color} />
-      <rect x="10.5" y="13" width="3" height="3" rx="0.8" fill={color} opacity="0.55" />
-      <rect x="14" y="13" width="3" height="3" rx="0.8" fill={color} opacity="0.35" />
+      <rect x="3.2" y="5.2" width="17.6" height="15.6" rx="3.2" stroke={color} strokeWidth="2" />
+      <path d="M3.4 10.6h17.2" stroke={color} strokeWidth="2" />
+      <path d="M8.2 3.2v4M15.8 3.2v4" stroke={color} strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
 
-function RangeTrigger({ range, onClick }) {
+function RangeFilterBar({ range, onPick, onCustom }) {
+  const info = rangeSummary(range);
+  const customOn = range.preset === "custom";
   return (
-    <button type="button" onClick={onClick} aria-label="选择时间范围"
-      style={{
-        appearance: "none",
-        border: "1px solid rgba(151,80,38,0.32)",
-        background: "rgba(255,255,255,0.95)",
-        color: HERO_TITLE,
-        borderRadius: 18, height: 34, padding: "0 10px 0 9px",
-        fontSize: 13, fontWeight: 650, cursor: "pointer", whiteSpace: "nowrap",
-        display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
-        maxWidth: 168,
-      }}>
-      <CalendarIcon size={18} color={ORANGE} />
-      <span style={{ overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "0.01em" }}>{rangeLabel(range)}</span>
-      <Icon name="chevron-down.svg" size={11} color={HERO_TITLE} />
-    </button>
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{
+          flex: 1, minWidth: 0, height: 34, display: "flex", alignItems: "stretch",
+          borderRadius: 17, overflow: "hidden",
+          background: PAPER, border: `1px solid ${LINE}`,
+        }}>
+          {RANGE_PRESETS.map((opt, i) => {
+            const on = range.preset === opt;
+            const prevOn = i > 0 && range.preset === RANGE_PRESETS[i - 1];
+            return (
+              <React.Fragment key={opt}>
+                {i > 0 && !on && !prevOn ? (
+                  <div style={{ width: 1, background: LINE, flexShrink: 0 }} />
+                ) : null}
+                <button type="button" onClick={() => onPick({ preset: opt })}
+                  style={{
+                    appearance: "none", border: "none", flex: "1 1 0", minWidth: 0, padding: 0,
+                    background: on ? ORANGE : "transparent",
+                    color: on ? "#fff" : "#6B6B6B",
+                    fontSize: 13, fontWeight: on ? 650 : 500, letterSpacing: "0.01em",
+                    cursor: "pointer", whiteSpace: "nowrap",
+                  }}>
+                  {opt}
+                </button>
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        <button type="button" onClick={onCustom}
+          style={{
+            appearance: "none", flexShrink: 0, height: 34, borderRadius: 17,
+            padding: "0 12px 0 10px",
+            display: "inline-flex", alignItems: "center", gap: 5,
+            border: `1px solid ${customOn ? ORANGE : LINE}`,
+            background: customOn ? ORANGE : PAPER,
+            color: customOn ? "#fff" : "#6B6B6B",
+            fontSize: 13, fontWeight: customOn ? 650 : 500, cursor: "pointer", whiteSpace: "nowrap",
+          }}>
+          <CalendarIcon size={15} color={customOn ? "#fff" : ORANGE} />
+          <span>自定义</span>
+        </button>
+      </div>
+
+      <div style={{ marginTop: 6, display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 4 }}>
+        <span style={{ fontSize: 11, color: MUTED }}>{info.text}</span>
+        {info.days ? <span style={{ fontSize: 11, color: MUTED }}>·</span> : null}
+        {info.days ? <span style={{ fontSize: 11, fontWeight: 650, color: ORANGE }}>共 {info.days} 天</span> : null}
+      </div>
+    </div>
   );
 }
 
@@ -705,8 +744,8 @@ function sheetMetrics(k) {
   return { vs, fs };
 }
 
-/* Sheet 基准内容高 ≈ 651px（390 宽、k=1）；留 8% 余量按可视高缩放，使其恰好放满且不出现内滚动 */
-const SHEET_BASE_H = 664;
+/* Sheet 基准内容高 ≈ 564px（390 宽、k=1，纯日历版）；留余量按可视高缩放，使其恰好放满且不出现内滚动 */
+const SHEET_BASE_H = 572;
 const SHEET_MAX_RATIO = 0.92;
 
 function RangeSheet({ value, onApply, onClose, viewportH }) {
@@ -714,7 +753,6 @@ function RangeSheet({ value, onApply, onClose, viewportH }) {
   const k = Math.min(1, Math.max(0.62, (avail - 6) / SHEET_BASE_H));
   const { vs, fs } = sheetMetrics(k);
   const initialBounds = resolveRangeBounds(value);
-  const [activePreset, setActivePreset] = useState(value.preset === "custom" ? null : value.preset);
   const [draftStart, setDraftStart] = useState(initialBounds.start || "");
   const [draftEnd, setDraftEnd] = useState(initialBounds.end || "");
   const [view, setView] = useState(() => {
@@ -723,15 +761,9 @@ function RangeSheet({ value, onApply, onClose, viewportH }) {
   });
 
   const canConfirm = !!draftStart && !!draftEnd;
-  const dirtyCustom = activePreset == null;
-
-  const pickPreset = (p) => {
-    onApply({ preset: p });
-    onClose();
-  };
+  const draftDays = rangeDays(draftStart, draftEnd);
 
   const pickDay = (key) => {
-    setActivePreset(null);
     if (!draftStart || (draftStart && draftEnd)) {
       setDraftStart(key);
       setDraftEnd("");
@@ -754,32 +786,9 @@ function RangeSheet({ value, onApply, onClose, viewportH }) {
     onClose();
   };
 
-  const row1 = ["今天", "本周", "上周"];
-  const row2 = ["本月", "全部"];
-
-  const chipH = vs(36);
   const navSz = vs(36);
   const boxH = vs(48);
   const btnH = vs(48);
-
-  const chip = (opt) => {
-    const on = activePreset === opt;
-    return (
-      <button key={opt} type="button" onClick={() => pickPreset(opt)}
-        style={{
-          appearance: "none",
-          border: on ? `1.5px solid ${ORANGE}` : `1px solid ${LINE}`,
-          background: on ? ORANGE : PAPER,
-          color: on ? "#fff" : INK,
-          borderRadius: chipH / 2, height: chipH, padding: `0 ${vs(14)}px`,
-          fontSize: fs(14), fontWeight: on ? 650 : 500, cursor: "pointer",
-          flex: "1 1 0",
-          minWidth: 0,
-        }}>
-        {opt}
-      </button>
-    );
-  };
 
   return (
     <>
@@ -790,18 +799,10 @@ function RangeSheet({ value, onApply, onClose, viewportH }) {
         padding: `${vs(10)}px 16px ${vs(18)}px`, maxHeight: avail, overflow: "hidden",
       }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: "#E5E5E5", margin: `0 auto ${vs(10)}px` }} />
-        <div style={{ fontSize: fs(17), fontWeight: 700, textAlign: "center", color: INK, letterSpacing: "0.02em" }}>选择时间范围</div>
+        <div style={{ fontSize: fs(17), fontWeight: 700, textAlign: "center", color: INK, letterSpacing: "0.02em" }}>选择日期范围</div>
 
-        <div style={{ marginTop: vs(14), display: "flex", gap: 8 }}>{row1.map(chip)}</div>
-        <div style={{ marginTop: vs(8), display: "flex", gap: 8 }}>
-          {row2.map(chip)}
-          <div style={{ flex: "1 1 0" }} />
-        </div>
-
-        <div style={{
-          marginTop: vs(16), paddingTop: vs(14), borderTop: `1px solid ${LINE}`,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: vs(10) }}>
+        <div style={{ marginTop: vs(12) }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: vs(8) }}>
             <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))}
               style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: navSz, height: navSz, borderRadius: navSz / 2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Icon name="chevron-left.svg" size={vs(18)} />
@@ -821,7 +822,19 @@ function RangeSheet({ value, onApply, onClose, viewportH }) {
           />
         </div>
 
-        <div style={{ marginTop: vs(14), display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ marginTop: vs(14), display: "flex", alignItems: "baseline", gap: 5, paddingLeft: 2 }}>
+          {canConfirm ? (
+            <>
+              <span style={{ fontSize: fs(12), color: MUTED }}>已选</span>
+              <span style={{ fontSize: fs(12), color: MUTED }}>·</span>
+              <span style={{ fontSize: fs(12), fontWeight: 650, color: ORANGE }}>共 {draftDays} 天</span>
+            </>
+          ) : (
+            <span style={{ fontSize: fs(12), color: MUTED }}>请选择起止日期</span>
+          )}
+        </div>
+
+        <div style={{ marginTop: vs(8), display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
             flex: 1, minWidth: 0, height: boxH, borderRadius: 10, padding: `0 ${vs(12)}px`,
             background: PAGE, border: `1px solid ${LINE}`,
@@ -853,12 +866,12 @@ function RangeSheet({ value, onApply, onClose, viewportH }) {
           </div>
         </div>
 
-        <button type="button" disabled={!dirtyCustom || !canConfirm} onClick={confirmCustom}
+        <button type="button" disabled={!canConfirm} onClick={confirmCustom}
           style={{
-            appearance: "none", border: "none", marginTop: vs(12), width: "100%", height: btnH, borderRadius: btnH / 2,
-            background: dirtyCustom && canConfirm ? ORANGE : "#F0F0F0",
-            color: dirtyCustom && canConfirm ? "#fff" : MUTED,
-            fontSize: fs(16), fontWeight: 700, cursor: dirtyCustom && canConfirm ? "pointer" : "default",
+            appearance: "none", border: "none", marginTop: vs(14), width: "100%", height: btnH, borderRadius: btnH / 2,
+            background: canConfirm ? ORANGE : "#F0F0F0",
+            color: canConfirm ? "#fff" : MUTED,
+            fontSize: fs(16), fontWeight: 700, cursor: canConfirm ? "pointer" : "default",
           }}>
           完成
         </button>
@@ -1012,21 +1025,25 @@ function StatsScreen({ onOpenLogs }) {
         right={<NavCapsule />}
       />
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 100px" }}>
+        <div style={{ marginTop: 12 }}>
+          <RangeFilterBar
+            range={range}
+            onPick={applyRange}
+            onCustom={() => setRangeOpen(true)}
+          />
+        </div>
         <div style={{ position: "relative", marginTop: 12 }}>
           <div style={{
             borderRadius: 12, overflow: "hidden",
             background: HERO_BG, border: `1px solid ${HERO_BORDER}`,
             padding: "18px 16px 16px",
           }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, minHeight: 56 }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 12, color: HERO_TITLE }}>联盟对账</span>
-                  <Icon name="help.svg" size={14} />
-                </div>
-                <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: HERO_TITLE, lineHeight: "28px" }}>丽妍雅集</div>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 12, color: HERO_TITLE }}>联盟对账</span>
+                <Icon name="help.svg" size={14} />
               </div>
-              <RangeTrigger range={range} onClick={() => setRangeOpen(true)} />
+              <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: HERO_TITLE, lineHeight: "28px" }}>丽妍雅集</div>
             </div>
             <div style={{ display: "flex", gap: 12, paddingTop: 16 }}>
               <div style={{ flex: 1, background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
