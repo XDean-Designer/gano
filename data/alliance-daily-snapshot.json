@@ -1,9 +1,9 @@
 {
   "ver": 9,
   "kind": "live-snapshot",
-  "capturedAt": "2026-11-13 16:16:04",
-  "source": "后台已核对快照 · 生产只读库实时 · 2026-11-13 16:16:04",
-  "note": "含作废券入库（有效 46 / 作废 0 / 合计 46）；亮码/扫码自 2026-11-11 取自 tb_alliance_click_stat；看板默认不含作废",
+  "capturedAt": "2026-11-13 17:23:22",
+  "source": "后台已核对快照 · 生产只读库实时 · 2026-11-13 17:23:22",
+  "note": "含作废券入库（有效 48 / 作废 0 / 合计 48）；亮码/扫码自 2026-11-11 取自 tb_alliance_click_stat；看板默认不含作废",
   "reportStart": "2026-11-11",
   "voidedCount": 0,
   "staff": [
@@ -863,6 +863,68 @@
     }
   ],
   "coupons": [
+    {
+      "claimTime": "2026-11-13 16:43:51",
+      "couponId": "1318659531933429800",
+      "couponName": "购卡满 5000",
+      "couponNo": "H3D4MZ9JUGBB",
+      "couponPrice": "980",
+      "couponStatus": "2",
+      "couponType": "3",
+      "customerMobile": "15900450600",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO HAIR·北外滩来福士店",
+      "issueTime": "2026-11-13 16:43:51",
+      "issuerMobile": "15121161412",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理一次",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "15121161412",
+      "storeName": "GANO HAIR·北外滩来福士店",
+      "price": "980",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 16:34:02",
+      "couponId": "1318657103603380200",
+      "couponName": "购卡满 5000",
+      "couponNo": "DVBE8DCKCUWA",
+      "couponPrice": "980",
+      "couponStatus": "2",
+      "couponType": "3",
+      "customerMobile": "13917305288",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO HAIR Salon·凯德虹口商业中心店",
+      "issueTime": "2026-11-13 16:34:02",
+      "issuerMobile": "18018848162",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理一次",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "18018848162",
+      "storeName": "GANO HAIR Salon·凯德虹口商业中心店",
+      "price": "980",
+      "status": "2"
+    },
     {
       "claimTime": "2026-11-13 16:02:43",
       "couponId": "1318649183759184000",
@@ -2312,13 +2374,13 @@
       "totalLimit": "1000"
     },
     {
-      "claimedCount": "15",
+      "claimedCount": "17",
       "couponName": "购卡满 5000",
       "couponType": "3",
       "issueBrandName": "GANO",
       "projectName": "紫镜嘭弾护理一次",
       "redeemBrandName": "丽妍雅集",
-      "remain": "985",
+      "remain": "983",
       "totalLimit": "1000"
     },
     {
@@ -2344,9 +2406,9 @@
     {
       "brandName": "GANO HAIR",
       "brandType": "2",
-      "issueCount": "50",
-      "scanCount": "21",
-      "claimCount": "18",
+      "issueCount": "56",
+      "scanCount": "23",
+      "claimCount": "20",
       "redeemCount": "0"
     }
   ],
@@ -2476,8 +2538,8 @@
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
       "shopName": "GANO HAIR·北外滩来福士店",
-      "lightCount": 16,
-      "scanCount": 10
+      "lightCount": 17,
+      "scanCount": 11
     },
     {
       "brandType": "2",
@@ -2507,24 +2569,24 @@
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
-      "shopName": "GANO HAIR·长宁来福士店",
-      "lightCount": 4,
+      "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+      "lightCount": 5,
       "scanCount": 1
     },
     {
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
-      "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
-      "lightCount": 3,
-      "scanCount": 0
+      "shopName": "GANO HAIR·长宁来福士店",
+      "lightCount": 5,
+      "scanCount": 1
     },
     {
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
       "shopName": "GANO HAIR·上海来福士人民广场店",
-      "lightCount": 2,
+      "lightCount": 4,
       "scanCount": 1
     },
     {
@@ -2614,13 +2676,13 @@
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
         "date": "2026-11-11",
         "lightCount": 2
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-11",
         "lightCount": 2
       },
@@ -2742,11 +2804,17 @@
         "brandType": 2,
         "shopName": "GANO HAIR·北外滩来福士店",
         "date": "2026-11-13",
-        "lightCount": 4
+        "lightCount": 5
       },
       {
         "brandType": 2,
         "shopName": "GANO HAIR·凯德晶萃店",
+        "date": "2026-11-13",
+        "lightCount": 3
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-13",
         "lightCount": 3
       },
@@ -2758,25 +2826,25 @@
       },
       {
         "brandType": 2,
+        "shopName": "GANO HAIR·长宁来福士店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
         "shopName": "GANO hair 造型·苏州中心店",
         "date": "2026-11-13",
         "lightCount": 2
       },
       {
         "brandType": 2,
+        "shopName": "GANO HAIR·上海来福士人民广场店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
         "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
-        "date": "2026-11-13",
-        "lightCount": 1
-      },
-      {
-        "brandType": 2,
-        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
-        "date": "2026-11-13",
-        "lightCount": 1
-      },
-      {
-        "brandType": 2,
-        "shopName": "GANO HAIR·长宁来福士店",
         "date": "2026-11-13",
         "lightCount": 1
       }
@@ -2900,7 +2968,7 @@
         "brandType": 2,
         "shopName": "GANO HAIR·北外滩来福士店",
         "date": "2026-11-13",
-        "scanCount": 3
+        "scanCount": 4
       },
       {
         "brandType": 2,
@@ -2911,6 +2979,12 @@
       {
         "brandType": 2,
         "shopName": "GANO hair 造型·苏州中心店",
+        "date": "2026-11-13",
+        "scanCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-13",
         "scanCount": 1
       }
@@ -2986,13 +3060,13 @@
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
         "date": "2026-11-11",
         "lightCount": 2
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-11",
         "lightCount": 2
       },
@@ -3114,11 +3188,17 @@
         "brandType": 2,
         "shopName": "GANO HAIR·北外滩来福士店",
         "date": "2026-11-13",
-        "lightCount": 4
+        "lightCount": 5
       },
       {
         "brandType": 2,
         "shopName": "GANO HAIR·凯德晶萃店",
+        "date": "2026-11-13",
+        "lightCount": 3
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-13",
         "lightCount": 3
       },
@@ -3130,25 +3210,25 @@
       },
       {
         "brandType": 2,
+        "shopName": "GANO HAIR·长宁来福士店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
         "shopName": "GANO hair 造型·苏州中心店",
         "date": "2026-11-13",
         "lightCount": 2
       },
       {
         "brandType": 2,
+        "shopName": "GANO HAIR·上海来福士人民广场店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
         "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
-        "date": "2026-11-13",
-        "lightCount": 1
-      },
-      {
-        "brandType": 2,
-        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
-        "date": "2026-11-13",
-        "lightCount": 1
-      },
-      {
-        "brandType": 2,
-        "shopName": "GANO HAIR·长宁来福士店",
         "date": "2026-11-13",
         "lightCount": 1
       }
@@ -3272,7 +3352,7 @@
         "brandType": 2,
         "shopName": "GANO HAIR·北外滩来福士店",
         "date": "2026-11-13",
-        "scanCount": 3
+        "scanCount": 4
       },
       {
         "brandType": 2,
@@ -3283,6 +3363,12 @@
       {
         "brandType": 2,
         "shopName": "GANO hair 造型·苏州中心店",
+        "date": "2026-11-13",
+        "scanCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-13",
         "scanCount": 1
       }
