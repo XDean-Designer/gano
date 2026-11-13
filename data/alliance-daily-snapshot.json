@@ -1,9 +1,9 @@
 {
   "ver": 9,
   "kind": "live-snapshot",
-  "capturedAt": "2026-11-13 10:25:24",
-  "source": "后台已核对快照 · 生产只读库实时 · 2026-11-13 10:25:24",
-  "note": "含作废券入库（有效 37 / 作废 0 / 合计 37）；亮码/扫码自 2026-11-11 取自 tb_alliance_click_stat；看板默认不含作废",
+  "capturedAt": "2026-11-13 16:16:04",
+  "source": "后台已核对快照 · 生产只读库实时 · 2026-11-13 16:16:04",
+  "note": "含作废券入库（有效 46 / 作废 0 / 合计 46）；亮码/扫码自 2026-11-11 取自 tb_alliance_click_stat；看板默认不含作废",
   "reportStart": "2026-11-11",
   "voidedCount": 0,
   "staff": [
@@ -864,6 +864,285 @@
   ],
   "coupons": [
     {
+      "claimTime": "2026-11-13 16:02:43",
+      "couponId": "1318649183759184000",
+      "couponName": "购卡满 5000",
+      "couponNo": "XMC7EVQMNZ7U",
+      "couponPrice": "980",
+      "couponStatus": "2",
+      "couponType": "3",
+      "customerMobile": "15652824111",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO hair 造型·苏州中心店",
+      "issueTime": "2026-11-13 16:02:43",
+      "issuerMobile": "17701566517",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理一次",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "17701566517",
+      "storeName": "GANO hair 造型·苏州中心店",
+      "price": "980",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 15:11:40",
+      "couponId": "1318635964663541800",
+      "couponName": "丽妍雅集 V3–V5",
+      "couponNo": "AYTCM77C7Q88",
+      "couponPrice": "218",
+      "couponStatus": "2",
+      "couponType": "1",
+      "customerMobile": "13611750856",
+      "customerNickname": "",
+      "issueBrandType": "1",
+      "issueShopName": "丽妍雅集Rubis SPA·凯德LuOne店",
+      "issueTime": "2026-11-13 15:11:40",
+      "issuerMobile": "13524102313",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "首席设计师洗剪吹或法式头皮减压",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "13524102313",
+      "storeName": "丽妍雅集Rubis SPA·凯德LuOne店",
+      "price": "218",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 14:51:45",
+      "couponId": "1318631383409832000",
+      "couponName": "购卡满 10000",
+      "couponNo": "DTSCE8N9J7M6",
+      "couponPrice": "1360",
+      "couponStatus": "2",
+      "couponType": "4",
+      "customerMobile": "15656433055",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO HAIR·凯德晶萃店",
+      "issueTime": "2026-11-13 14:51:45",
+      "issuerMobile": "18549922246",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理 + 归元暖腹灸",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "18549922246",
+      "storeName": "GANO HAIR·凯德晶萃店",
+      "price": "1360",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 14:10:20",
+      "couponId": "1318620859041263600",
+      "couponName": "购卡满 5000",
+      "couponNo": "4TCUKAG2M9ER",
+      "couponPrice": "980",
+      "couponStatus": "2",
+      "couponType": "3",
+      "customerMobile": "18721820766",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO HAIR·北外滩来福士店",
+      "issueTime": "2026-11-13 14:10:20",
+      "issuerMobile": "15121161412",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理一次",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "15121161412",
+      "storeName": "GANO HAIR·北外滩来福士店",
+      "price": "980",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 13:12:50",
+      "couponId": "1318606487405408300",
+      "couponName": "丽妍雅集 V3–V5",
+      "couponNo": "27TE7ZJEWJUY",
+      "couponPrice": "218",
+      "couponStatus": "2",
+      "couponType": "1",
+      "customerMobile": "13671554312",
+      "customerNickname": "",
+      "issueBrandType": "1",
+      "issueShopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+      "issueTime": "2026-11-13 13:12:50",
+      "issuerMobile": "13761253359",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "首席设计师洗剪吹或法式头皮减压",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "13761253359",
+      "storeName": "丽妍雅集Rubis SPA·北外滩来福士店",
+      "price": "218",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 13:06:14",
+      "couponId": "1318604820257648600",
+      "couponName": "丽妍雅集 V3–V5",
+      "couponNo": "XSZ7D5U7S66Z",
+      "couponPrice": "218",
+      "couponStatus": "2",
+      "couponType": "1",
+      "customerMobile": "13661420957",
+      "customerNickname": "",
+      "issueBrandType": "1",
+      "issueShopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+      "issueTime": "2026-11-13 13:06:14",
+      "issuerMobile": "13761253359",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "首席设计师洗剪吹或法式头皮减压",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "13761253359",
+      "storeName": "丽妍雅集Rubis SPA·北外滩来福士店",
+      "price": "218",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 12:19:33",
+      "couponId": "1318593081004732400",
+      "couponName": "购卡满 10000",
+      "couponNo": "V4X44GCTXPXZ",
+      "couponPrice": "1360",
+      "couponStatus": "2",
+      "couponType": "4",
+      "customerMobile": "15921301945",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO HAIR·北外滩来福士店",
+      "issueTime": "2026-11-13 12:19:33",
+      "issuerMobile": "15121161412",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理 + 归元暖腹灸",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "15121161412",
+      "storeName": "GANO HAIR·北外滩来福士店",
+      "price": "1360",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 12:18:59",
+      "couponId": "1318592927367377000",
+      "couponName": "购卡满 10000",
+      "couponNo": "576R5NWAU8ZQ",
+      "couponPrice": "1360",
+      "couponStatus": "2",
+      "couponType": "4",
+      "customerMobile": "13917055577",
+      "customerNickname": "",
+      "issueBrandType": "2",
+      "issueShopName": "GANO HAIR·北外滩来福士店",
+      "issueTime": "2026-11-13 12:18:59",
+      "issuerMobile": "15121161412",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "紫镜嘭弾护理 + 归元暖腹灸",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "15121161412",
+      "storeName": "GANO HAIR·北外滩来福士店",
+      "price": "1360",
+      "status": "2"
+    },
+    {
+      "claimTime": "2026-11-13 11:55:49",
+      "couponId": "1318586983258468400",
+      "couponName": "丽妍雅集 V3–V5",
+      "couponNo": "KXFXEGDDG9C5",
+      "couponPrice": "218",
+      "couponStatus": "2",
+      "couponType": "1",
+      "customerMobile": "19290080749",
+      "customerNickname": "",
+      "issueBrandType": "1",
+      "issueShopName": "丽妍雅集Rubis SPA·久光百货店",
+      "issueTime": "2026-11-13 11:55:49",
+      "issuerMobile": "15961588921",
+      "issuerNickname": "",
+      "issuerStaffName": "",
+      "projectName": "首席设计师洗剪吹或法式头皮减压",
+      "redeemBrandType": "",
+      "redeemMobile": "",
+      "redeemNickname": "",
+      "redeemShopName": "",
+      "redeemStaffName": "",
+      "redeemTime": "",
+      "voidOperatorName": "",
+      "voidReason": "",
+      "voidTime": "",
+      "issuerPhone": "15961588921",
+      "storeName": "丽妍雅集Rubis SPA·久光百货店",
+      "price": "218",
+      "status": "2"
+    },
+    {
       "claimTime": "2026-11-13 10:15:00",
       "couponId": "1318561394820591600",
       "couponName": "丽妍雅集 V3–V5",
@@ -1241,7 +1520,7 @@
       "couponName": "丽妍雅集 V3–V5",
       "couponNo": "6YAMPU9HC6HE",
       "couponPrice": "218",
-      "couponStatus": "2",
+      "couponStatus": "3",
       "couponType": "1",
       "customerMobile": "18918005857",
       "customerNickname": "",
@@ -1252,19 +1531,19 @@
       "issuerNickname": "",
       "issuerStaffName": "",
       "projectName": "首席设计师洗剪吹或法式头皮减压",
-      "redeemBrandType": "",
-      "redeemMobile": "",
+      "redeemBrandType": "2",
+      "redeemMobile": "15121161412",
       "redeemNickname": "",
-      "redeemShopName": "",
+      "redeemShopName": "GANO HAIR·北外滩来福士店",
       "redeemStaffName": "",
-      "redeemTime": "",
+      "redeemTime": "2026-11-13 14:31:15",
       "voidOperatorName": "",
       "voidReason": "",
       "voidTime": "",
       "issuerPhone": "18702169501",
       "storeName": "丽妍雅集Rubis SPA·瑞虹太阳宫店",
       "price": "218",
-      "status": "2"
+      "status": "3"
     },
     {
       "claimTime": "2026-11-12 16:57:01",
@@ -2013,13 +2292,13 @@
   ],
   "quotas": [
     {
-      "claimedCount": "23",
+      "claimedCount": "27",
       "couponName": "丽妍雅集 V3–V5",
       "couponType": "1",
       "issueBrandName": "丽妍雅集",
       "projectName": "首席设计师洗剪吹或法式头皮减压",
       "redeemBrandName": "GANO",
-      "remain": "977",
+      "remain": "973",
       "totalLimit": "1000"
     },
     {
@@ -2033,23 +2312,23 @@
       "totalLimit": "1000"
     },
     {
-      "claimedCount": "13",
+      "claimedCount": "15",
       "couponName": "购卡满 5000",
       "couponType": "3",
       "issueBrandName": "GANO",
       "projectName": "紫镜嘭弾护理一次",
       "redeemBrandName": "丽妍雅集",
-      "remain": "987",
+      "remain": "985",
       "totalLimit": "1000"
     },
     {
-      "claimedCount": "0",
+      "claimedCount": "3",
       "couponName": "购卡满 10000",
       "couponType": "4",
       "issueBrandName": "GANO",
       "projectName": "紫镜嘭弾护理 + 归元暖腹灸",
       "redeemBrandName": "丽妍雅集",
-      "remain": "1000",
+      "remain": "997",
       "totalLimit": "1000"
     }
   ],
@@ -2057,17 +2336,17 @@
     {
       "brandName": "丽妍雅集",
       "brandType": "1",
-      "issueCount": "77",
-      "scanCount": "26",
-      "claimCount": "24",
-      "redeemCount": "0"
+      "issueCount": "91",
+      "scanCount": "32",
+      "claimCount": "28",
+      "redeemCount": "1"
     },
     {
       "brandName": "GANO HAIR",
       "brandType": "2",
-      "issueCount": "36",
-      "scanCount": "16",
-      "claimCount": "13",
+      "issueCount": "50",
+      "scanCount": "21",
+      "claimCount": "18",
       "redeemCount": "0"
     }
   ],
@@ -2085,8 +2364,16 @@
       "brandName": "丽妍雅集",
       "shopId": "860000000000000300",
       "shopName": "丽妍雅集Rubis SPA·凯德LuOne店",
-      "lightCount": 9,
-      "scanCount": 2
+      "lightCount": 10,
+      "scanCount": 4
+    },
+    {
+      "brandType": "1",
+      "brandName": "丽妍雅集",
+      "shopId": "860000000000000300",
+      "shopName": "丽妍雅集Rubis SPA·久光百货店",
+      "lightCount": 8,
+      "scanCount": 3
     },
     {
       "brandType": "1",
@@ -2100,9 +2387,9 @@
       "brandType": "1",
       "brandName": "丽妍雅集",
       "shopId": "860000000000000300",
-      "shopName": "丽妍雅集Rubis SPA·久光百货店",
-      "lightCount": 7,
-      "scanCount": 2
+      "shopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+      "lightCount": 6,
+      "scanCount": 3
     },
     {
       "brandType": "1",
@@ -2156,6 +2443,22 @@
       "brandType": "1",
       "brandName": "丽妍雅集",
       "shopId": "860000000000000300",
+      "shopName": "丽妍雅集Rubis SPA·苏州中心广场店",
+      "lightCount": 4,
+      "scanCount": 0
+    },
+    {
+      "brandType": "1",
+      "brandName": "丽妍雅集",
+      "shopId": "860000000000000300",
+      "shopName": "丽妍雅集Rubis SPA·仲盛世界商城店",
+      "lightCount": 4,
+      "scanCount": 0
+    },
+    {
+      "brandType": "1",
+      "brandName": "丽妍雅集",
+      "shopId": "860000000000000300",
       "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
       "lightCount": 3,
       "scanCount": 2
@@ -2169,52 +2472,52 @@
       "scanCount": 0
     },
     {
-      "brandType": "1",
-      "brandName": "丽妍雅集",
-      "shopId": "860000000000000300",
-      "shopName": "丽妍雅集Rubis SPA·苏州中心广场店",
-      "lightCount": 2,
-      "scanCount": 0
-    },
-    {
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
       "shopName": "GANO HAIR·北外滩来福士店",
-      "lightCount": 12,
-      "scanCount": 7
+      "lightCount": 16,
+      "scanCount": 10
     },
     {
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
       "shopName": "GANO HAIR·凯德晶萃店",
-      "lightCount": 7,
-      "scanCount": 4
-    },
-    {
-      "brandType": "2",
-      "brandName": "GANO HAIR",
-      "shopId": "860000000000000100",
-      "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
-      "lightCount": 5,
-      "scanCount": 1
+      "lightCount": 10,
+      "scanCount": 5
     },
     {
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
       "shopName": "GANO hair 造型·苏州中心店",
-      "lightCount": 4,
-      "scanCount": 2
+      "lightCount": 6,
+      "scanCount": 3
+    },
+    {
+      "brandType": "2",
+      "brandName": "GANO HAIR",
+      "shopId": "860000000000000100",
+      "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+      "lightCount": 6,
+      "scanCount": 1
     },
     {
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
       "shopName": "GANO HAIR·长宁来福士店",
-      "lightCount": 3,
+      "lightCount": 4,
       "scanCount": 1
+    },
+    {
+      "brandType": "2",
+      "brandName": "GANO HAIR",
+      "shopId": "860000000000000100",
+      "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+      "lightCount": 3,
+      "scanCount": 0
     },
     {
       "brandType": "2",
@@ -2228,7 +2531,7 @@
       "brandType": "2",
       "brandName": "GANO HAIR",
       "shopId": "860000000000000100",
-      "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+      "shopName": "GANO HAIR+奈造型设计·仁恒仓街店",
       "lightCount": 2,
       "scanCount": 0
     },
@@ -2251,25 +2554,25 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·光启城时尚购物中心店",
-        "date": "2026-11-11",
-        "lightCount": 4
-      },
-      {
-        "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·七宝领展广场店",
         "date": "2026-11-11",
         "lightCount": 4
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·瑞虹太阳宫店",
+        "shopName": "丽妍雅集Rubis SPA·光启城时尚购物中心店",
+        "date": "2026-11-11",
+        "lightCount": 4
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
         "date": "2026-11-11",
         "lightCount": 3
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
+        "shopName": "丽妍雅集Rubis SPA·瑞虹太阳宫店",
         "date": "2026-11-11",
         "lightCount": 3
       },
@@ -2311,13 +2614,13 @@
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-11",
         "lightCount": 2
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
         "date": "2026-11-11",
         "lightCount": 2
       },
@@ -2341,7 +2644,7 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·蟠龙新天地店",
+        "shopName": "丽妍雅集Rubis SPA·浦东嘉里城店",
         "date": "2026-11-12",
         "lightCount": 5
       },
@@ -2353,7 +2656,7 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·浦东嘉里城店",
+        "shopName": "丽妍雅集Rubis SPA·蟠龙新天地店",
         "date": "2026-11-12",
         "lightCount": 5
       },
@@ -2407,9 +2710,75 @@
       },
       {
         "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+        "date": "2026-11-13",
+        "lightCount": 6
+      },
+      {
+        "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·凯德LuOne店",
         "date": "2026-11-13",
+        "lightCount": 5
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·仲盛世界商城店",
+        "date": "2026-11-13",
         "lightCount": 4
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·苏州中心广场店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·久光百货店",
+        "date": "2026-11-13",
+        "lightCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·北外滩来福士店",
+        "date": "2026-11-13",
+        "lightCount": 4
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·凯德晶萃店",
+        "date": "2026-11-13",
+        "lightCount": 3
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR+奈造型设计·仁恒仓街店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO hair 造型·苏州中心店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+        "date": "2026-11-13",
+        "lightCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+        "date": "2026-11-13",
+        "lightCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·长宁来福士店",
+        "date": "2026-11-13",
+        "lightCount": 1
       }
     ],
     "scan": [
@@ -2421,12 +2790,6 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
-        "date": "2026-11-11",
-        "scanCount": 2
-      },
-      {
-        "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·七宝领展广场店",
         "date": "2026-11-11",
         "scanCount": 2
@@ -2434,6 +2797,12 @@
       {
         "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·光启城时尚购物中心店",
+        "date": "2026-11-11",
+        "scanCount": 2
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
         "date": "2026-11-11",
         "scanCount": 2
       },
@@ -2513,7 +2882,37 @@
         "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·凯德LuOne店",
         "date": "2026-11-13",
-        "scanCount": 2
+        "scanCount": 4
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+        "date": "2026-11-13",
+        "scanCount": 3
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·久光百货店",
+        "date": "2026-11-13",
+        "scanCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·北外滩来福士店",
+        "date": "2026-11-13",
+        "scanCount": 3
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·凯德晶萃店",
+        "date": "2026-11-13",
+        "scanCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO hair 造型·苏州中心店",
+        "date": "2026-11-13",
+        "scanCount": 1
       }
     ]
   },
@@ -2527,25 +2926,25 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·光启城时尚购物中心店",
-        "date": "2026-11-11",
-        "lightCount": 4
-      },
-      {
-        "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·七宝领展广场店",
         "date": "2026-11-11",
         "lightCount": 4
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·瑞虹太阳宫店",
+        "shopName": "丽妍雅集Rubis SPA·光启城时尚购物中心店",
+        "date": "2026-11-11",
+        "lightCount": 4
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
         "date": "2026-11-11",
         "lightCount": 3
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
+        "shopName": "丽妍雅集Rubis SPA·瑞虹太阳宫店",
         "date": "2026-11-11",
         "lightCount": 3
       },
@@ -2587,13 +2986,13 @@
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
         "date": "2026-11-11",
         "lightCount": 2
       },
       {
         "brandType": 2,
-        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
         "date": "2026-11-11",
         "lightCount": 2
       },
@@ -2617,7 +3016,7 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·蟠龙新天地店",
+        "shopName": "丽妍雅集Rubis SPA·浦东嘉里城店",
         "date": "2026-11-12",
         "lightCount": 5
       },
@@ -2629,7 +3028,7 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·浦东嘉里城店",
+        "shopName": "丽妍雅集Rubis SPA·蟠龙新天地店",
         "date": "2026-11-12",
         "lightCount": 5
       },
@@ -2683,9 +3082,75 @@
       },
       {
         "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+        "date": "2026-11-13",
+        "lightCount": 6
+      },
+      {
+        "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·凯德LuOne店",
         "date": "2026-11-13",
+        "lightCount": 5
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·仲盛世界商城店",
+        "date": "2026-11-13",
         "lightCount": 4
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·苏州中心广场店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·久光百货店",
+        "date": "2026-11-13",
+        "lightCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·北外滩来福士店",
+        "date": "2026-11-13",
+        "lightCount": 4
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·凯德晶萃店",
+        "date": "2026-11-13",
+        "lightCount": 3
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR+奈造型设计·仁恒仓街店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO hair 造型·苏州中心店",
+        "date": "2026-11-13",
+        "lightCount": 2
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR+奈造型设计·虹桥天地店",
+        "date": "2026-11-13",
+        "lightCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR Salon·凯德虹口商业中心店",
+        "date": "2026-11-13",
+        "lightCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·长宁来福士店",
+        "date": "2026-11-13",
+        "lightCount": 1
       }
     ],
     "scan": [
@@ -2697,12 +3162,6 @@
       },
       {
         "brandType": 1,
-        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
-        "date": "2026-11-11",
-        "scanCount": 2
-      },
-      {
-        "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·七宝领展广场店",
         "date": "2026-11-11",
         "scanCount": 2
@@ -2710,6 +3169,12 @@
       {
         "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·光启城时尚购物中心店",
+        "date": "2026-11-11",
+        "scanCount": 2
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·LU1885陆里店",
         "date": "2026-11-11",
         "scanCount": 2
       },
@@ -2789,7 +3254,37 @@
         "brandType": 1,
         "shopName": "丽妍雅集Rubis SPA·凯德LuOne店",
         "date": "2026-11-13",
-        "scanCount": 2
+        "scanCount": 4
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·北外滩来福士店",
+        "date": "2026-11-13",
+        "scanCount": 3
+      },
+      {
+        "brandType": 1,
+        "shopName": "丽妍雅集Rubis SPA·久光百货店",
+        "date": "2026-11-13",
+        "scanCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·北外滩来福士店",
+        "date": "2026-11-13",
+        "scanCount": 3
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO HAIR·凯德晶萃店",
+        "date": "2026-11-13",
+        "scanCount": 1
+      },
+      {
+        "brandType": 2,
+        "shopName": "GANO hair 造型·苏州中心店",
+        "date": "2026-11-13",
+        "scanCount": 1
       }
     ]
   }
