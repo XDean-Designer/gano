@@ -65,7 +65,7 @@
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.26.0/babel.min.js"></script>
 <script type="text/babel" data-presets="react">
-const { useState, useMemo } = React;
+const { useState, useEffect, useMemo } = React;
 
 /* —— Visual tokens (Figma exact) —— */
 const ORANGE = "#FF6002";
@@ -596,7 +596,8 @@ function RangeTrigger({ range, onClick }) {
   );
 }
 
-function MonthGrid({ view, start, end, onPickDay }) {
+function MonthGrid({ view, start, end, onPickDay, k = 1 }) {
+  const { vs, fs } = sheetMetrics(k);
   const year = view.getFullYear();
   const month = view.getMonth();
   const first = new Date(year, month, 1);
@@ -612,16 +613,19 @@ function MonthGrid({ view, start, end, onPickDay }) {
   const todayT = startOfDay(new Date()).getTime();
   const sameDay = startT != null && endT != null && startT === endT;
 
+  const cellH = vs(40);
+  const dot = vs(36);
+
   return (
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", marginBottom: 2 }}>
         {WEEKDAYS.map((w) => (
-          <div key={w} style={{ textAlign: "center", fontSize: 12, color: MUTED, height: 30, lineHeight: "30px", fontWeight: 500 }}>{w}</div>
+          <div key={w} style={{ textAlign: "center", fontSize: fs(12), color: MUTED, height: vs(30), lineHeight: `${vs(30)}px`, fontWeight: 500 }}>{w}</div>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", rowGap: 4 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", rowGap: vs(4) }}>
         {cells.map((day, i) => {
-          if (!day) return <div key={`e${i}`} style={{ height: 40 }} />;
+          if (!day) return <div key={`e${i}`} style={{ height: cellH }} />;
           const t = startOfDay(day).getTime();
           const key = ymd(day);
           const isStart = startT != null && t === startT;
@@ -640,16 +644,16 @@ function MonthGrid({ view, start, end, onPickDay }) {
             <button key={key} type="button" onClick={() => onPickDay(key)}
               style={{
                 appearance: "none", border: "none", background: cellBg, padding: 0,
-                height: 40, cursor: "pointer", position: "relative",
+                height: cellH, cursor: "pointer", position: "relative",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
               <span style={{
-                width: 36, height: 36, borderRadius: 18,
+                width: dot, height: dot, borderRadius: dot / 2,
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
                 background: isEdge ? ORANGE : "transparent",
                 color: isEdge ? "#fff" : INK,
                 fontWeight: isEdge || isToday ? 700 : 500,
-                fontSize: 15,
+                fontSize: fs(15),
                 border: !isEdge && isToday ? `1.5px solid ${ORANGE}` : "1.5px solid transparent",
                 boxSizing: "border-box",
               }}>
@@ -663,7 +667,52 @@ function MonthGrid({ view, start, end, onPickDay }) {
   );
 }
 
-function RangeSheet({ value, onApply, onClose }) {
+/* 手机可视高度：真机取 --mobile-h（已换算为逻辑高度），桌面预览固定 844 */
+function usePhoneHeight() {
+  const read = () => {
+    const root = document.documentElement;
+    if (root.classList.contains("is-mobile")) {
+      const v = parseFloat(getComputedStyle(root).getPropertyValue("--mobile-h"));
+      if (isFinite(v) && v > 0) return v;
+      return window.innerHeight || 844;
+    }
+    return 844;
+  };
+  const [h, setH] = useState(read);
+  useEffect(() => {
+    const on = () => setH(read());
+    window.addEventListener("resize", on);
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", on);
+      vv.addEventListener("scroll", on);
+    }
+    return () => {
+      window.removeEventListener("resize", on);
+      if (vv) {
+        vv.removeEventListener("resize", on);
+        vv.removeEventListener("scroll", on);
+      }
+    };
+  }, []);
+  return h;
+}
+
+/* 按压高等比缩放的垂直尺寸 / 字号（字号收缩更保守，避免糊成一片） */
+function sheetMetrics(k) {
+  const vs = (n) => Math.max(1, Math.round(n * k));
+  const fs = (n) => Math.round(n * (0.88 + 0.12 * k) * 10) / 10;
+  return { vs, fs };
+}
+
+/* Sheet 基准内容高 ≈ 651px（390 宽、k=1）；留 8% 余量按可视高缩放，使其恰好放满且不出现内滚动 */
+const SHEET_BASE_H = 664;
+const SHEET_MAX_RATIO = 0.92;
+
+function RangeSheet({ value, onApply, onClose, viewportH }) {
+  const avail = Math.max(320, Math.round(viewportH * SHEET_MAX_RATIO));
+  const k = Math.min(1, Math.max(0.62, (avail - 6) / SHEET_BASE_H));
+  const { vs, fs } = sheetMetrics(k);
   const initialBounds = resolveRangeBounds(value);
   const [activePreset, setActivePreset] = useState(value.preset === "custom" ? null : value.preset);
   const [draftStart, setDraftStart] = useState(initialBounds.start || "");
@@ -708,6 +757,11 @@ function RangeSheet({ value, onApply, onClose }) {
   const row1 = ["今天", "本周", "上周"];
   const row2 = ["本月", "全部"];
 
+  const chipH = vs(36);
+  const navSz = vs(36);
+  const boxH = vs(48);
+  const btnH = vs(48);
+
   const chip = (opt) => {
     const on = activePreset === opt;
     return (
@@ -717,8 +771,8 @@ function RangeSheet({ value, onApply, onClose }) {
           border: on ? `1.5px solid ${ORANGE}` : `1px solid ${LINE}`,
           background: on ? ORANGE : PAPER,
           color: on ? "#fff" : INK,
-          borderRadius: 18, height: 36, padding: "0 14px",
-          fontSize: 14, fontWeight: on ? 650 : 500, cursor: "pointer",
+          borderRadius: chipH / 2, height: chipH, padding: `0 ${vs(14)}px`,
+          fontSize: fs(14), fontWeight: on ? 650 : 500, cursor: "pointer",
           flex: "1 1 0",
           minWidth: 0,
         }}>
@@ -733,29 +787,29 @@ function RangeSheet({ value, onApply, onClose }) {
       <div className="proto-sheet" style={{
         position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 41, background: PAPER,
         borderTopLeftRadius: 16, borderTopRightRadius: 16,
-        padding: "10px 16px 18px", maxHeight: "86%", overflow: "auto",
+        padding: `${vs(10)}px 16px ${vs(18)}px`, maxHeight: avail, overflow: "hidden",
       }}>
-        <div style={{ width: 36, height: 4, borderRadius: 2, background: "#E5E5E5", margin: "0 auto 10px" }} />
-        <div style={{ fontSize: 17, fontWeight: 700, textAlign: "center", color: INK, letterSpacing: "0.02em" }}>选择时间范围</div>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: "#E5E5E5", margin: `0 auto ${vs(10)}px` }} />
+        <div style={{ fontSize: fs(17), fontWeight: 700, textAlign: "center", color: INK, letterSpacing: "0.02em" }}>选择时间范围</div>
 
-        <div style={{ marginTop: 14, display: "flex", gap: 8 }}>{row1.map(chip)}</div>
-        <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+        <div style={{ marginTop: vs(14), display: "flex", gap: 8 }}>{row1.map(chip)}</div>
+        <div style={{ marginTop: vs(8), display: "flex", gap: 8 }}>
           {row2.map(chip)}
           <div style={{ flex: "1 1 0" }} />
         </div>
 
         <div style={{
-          marginTop: 16, paddingTop: 14, borderTop: `1px solid ${LINE}`,
+          marginTop: vs(16), paddingTop: vs(14), borderTop: `1px solid ${LINE}`,
         }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: vs(10) }}>
             <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))}
-              style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: 36, height: 36, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Icon name="chevron-left.svg" size={18} />
+              style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: navSz, height: navSz, borderRadius: navSz / 2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="chevron-left.svg" size={vs(18)} />
             </button>
-            <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>{view.getFullYear()}年{view.getMonth() + 1}月</div>
+            <div style={{ fontSize: fs(16), fontWeight: 700, color: INK }}>{view.getFullYear()}年{view.getMonth() + 1}月</div>
             <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1))}
-              style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: 36, height: 36, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Icon name="chevron-right.svg" size={18} />
+              style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: navSz, height: navSz, borderRadius: navSz / 2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="chevron-right.svg" size={vs(18)} />
             </button>
           </div>
           <MonthGrid
@@ -763,47 +817,48 @@ function RangeSheet({ value, onApply, onClose }) {
             start={draftStart || null}
             end={draftEnd || null}
             onPickDay={pickDay}
+            k={k}
           />
         </div>
 
-        <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ marginTop: vs(14), display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
-            flex: 1, minWidth: 0, height: 48, borderRadius: 10, padding: "0 12px",
+            flex: 1, minWidth: 0, height: boxH, borderRadius: 10, padding: `0 ${vs(12)}px`,
             background: PAGE, border: `1px solid ${LINE}`,
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
           }}>
             <span style={{
               flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-              fontSize: 14, fontWeight: draftStart ? 600 : 400,
+              fontSize: fs(14), fontWeight: draftStart ? 600 : 400,
               color: draftStart ? INK : MUTED,
             }}>
               {draftStart ? fmtDayCn(draftStart) : "点击日历选择"}
             </span>
-            <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: draftStart ? ORANGE : MUTED }}>起</span>
+            <span style={{ flexShrink: 0, fontSize: fs(13), fontWeight: 600, color: draftStart ? ORANGE : MUTED }}>起</span>
           </div>
           <div style={{ width: 20, height: 1, background: LINE, flexShrink: 0 }} />
           <div style={{
-            flex: 1, minWidth: 0, height: 48, borderRadius: 10, padding: "0 12px",
+            flex: 1, minWidth: 0, height: boxH, borderRadius: 10, padding: `0 ${vs(12)}px`,
             background: PAGE, border: `1px solid ${LINE}`,
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
           }}>
             <span style={{
               flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-              fontSize: 14, fontWeight: draftEnd ? 600 : 400,
+              fontSize: fs(14), fontWeight: draftEnd ? 600 : 400,
               color: draftEnd ? INK : MUTED,
             }}>
               {draftEnd ? fmtDayCn(draftEnd) : "点击日历选择"}
             </span>
-            <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: draftEnd ? ORANGE : MUTED }}>止</span>
+            <span style={{ flexShrink: 0, fontSize: fs(13), fontWeight: 600, color: draftEnd ? ORANGE : MUTED }}>止</span>
           </div>
         </div>
 
         <button type="button" disabled={!dirtyCustom || !canConfirm} onClick={confirmCustom}
           style={{
-            appearance: "none", border: "none", marginTop: 12, width: "100%", height: 48, borderRadius: 24,
+            appearance: "none", border: "none", marginTop: vs(12), width: "100%", height: btnH, borderRadius: btnH / 2,
             background: dirtyCustom && canConfirm ? ORANGE : "#F0F0F0",
             color: dirtyCustom && canConfirm ? "#fff" : MUTED,
-            fontSize: 16, fontWeight: 700, cursor: dirtyCustom && canConfirm ? "pointer" : "default",
+            fontSize: fs(16), fontWeight: 700, cursor: dirtyCustom && canConfirm ? "pointer" : "default",
           }}>
           完成
         </button>
@@ -919,6 +974,7 @@ function FunnelRow({ label, value, max, onClick }) {
 function StatsScreen({ onOpenLogs }) {
   const [range, setRange] = useState(() => loadSavedRange());
   const [rangeOpen, setRangeOpen] = useState(false);
+  const phoneH = usePhoneHeight();
   const s = rangeScale(range);
 
   const guestLi = scaleNum(2, Math.max(0.5, s));
@@ -1029,6 +1085,7 @@ function StatsScreen({ onOpenLogs }) {
           value={range}
           onApply={applyRange}
           onClose={() => setRangeOpen(false)}
+          viewportH={phoneH}
         />
       ) : null}
     </div>
