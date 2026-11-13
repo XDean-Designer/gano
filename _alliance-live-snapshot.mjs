@@ -1,5 +1,5 @@
 /**
- * 从生产只读库组装联盟日报快照（与页面口径一致：自 REPORT_START，剔作废）。
+ * 从生产只读库组装联盟日报快照（自 REPORT_START；含作废券，由看板开关过滤）。
  * 用法：
  *   import { buildLiveSnapshot, loadDbConfig } from "./_alliance-live-snapshot.mjs"
  *   node _alliance-live-snapshot.mjs --write
@@ -157,8 +157,6 @@ export async function buildLiveSnapshot(cfg = loadDbConfig()) {
        WHERE cp.Delete_Yn = 0
          AND cp.Claim_Time IS NOT NULL
          AND cp.Claim_Time >= ?
-         AND cp.Coupon_Status <> 5
-         AND cp.Void_Time IS NULL
        ORDER BY cp.Claim_Time DESC`,
       [REPORT_START_DT]
     );
@@ -286,11 +284,20 @@ export async function buildLiveSnapshot(cfg = loadDbConfig()) {
 
     const claimByBrand = { 1: 0, 2: 0 };
     const redeemByBrand = { 1: 0, 2: 0 };
+    const voidedCount = coupons.filter(
+      (c) => c.voidTime || String(c.couponStatus) === "5"
+    ).length;
     for (const c of coupons) {
       const bt = Number(c.issueBrandType);
+      const isVoid = !!(c.voidTime || String(c.couponStatus) === "5");
       if (bt === 1 || bt === 2) {
-        claimByBrand[bt] += 1;
-        if (c.couponStatus === "3" || c.redeemTime) redeemByBrand[bt] += 1;
+        /* funnelCumulative.claim/redeem 默认按「不含作废」写入；看板打开「含作废」时用券明细重算 */
+        if (!isVoid) {
+          claimByBrand[bt] += 1;
+          if (c.couponStatus === "3" || c.couponStatus === "4" || c.redeemTime) {
+            redeemByBrand[bt] += 1;
+          }
+        }
       }
     }
 
@@ -356,8 +363,9 @@ export async function buildLiveSnapshot(cfg = loadDbConfig()) {
       kind: "live-snapshot",
       capturedAt: stamp,
       source: `后台已核对快照 · 生产只读库实时 · ${stamp}`,
-      note: `仅含有效券 ${coupons.length} 张；亮码/扫码自 ${REPORT_START} 取自 tb_alliance_click_stat；作废不入库`,
+      note: `含作废券入库（有效 ${coupons.length - voidedCount} / 作废 ${voidedCount} / 合计 ${coupons.length}）；亮码/扫码自 ${REPORT_START} 取自 tb_alliance_click_stat；看板默认不含作废`,
       reportStart: REPORT_START,
+      voidedCount,
       staff,
       coupons,
       quotas,
