@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import mysql from "mysql2/promise";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPORT_START = "2026-11-10";
+const REPORT_START = "2026-11-11";
 const REPORT_START_DT = `${REPORT_START} 00:00:00`;
 
 const COUPON_META = {
