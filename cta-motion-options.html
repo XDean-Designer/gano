@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>「立即领取」提示动效</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --orange:#FF6002;
+    --orange-bar:#FF9602;
+    --coupon:#FFF1E8;
+    --ink:#222222;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:#EDEDEA;
+    color:var(--ink);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 24px 72px;
+  }
+  .wrap{max-width:420px;margin:0 auto}
+  h1{font-size:22px;font-weight:600;margin:0 0 18px;letter-spacing:.2px}
+
+  .bar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+  .btn{
+    appearance:none;border:1px solid #DDD;background:#fff;color:#444;
+    height:32px;padding:0 12px;border-radius:8px;font-size:12px;cursor:pointer;
+    font-family:inherit;font-weight:500;
+  }
+  .btn:hover{border-color:#bbb}
+  .btn.on{background:#FF6002;border-color:#FF6002;color:#fff}
+  .hint{font-size:11px;color:#9A9A9A;line-height:1.5}
+
+  /* —— 设计稿真实优惠券 UI（132:2466 = 326×222，比约 1.47） —— */
+  .coupon{
+    position:relative;
+    width:326px;
+    max-width:100%;
+    aspect-ratio:326 / 222;
+    margin:0 auto;
+    background:transparent;
+  }
+  .punch{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:var(--coupon);
+    border-radius:12px;
+    display:flex;
+    flex-direction:column;
+  }
+  /* 左右半圆缺口（对齐虚线撕口，稿面约 y=138） */
+  .punch::before,
+  .punch::after{
+    content:"";position:absolute;top:62.2%;width:12px;height:12px;
+    border-radius:50%;background:#EDEDEA;z-index:4;
+    transform:translateY(-50%);pointer-events:none;
+  }
+  .punch::before{left:-6px}
+  .punch::after{right:-6px}
+  .mark{
+    position:absolute;left:0;top:0;z-index:2;
+    width:58px;height:18px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(90deg,#FF7802 0%,#FF2AB2 100%);
+    border-radius:0 0 8px 0;
+    color:#fff;font-size:11px;font-weight:500;letter-spacing:.2px;
+  }
+  .body{
+    flex:0 0 auto;
+    height:57.7%; /* 128/222 */
+    padding:9.9% 4.9% 0; /* 22/222 · 16/326 */
+    text-align:center;
+    box-sizing:border-box;
+  }
+  .title{
+    font-size:12px;font-weight:500;color:var(--orange);
+    letter-spacing:.3px;line-height:14px;
+  }
+  .price{
+    display:flex;align-items:baseline;justify-content:center;
+    gap:1px;color:var(--orange);margin-top:8px;height:44px;
+  }
+  .price .yen{font-size:14px;font-weight:500;line-height:1;transform:translateY(-8px)}
+  .price .num{font-size:40px;font-weight:700;line-height:44px;letter-spacing:-1px}
+  .item{
+    margin-top:8px;font-size:15px;font-weight:500;color:#333;
+    line-height:18px;
+  }
+  .meta{
+    margin-top:4px;font-size:12px;color:#929292;line-height:14px;
+  }
+  .dash{
+    flex:0 0 auto;
+    width:auto;
+    margin:0 4.9%;
+    height:0;
+    border:none;
+    border-top:1px dashed #E8C9B4;
+    /* 稿面撕口带高 26：上下各留约一半空隙 */
+    margin-top:5.4%;
+    margin-bottom:5.4%;
+  }
+  .cta-area{
+    position:relative;
+    flex:1 1 auto;
+    min-height:0;
+    padding:0 4.9% 8.1%;
+    box-sizing:border-box;
+    display:flex;
+    align-items:flex-start;
+  }
+
+  /* CTA 按钮（稿面 294×40） */
+  .cta-wrap{
+    position:relative;
+    width:100%;
+    height:40px;
+  }
+  .cta{
+    position:relative;z-index:3;
+    width:100%;height:40px;border-radius:20px;
+    background:linear-gradient(90deg,#FF7802 0%,#FF6002 100%);
+    color:#fff;font-size:15px;font-weight:500;letter-spacing:.6px;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;isolation:isolate;
+  }
+  .cta .label{position:relative;z-index:3}
+
+  /* 多条斜向竖条：#FF9602 / 40%，30px 条 + 30px 隙，铺满并向右无缝滚动（2.0s） */
+  .cta .bar-sweep{
+    position:absolute;top:-40%;bottom:-40%;
+    left:-50%;width:220%;
+    background:repeating-linear-gradient(
+      90deg,
+      rgba(255,150,2,.4) 0,
+      rgba(255,150,2,.4) 30px,
+      transparent 30px,
+      transparent 60px
+    );
+    transform:skewX(-25deg) translateX(0);
+    animation:bars-right 2s linear infinite;
+    pointer-events:none;z-index:1;
+  }
+  @keyframes bars-right{
+    from{transform:skewX(-25deg) translateX(0)}
+    to  {transform:skewX(-25deg) translateX(60px)}
+  }
+
+  /* 克制涟漪（原方案 C） */
+  .ripple{
+    position:absolute;left:50%;top:50%;
+    width:100%;height:100%;
+    transform:translate(-50%,-50%);
+    border-radius:999px;
+    border:1.5px solid rgba(255,96,2,.62);
+    box-shadow:0 0 8px rgba(255,96,2,.18);
+    animation:ripple 2.6s cubic-bezier(.25,.6,.3,1) infinite;
+    pointer-events:none;z-index:1;
+  }
+  .ripple.d2{animation-delay:1.3s}
+  @keyframes ripple{
+    0%   {width:100%;height:100%;opacity:.55}
+    35%  {width:calc(100% + 12px);height:calc(100% + 10px);opacity:.38}
+    85%  {width:calc(100% + 16px);height:calc(100% + 14px);opacity:.05}
+    100% {width:calc(100% + 16px);height:calc(100% + 14px);opacity:0}
+  }
+
+  body.paused .cta .bar-sweep,
+  body.paused .ripple{animation-play-state:paused !important}
+
+  @media (prefers-reduced-motion:reduce){
+    .cta .bar-sweep,.ripple{animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>「立即领取」提示动效</h1>
+
+  <div class="bar">
+    <button class="btn" id="toggle">暂停动效</button>
+    <button class="btn" id="replay">重新播放</button>
+    <span class="hint">建议只在券卡进入视口且未领取时播放；退出页面或点击后停止。</span>
+  </div>
+
+  <div class="coupon">
+    <div class="punch">
+      <div class="mark">联盟优惠</div>
+      <div class="body">
+        <div class="title">丽妍雅集会员专属礼遇</div>
+        <div class="price"><span class="yen">¥</span><span class="num">480</span></div>
+        <div class="item">日本玫丽盼全球化护理</div>
+        <div class="meta">9店通用 · 到店核销</div>
+      </div>
+      <hr class="dash" />
+      <div class="cta-area">
+        <div class="cta-wrap">
+          <div class="ripple"></div>
+          <div class="ripple d2"></div>
+          <div class="cta">
+            <span class="bar-sweep" aria-hidden="true"></span>
+            <span class="label">立即领取</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const body = document.body;
+  const toggle = document.getElementById('toggle');
+
+  toggle.addEventListener('click', () => {
+    body.classList.toggle('paused');
+    const paused = body.classList.contains('paused');
+    toggle.textContent = paused ? '继续动效' : '暂停动效';
+    toggle.classList.toggle('on', paused);
+  });
+
+  document.getElementById('replay').addEventListener('click', () => {
+    const nodes = document.querySelectorAll('.bar-sweep, .ripple');
+    nodes.forEach((n) => {
+      n.style.animation = 'none';
+      void n.offsetWidth;
+      n.style.animation = '';
+    });
+    body.classList.remove('paused');
+    toggle.textContent = '暂停动效';
+    toggle.classList.remove('on');
+  });
+</script>
+</body>
+</html>

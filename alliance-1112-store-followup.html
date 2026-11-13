@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>联盟核销 · 11/12 门店沟通执行单</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#6b7280; --line:#e5e7eb; --page:#f3f4f6; --card:#fff;
+    --liyan:#C62828; --liyan-soft:#FDECEC; --liyan-line:#F5C2C2;
+    --gano:#1565C0; --gano-soft:#E8F1FB; --gano-line:#B6D0F0;
+    --warn-bg:#FFF8E7; --warn-bd:#E6C35C;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--page); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased; padding:24px 16px 32px;
+  }
+  .sheet{max-width:1000px;margin:0 auto;background:var(--card);border-radius:10px;
+    box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);overflow:hidden;
+    border:1px solid var(--line)}
+  .stripe{display:flex;height:4px}
+  .stripe i{flex:1}
+  .stripe .a{background:var(--liyan)}
+  .stripe .b{background:var(--gano)}
+  .head{padding:20px 32px 16px;border-bottom:1px solid var(--line)}
+  .head h1{margin:0;font-size:21px;font-weight:800;letter-spacing:.01em}
+  .head .sub{margin-top:6px;font-size:12.5px;color:var(--muted);line-height:1.6}
+  .head .sub b{color:var(--ink);font-weight:700}
+  .body{padding:18px 32px 26px}
+  h2{font-size:13px;font-weight:800;margin:0 0 10px;display:flex;align-items:center;gap:8px;letter-spacing:.02em}
+  h2 .n{width:18px;height:18px;border-radius:4px;background:#111827;color:#fff;font-size:11px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+  h2 .tag{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted)}
+  section+section{margin-top:18px}
+  .concl{display:grid;gap:8px}
+  .c{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:10px 12px;border-radius:7px;
+    background:#f9fafb;border:1px solid var(--line);font-size:13px;line-height:1.62}
+  .c .k{font-weight:800;font-size:12px;color:#fff;background:#111827;border-radius:4px;
+    height:19px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .c b{font-weight:700}
+  .c .liyan{color:var(--liyan);font-weight:700}
+  .c .gano{color:var(--gano);font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;line-height:1.5}
+  th{color:var(--muted);font-weight:600;font-size:11.5px;background:#fafafa}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .brand{font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap}
+  .brand.l{color:var(--liyan);background:var(--liyan-soft);border:1px solid var(--liyan-line)}
+  .brand.g{color:var(--gano);background:var(--gano-soft);border:1px solid var(--gano-line)}
+  .who{font-weight:700}
+  .tel{font-variant-numeric:tabular-nums;white-space:nowrap;color:#111827}
+  .why{color:var(--muted)}
+  .why em{font-style:normal;color:#B45309;font-weight:600}
+  .bulk{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:2px}
+  .box{border:1px solid var(--line);border-radius:7px;padding:11px 12px;font-size:12.5px;line-height:1.6}
+  .box .t{font-weight:800;font-size:12px;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+  .box .t .brand{font-size:10.5px}
+  .box .list{color:#374151}
+  .box .to{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);color:var(--muted);font-size:12px}
+  .box .to b{color:var(--ink);font-weight:700}
+  .qs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .q{border:1px solid var(--line);border-left:3px solid #111827;border-radius:6px;padding:10px 11px;
+    font-size:12.5px;line-height:1.6;background:#fcfcfd}
+  .q .i{font-weight:800;font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+  .q .h{color:var(--muted);font-size:11.5px;margin-top:5px}
+  .close{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}
+  .cl{border:1px solid var(--line);border-radius:7px;padding:12px}
+  .cl .t{font-size:12px;font-weight:800;margin-bottom:8px}
+  ol,ul{margin:0;padding-left:17px}
+  li{font-size:12.5px;line-height:1.75}
+  li b{font-weight:700}
+  .cl.act{border-top:3px solid #111827}
+  .cl.tmr{border-top:3px solid var(--gano);background:var(--gano-soft);border-color:var(--gano-line)}
+  .cl.tmr li{color:#123c66}
+  .cl.tmr b{color:var(--gano)}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
+    font-size:11px;color:var(--muted);line-height:1.65}
+  .warn{margin:0 0 14px;padding:9px 12px;border-radius:6px;background:var(--warn-bg);
+    border:1px solid var(--warn-bd);font-size:12px;line-height:1.55;color:#6b5a1e}
+  @media print{
+    body{background:#fff;padding:0}
+    .sheet{box-shadow:none;border:0;max-width:none}
+    @page{size:A4;margin:10mm}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="stripe"><i class="a"></i><i class="b"></i></div>
+  <div class="head">
+    <h1>联盟核销 · 门店沟通执行单</h1>
+    <div class="sub">
+      执行日 <b>11/12 上午</b>　·　数据口径日 <b>11/11</b>（11/10 为培训试码期，不计入转化）<br>
+      覆盖 <b>26 家门店</b>（丽妍 17 / GANO 9）＝ <b>8 通电话 + 2 条群发</b>　·　执行：市场运营同事
+    </div>
+  </div>
+
+  <div class="body">
+
+    <section>
+      <h2><span class="n">1</span>三个结论<span class="tag">先看清问题在哪，再打电话</span></h2>
+      <div class="concl">
+        <div class="c"><span class="k">A</span><div><b>丽妍「亮码→扫码」为 0，不是统计误差，是真断点。</b>11/11 全天只有 <b>3 家店、3 个人</b>亮码共 <span class="liyan">6 次</span>，扫码 <span class="liyan">0</span>、发券 <span class="liyan">0</span>。顾客根本没扫，不是扫了没领。</div></div>
+        <div class="c"><span class="k">B</span><div><b>参与门店占比偏低：丽妍 3/17 家（18%），GANO 6/9 家（67%）。</b>两边的问题性质因此不同——丽妍是「尚未开始」，GANO 是「已开始但未跑通」。</div></div>
+        <div class="c"><span class="k">C</span><div><b>GANO「扫码→领券」3→2，仅差 1 单，且发生在北外滩。</b>两张券都出自北外滩客服（13:27 / 15:31），顾客 139****0531、150****6713，<em style="font-style:normal;color:#B45309;font-weight:600">至今未核销</em>。其余 4 家为「有亮码、0 券」，原因待核实，与丽妍同属一类。</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">2</span>八通电话<span class="tag">一通一店一人，短通话即可</span></h2>
+      <table>
+        <thead><tr><th style="width:26px">#</th><th style="width:190px">门店</th><th style="width:140px">沟通对象</th><th style="width:112px">电话</th><th>为什么打这通</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="brand l">丽妍</span> Rubis SPA·瑞虹太阳宫店</td><td class="who">张舒</td><td class="tel">17602131262</td><td class="why">亮码 <b>3 次</b> → 扫码 0，是丽妍亮码最多的店</td></tr>
+          <tr><td class="num">2</td><td><span class="brand l">丽妍</span> Rubis SPA·苏州中心广场店</td><td class="who">yoyo</td><td class="tel">18169696012</td><td class="why">亮码 <b>2 次</b> → 扫码 0</td></tr>
+          <tr><td class="num">3</td><td><span class="brand l">丽妍</span> Rubis SPA·美罗百货店</td><td class="who">张娟</td><td class="tel">15850184093</td><td class="why">亮码 <b>1 次</b> → 扫码 0；苏州异地店，可验证跨城是否有阻力</td></tr>
+          <tr><td class="num">4</td><td><span class="brand l">丽妍</span> Rubis SPA·长宁来福士广场店</td><td class="who">李春玲</td><td class="tel">18017383837</td><td class="why">旗舰店 + 运营本部所在地，当日 <em>0 亮码</em></td></tr>
+          <tr><td class="num">5</td><td><span class="brand g">GANO</span> HAIR·北外滩来福士店</td><td class="who">北外滩客服</td><td class="tel">15121161412</td><td class="why">当日唯一「扫码未领券」的店：3 扫码 → 2 券，需了解第 3 位顾客停在哪一步；顺带定 2 张券的预约</td></tr>
+          <tr><td class="num">6</td><td><span class="brand g">GANO</span> HAIR·凯德晶萃店</td><td class="who">夏夏</td><td class="tel">18549922246</td><td class="why">亮码次数全司最多（16 次中余下份额），却 <em>0 券</em>，需确认是否为店员自行演示</td></tr>
+          <tr><td class="num">7</td><td><span class="brand g">GANO</span> HAIR·上海来福士人民广场店</td><td class="who">GANO人广客服</td><td class="tel">17521791529</td><td class="why"><em>0 亮码</em>；客流规模最大的一家</td></tr>
+          <tr><td class="num">8</td><td><span class="brand g">GANO</span> HAIR·荟聚店</td><td class="who">荟聚客服</td><td class="tel">17511629368</td><td class="why"><em>0 亮码</em>；位于大型商业体，客流量级与已参与门店相当</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2><span class="n">3</span>两条群发<span class="tag">不打，只收回执</span></h2>
+      <div class="bulk">
+        <div class="box">
+          <div class="t"><span class="brand l">丽妍</span> 剩余 13 家（今日 0 亮码）</div>
+          <div class="list">西岸中环、光启城、北外滩来福士、仲盛世界商城、七宝领展、凯德LuOne、虹桥新天地、蟠龙新天地、浦东嘉里城、LU1885陆里、宝杨宝龙广场、久光百货、芮欧百货</div>
+          <div class="to">发 <b>Danny 13901756477</b>（抄 丽妍雅集运营 18580709927）<b>·</b> 要回执：每店「亮码责任人姓名」</div>
+        </div>
+        <div class="box">
+          <div class="t"><span class="brand g">GANO</span> 剩余 5 家（1 家未参与 + 4 家有亮码 0 券）</div>
+          <div class="list">仁恒仓街（0 亮码）、苏州中心、虹桥天地、长宁来福士、凯德虹口（有亮码但 0 券）</div>
+          <div class="to">发 <b>GANO运营 17621400094</b><b>·</b> 要回执：同上 +「今日预约到店人数」</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">4</span>统一三问<span class="tag">8 通 + 5 家回执用同一套，否则结论不可比</span></h2>
+      <div class="qs">
+        <div class="q"><span class="i">Q1 · 分清「没做」和「做了没成」</span>今天有没有把码亮给顾客、让顾客扫？<div class="h">答"有"→ 记次数；答"没有"→ 为什么</div></div>
+        <div class="q"><span class="i">Q2 · 定位断点</span>顾客扫完停在哪一步：打不开页面 / 不愿授权手机号 / 没点领取 / 说自己是会员？<div class="h">这四项直接对应四类改法</div></div>
+        <div class="q"><span class="i">Q3 · 落到人</span>接下来固定由谁负责亮码？<div class="h">要姓名，不接受"店里会说"</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">5</span>今日收口与后续观测</h2>
+      <div class="close">
+        <div class="cl act">
+          <div class="t">上午内收口（三件）</div>
+          <ol>
+            <li><b>8 通电话回收成一句判定</b>：主因按「执行 / 认知 / 产品」排序，指出占比最高的那一个</li>
+            <li><b>北外滩 2 张券</b>（139****0531、150****6713）当天定下预约到店时间并回传</li>
+            <li><b>两条群发回执</b>：18 家门店的「亮码责任人」+ GANO 预约人数，当天内收齐</li>
+          </ol>
+        </div>
+        <div class="cl tmr">
+          <div class="t">接下来只看三个数</div>
+          <ul>
+            <li>参与门店：丽妍 <b>3/17</b> → ? ／ GANO <b>6/9</b> → ?</li>
+            <li>亮码→扫码：丽妍 <b>0%</b>（6→0）／ GANO <b>30%</b>（10→3）</li>
+            <li>扫码→领券：GANO <b>67%</b>（3→2，差 1 单，目标 100%）</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="foot">
+      口径说明：亮码的门店归属取 11/11 18:00 后台「数据明细·亮码」按门店视图（丽妍 6 次 / GANO 16 次，GANO 各店为北外滩 3、苏州中心 3、虹桥天地 2、长宁 2、虹口 2，余下为凯德晶萃）；扫码与领券取 11/11 16:24 日报快照（丽妍 0/0，GANO 3/2）。两处截取时间不同，故「亮码→扫码」为下界，实际只会更低。
+      数据源：data/alliance-daily-snapshot.json + 后台「数据明细」截图，无演示数据。
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

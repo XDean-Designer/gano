@@ -21,7 +21,7 @@
 
 | 文件 | 说明 |
 |------|------|
-| **[data-prototype.html](./data-prototype.html)** | **数据钻取 + 店长模式（10–13 / 20–22）** · [GitHub Pages](https://xdean-designer.github.io/gano/data-prototype.html) · 真机自动全屏 / 桌面 `?mobile=1` |
+| **[data-prototype.html](./data-prototype.html)** | **数据钻取（10–13）** · [GitHub Pages](https://xdean-designer.github.io/gano/data-prototype.html) · 真机自动全屏 / 桌面 `?mobile=1` |
 | **[alliance-daily-report.html](./alliance-daily-report.html)** | **联盟活动运营日报** · [GitHub Pages](https://xdean-designer.github.io/gano/alliance-daily-report.html) · 真数快照 `data/alliance-daily-snapshot.json`（禁止虚构演示券；更新后跑 `node _sync-live-snapshot.mjs`） |
 | `alliance-flow-A-storyboard-spec.html` | A 向故事板（规范版） |
 | `alliance-flow-A-storyboard.html` | A 向故事板 |

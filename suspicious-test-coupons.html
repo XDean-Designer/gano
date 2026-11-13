@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>可疑数据</title>
+<style>
+  @font-face{
+    font-family:"Noto Sans SC";
+    src:url("./fonts/NotoSansSC-VF.ttf") format("truetype");
+    font-weight:100 900;font-style:normal;font-display:swap;
+  }
+  :root{
+    --ink:#1a1a1a;--muted:#6b7280;--line:#e5e7eb;--page:#f3f4f6;--card:#fff;
+    --liyan:#C62828;--gano:#1565C0;--warn:#B45309;--hit:#FFF7ED;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);background:var(--page);padding:20px 14px 40px;
+  }
+  .wrap{max-width:1100px;margin:0 auto}
+  .sheet{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);overflow:hidden;
+  }
+  .brand-bar{display:flex;height:4px}
+  .brand-bar .liyan{flex:1;background:var(--liyan)}
+  .brand-bar .gano{flex:1;background:var(--gano)}
+  header{padding:18px 22px 14px;border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-size:18px;font-weight:700}
+  header .meta{margin-top:6px;font-size:12px;color:var(--muted)}
+  .body{padding:16px 22px 22px}
+  h2{margin:0 0 10px;font-size:14px;font-weight:700}
+  h3{margin:16px 0 8px;font-size:13px;font-weight:700;color:#374151}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+  .kpi{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fafafa}
+  .kpi .l{font-size:12px;color:var(--muted)}
+  .kpi .v{margin-top:4px;font-size:24px;font-weight:700}
+  .kpi.warn .v{color:var(--warn)}
+  .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:900px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:#111827;color:#fff;font-weight:600;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  tr.hit{background:var(--hit)}
+  .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+  .sub{margin-top:3px;color:var(--muted);font-size:11px;font-family:"Noto Sans SC",sans-serif}
+  .tag{
+    display:inline-block;margin-top:4px;padding:1px 6px;border-radius:4px;
+    background:#111827;color:#fff;font-size:10px;font-weight:600;
+  }
+  .chip{
+    display:inline-flex;align-items:center;height:20px;padding:0 7px;margin:0 4px 4px 0;
+    border-radius:999px;font-size:11px;font-weight:700;background:#e5e7eb;color:#111;
+  }
+  .chip.rule.r1{background:#FEE2E2;color:#991B1B}
+  .chip.rule.r2{background:#FFEDD5;color:#9A3412}
+  .chip.rule.r3{background:#FEF3C7;color:#92400E}
+  .chip.rule.r4{background:#E0E7FF;color:#3730A3}
+  .chip.rule.r5{background:#F3E8FF;color:#6B21A8}
+  .yes{color:var(--liyan);font-weight:700}
+  .muted{color:var(--muted)}
+  .reason{font-weight:600;color:#9A3412;white-space:nowrap}
+  .empty{text-align:center;color:var(--muted);padding:20px !important}
+  @media (max-width:700px){
+    .kpis{grid-template-columns:1fr 1fr}
+    .body,header{padding-left:14px;padding-right:14px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sheet">
+    <div class="brand-bar"><i class="liyan"></i><i class="gano"></i></div>
+    <header>
+      <h1>可疑数据</h1>
+      <div class="meta">开始 2026-11-11 · R1+R2+R4+R5+R6 · 全量已领 37</div>
+    </header>
+    <div class="body">
+      <div class="kpis">
+        <div class="kpi warn"><div class="l">可疑券</div><div class="v">3</div></div>
+        <div class="kpi"><div class="l">开始前</div><div class="v">0</div></div>
+        <div class="kpi warn"><div class="l">开始后</div><div class="v">3</div></div>
+        <div class="kpi warn"><div class="l">开始前点击 R6</div><div class="v">116</div></div>
+      </div>
+      <div class="muted" style="font-size:12px;margin:-6px 0 14px">
+        R6 开始前：亮码 94 · 扫码 22
+      </div>
+
+      <h2>可疑券码</h2>
+      
+      <h3>开始后（3）</h3>
+      <div class="table-wrap"><table>
+        <thead><tr>
+          <th>券码</th><th>类型</th><th>领取时间</th><th>门店</th><th>发券</th><th>领取</th><th>问题原因</th><th>作废</th>
+        </tr></thead>
+        <tbody><tr class="hit">
+      <td class="mono">S899ACTUMJ3N</td>
+      <td>丽妍V6-V10</td>
+      <td class="mono">2026-11-12 12:53:18</td>
+      <td>丽妍雅集Rubis SPA·久光百货店</td>
+      <td class="mono">15961588921<div class="sub">李嫚嫚</div><div class="tag">Staff</div></td>
+      <td class="mono">15961588921<div class="sub">李嫚嫚</div><div class="tag">Staff</div></td>
+      <td class="reason">员工自发自领</td>
+      <td><span class="muted">—</span></td>
+    </tr>
+<tr class="hit">
+      <td class="mono">Y6P433DY7J8T</td>
+      <td>丽妍V3-V5</td>
+      <td class="mono">2026-11-12 16:57:01</td>
+      <td>丽妍雅集Rubis SPA·瑞虹太阳宫店</td>
+      <td class="mono">18702169501<div class="sub">太阳宫-前台 陆爱明</div><div class="tag">Staff</div></td>
+      <td class="mono">18702169501<div class="sub">太阳宫-前台 陆爱明</div><div class="tag">Staff</div></td>
+      <td class="reason">员工自发自领</td>
+      <td><span class="muted">—</span></td>
+    </tr>
+<tr class="hit">
+      <td class="mono">SEKUQNNHWJTJ</td>
+      <td>丽妍V3-V5</td>
+      <td class="mono">2026-11-12 17:32:31</td>
+      <td>丽妍雅集Rubis SPA·浦东嘉里城店</td>
+      <td class="mono">13564066546<div class="sub">蔡芸</div><div class="tag">Staff</div></td>
+      <td class="mono">13564066546<div class="sub">蔡芸</div><div class="tag">Staff</div></td>
+      <td class="reason">员工自发自领</td>
+      <td><span class="muted">—</span></td>
+    </tr></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

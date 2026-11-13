@@ -5,15 +5,6 @@ const ORANGE = "#FF6633";
 const CHIP = "#FFF4EE";
 const INK = "#222222";
 const MUTED = "#888888";
-const LINE = "#EEEEEE";
-const PAGE = "#F6F6F6";
-const PAPER = "#FFFFFF";
-const OPEN = "#2BA471";
-
-const DESIGN_W = 390;
-const DESIGN_H = 844;
-const SCALE = 0.52;
-const UI_FONT = '"Noto Sans SC", "Source Han Sans SC", sans-serif';
 
 function ChevronDown({ size = 12, color = "#999999", rotate = 0 }) {
   return (
@@ -29,6 +20,15 @@ function ChevronDown({ size = 12, color = "#999999", rotate = 0 }) {
     </svg>
   );
 }
+const LINE = "#EEEEEE";
+const PAGE = "#F6F6F6";
+const PAPER = "#FFFFFF";
+const OPEN = "#2BA471";
+
+const DESIGN_W = 390;
+const DESIGN_H = 844;
+const SCALE = 0.52;
+const UI_FONT = '"Noto Sans SC", "Source Han Sans SC", sans-serif';
 
 function Screen({ id }) {
   if (id === "enter") return <Enter />;
@@ -45,9 +45,8 @@ function Screen({ id }) {
   if (id === "expired") return <ExpiredStaff />;
   if (id === "staleTicket") return <TicketStale />;
   if (id === "review") return <Review />;
-  if (id === "feedback") return <OrderDetail />;
+  if (id === "feedback") return <Feedback />;
   if (id === "stats") return <Stats />;
-  if (id === "logs") return <LogsDetail />;
   if (id === "tiersEmpty") return <TiersEmpty />;
   if (id === "codeV35") return <StaffCodeV35 />;
   if (id === "claimV35") return <ClaimV35 />;
@@ -237,8 +236,9 @@ function Poster() {
 }
 
 function ShopLanding() {
+  const [allOpen, setAllOpen] = useState(false);
   return (
-    <div style={{ height: "100%", background: "#F6F6F6", color: "#111111", display: "flex", flexDirection: "column" }}>
+    <div style={{ height: "100%", background: "#F6F6F6", color: "#111111", display: "flex", flexDirection: "column", position: "relative" }}>
       <div style={{ height: 28, flexShrink: 0, background: "#2B2B2B" }} />
       <div style={{ flex: 1, minHeight: 0, overflowY: "scroll", scrollbarWidth: "thin" }}>
         <div style={{ height: 78, background: "#C4B2A4", display: "flex", alignItems: "flex-end", padding: "0 12px 10px", gap: 6 }}>
@@ -271,11 +271,16 @@ function ShopLanding() {
             <span style={{ fontSize: 11, color: "#666666" }}>电话</span>
           </div>
         </div>
-        <div style={{ margin: "8px 8px 12px", background: "#FFFFFF", borderRadius: 10, padding: "10px 12px 0" }}>
+        <div style={{ margin: "8px 8px 0", paddingBottom: 10 }}>
           <ShopTabs active="联盟优惠" />
-          <AllianceDrop />
         </div>
+        <div style={{ margin: "0 8px 0", background: "#FFFFFF", borderRadius: 10, padding: "10px 12px 0" }}>
+          <AllianceDrop />
+          <StoreMapInline brand="gano" onOpenAll={() => setAllOpen(true)} />
+        </div>
+        <div style={{ height: 12 }} />
       </div>
+      {allOpen ? <StoreAllSheet brand="gano" onClose={() => setAllOpen(false)} /> : null}
     </div>
   );
 }
@@ -305,6 +310,513 @@ function WxScan() {
   );
 }
 
+/* ===== 适用门店 · 腾讯地图卡（示意底图；接入参数见 PRD 05） ===== */
+const STORE_MAP = {
+  gano: {
+    label: "GANO HAIR",
+    meta: "上海 · 苏州 9 家",
+    stores: [
+      { name: "凯德晶萃店", city: "上海", address: "静安区西藏北路 166 号 L4", dist: "1.2km", x: 0.52, y: 0.40 },
+      { name: "北外滩来福士店", city: "上海", address: "虹口区东大名路 999 号 L4", dist: "3.4km", x: 0.63, y: 0.30 },
+      { name: "虹桥天地店", city: "上海", address: "闵行区申长路 688 号 L3", dist: "8.6km", x: 0.29, y: 0.54 },
+      { name: "凯德虹口商业中心店", city: "上海", address: "虹口区四川北路 1350 号 L4", dist: "4.1km", x: 0.57, y: 0.24 },
+      { name: "人广来福士店", city: "上海", address: "黄浦区西藏中路 268 号 L5", dist: "0.8km", x: 0.47, y: 0.46 },
+      { name: "长宁来福士店", city: "上海", address: "长宁区长宁路 1139 号 L4", dist: "4.9km", x: 0.37, y: 0.44 },
+      { name: "荟聚店", city: "上海", address: "闵行区七莘路 1507 号 L3", dist: "9.7km", x: 0.26, y: 0.62 },
+      { name: "苏州中心店", city: "苏州", address: "工业园区苏绣路 58 号 L4", dist: "84km", x: 0.13, y: 0.32 },
+      { name: "仁恒仓街店", city: "苏州", address: "姑苏区干将东路 666 号 L2", dist: "86km", x: 0.17, y: 0.48 },
+    ],
+  },
+  liyan: {
+    label: "丽妍雅集 Rubis SPA",
+    meta: "上海 · 苏州 17 家",
+    stores: [
+      { name: "西岸中环店", city: "上海", address: "徐汇区龙腾大道 2600 号", dist: "6.8km", x: 0.32, y: 0.66 },
+      { name: "光启城店", city: "上海", address: "徐汇区宜山路 455 号", dist: "5.2km", x: 0.38, y: 0.60 },
+      { name: "北外滩来福士店", city: "上海", address: "虹口区东大名路 999 号", dist: "3.4km", x: 0.63, y: 0.30 },
+      { name: "瑞虹太阳宫店", city: "上海", address: "虹口区瑞虹路 181 号", dist: "4.6km", x: 0.60, y: 0.20 },
+      { name: "长宁来福士店", city: "上海", address: "长宁区长宁路 1139 号", dist: "4.9km", x: 0.37, y: 0.44 },
+      { name: "仲盛世界商城店", city: "上海", address: "闵行区都市路 5001 号", dist: "12km", x: 0.24, y: 0.70 },
+      { name: "七宝领展店", city: "上海", address: "闵行区七莘路 3655 号", dist: "11km", x: 0.22, y: 0.58 },
+      { name: "企业领展店", city: "上海", address: "浦东新区张江路 88 号", dist: "9.1km", x: 0.68, y: 0.50 },
+      { name: "凯德 LuOne 店", city: "上海", address: "黄浦区徐家汇路 268 号", dist: "2.6km", x: 0.46, y: 0.56 },
+      { name: "虹桥天地店", city: "上海", address: "闵行区申长路 688 号", dist: "8.6km", x: 0.29, y: 0.54 },
+      { name: "蟠龙天地店", city: "上海", address: "青浦区蟠龙路 88 号", dist: "18km", x: 0.16, y: 0.50 },
+      { name: "浦东嘉里城店", city: "上海", address: "浦东新区花木路 1378 号", dist: "8.3km", x: 0.72, y: 0.58 },
+      { name: "LU1885 陆里店", city: "上海", address: "静安区南京西路 1885 号", dist: "1.9km", x: 0.44, y: 0.38 },
+      { name: "宝杨宝龙店", city: "上海", address: "宝山区牡丹江路 1508 号", dist: "14km", x: 0.66, y: 0.10 },
+      { name: "苏州中心店", city: "苏州", address: "工业园区苏绣路 58 号", dist: "84km", x: 0.13, y: 0.32 },
+      { name: "苏州久光店", city: "苏州", address: "姑苏区干将西路 128 号", dist: "86km", x: 0.10, y: 0.44 },
+      { name: "苏州美罗店", city: "苏州", address: "姑苏区观前街 245 号", dist: "87km", x: 0.15, y: 0.56 },
+    ],
+  },
+};
+
+function MapCanvas({ stores, active, onPick }) {
+  return (
+    <div style={{ position: "absolute", inset: 0 }}>
+      <svg width="100%" height="100%" viewBox="0 0 360 160" preserveAspectRatio="none" aria-hidden="true">
+        <rect width="360" height="160" fill="#F1F2EC" />
+        <path d="M0 118 C60 104 96 122 148 112 C210 100 260 118 360 96 L360 160 L0 160 Z" fill="#E3EDF2" />
+        <path d="M0 30 C70 44 120 26 180 40 C250 56 300 34 360 48" stroke="#FFFFFF" strokeWidth="7" fill="none" />
+        <path d="M92 0 L92 160" stroke="#FFFFFF" strokeWidth="6" />
+        <path d="M210 0 L210 160" stroke="#FFFFFF" strokeWidth="5" />
+        <path d="M0 84 L360 84" stroke="#FFFFFF" strokeWidth="5" />
+        <path d="M0 132 L360 132" stroke="#FFFFFF" strokeWidth="4" />
+        <path d="M286 0 L286 160" stroke="#FFFFFF" strokeWidth="3" />
+        {[
+          [24, 12, 40, 26],
+          [110, 10, 52, 24],
+          [232, 8, 40, 22],
+          [300, 12, 46, 26],
+          [118, 56, 44, 20],
+          [246, 56, 34, 18],
+          [36, 96, 38, 22],
+          [150, 96, 46, 22],
+          [268, 96, 42, 24],
+        ].map(([x, y, w, h], i) => (
+          <rect key={i} x={x} y={y} width={w} height={h} rx="3" fill="#E7E8E0" />
+        ))}
+        <rect x="316" y="60" width="26" height="18" rx="3" fill="#E1EADB" />
+        <rect x="24" y="64" width="24" height="16" rx="3" fill="#E1EADB" />
+        <text x="26" y="150" fontSize="8" fill="#AEB0A6" fontFamily="sans-serif">苏州</text>
+        <text x="306" y="150" fontSize="8" fill="#AEB0A6" fontFamily="sans-serif">上海</text>
+      </svg>
+      {stores.map((s, i) => {
+        const on = i === active;
+        return (
+          <div
+            key={s.name}
+            onClick={(event) => {
+              event.stopPropagation();
+              onPick(i);
+            }}
+            style={{
+              position: "absolute",
+              left: `${s.x * 100}%`,
+              top: `${s.y * 100}%`,
+              transform: "translate(-50%,-50%)",
+              cursor: "pointer",
+              zIndex: on ? 3 : 2,
+            }}
+          >
+            <div
+              style={{
+                width: on ? 22 : 16,
+                height: on ? 22 : 16,
+                borderRadius: on ? 11 : 8,
+                background: on ? ORANGE : "#5A5A5A",
+                border: "2px solid #FFFFFF",
+                boxShadow: on ? "0 2px 6px rgba(255,102,51,.45)" : "0 1px 3px rgba(0,0,0,.25)",
+                color: "#FFFFFF",
+                fontSize: 9,
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxSizing: "border-box",
+              }}
+            >
+              {on ? i + 1 : ""}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function StoreMapCard({ brand = "gano", onOpenAll }) {
+  const data = STORE_MAP[brand];
+  const stores = data.stores;
+  const [active, setActive] = useState(0);
+  const [located, setLocated] = useState(true);
+  const cur = stores[active] || stores[0];
+  const nearby = stores.slice(0, 5);
+
+  return (
+    <div style={{ margin: "8px 12px 0", background: "#FFFFFF", borderRadius: 8, padding: 12, position: "relative" }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>适用门店</span>
+        <span style={{ marginLeft: 6, fontSize: 11, color: "#999999" }}>{data.meta}</span>
+        <span
+          onClick={(event) => {
+            event.stopPropagation();
+            if (onOpenAll) onOpenAll();
+          }}
+          style={{ marginLeft: "auto", fontSize: 11, color: ORANGE, cursor: "pointer" }}
+        >
+          全部 ›
+        </span>
+      </div>
+
+      <div style={{ marginTop: 8, height: 128, borderRadius: 8, overflow: "hidden", position: "relative", background: "#F1F2EC" }}>
+        <MapCanvas stores={stores} active={active} onPick={setActive} />
+        {!located ? (
+          <div
+            onClick={(event) => {
+              event.stopPropagation();
+              setLocated(true);
+            }}
+            style={{ position: "absolute", left: 8, right: 8, top: 8, display: "flex", alignItems: "center", background: "#FFFFFF", borderRadius: 6, padding: "5px 8px", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,.12)" }}
+          >
+            <span style={{ fontSize: 10, color: "#666666", lineHeight: "14px" }}>开启定位，看离你最近的门店</span>
+            <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, color: ORANGE }}>去开启</span>
+          </div>
+        ) : null}
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            if (onOpenAll) onOpenAll();
+          }}
+          style={{
+            position: "absolute",
+            left: "68%",
+            top: "62%",
+            transform: "translate(-50%,-50%)",
+            height: 20,
+            padding: "0 7px",
+            borderRadius: 10,
+            background: "#FFFFFF",
+            boxShadow: "0 1px 4px rgba(0,0,0,.18)",
+            fontSize: 10,
+            fontWeight: 600,
+            color: "#444444",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+        >
+          +{Math.max(stores.length - 5, 1)}
+        </div>
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            setLocated(!located);
+          }}
+          title={located ? "关闭定位" : "开启定位"}
+          style={{
+            position: "absolute",
+            right: 8,
+            bottom: 8,
+            width: 24,
+            height: 24,
+            borderRadius: 12,
+            background: "#FFFFFF",
+            boxShadow: "0 1px 4px rgba(0,0,0,.18)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={located ? ORANGE : "#888888"} strokeWidth="2">
+            <circle cx="12" cy="12" r="3.2" />
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" strokeLinecap="round" />
+          </svg>
+        </div>
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            if (onOpenAll) onOpenAll();
+          }}
+          title="展开全部门店"
+          style={{
+            position: "absolute",
+            right: 38,
+            bottom: 8,
+            width: 24,
+            height: 24,
+            borderRadius: 12,
+            background: "#FFFFFF",
+            boxShadow: "0 1px 4px rgba(0,0,0,.18)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="2" strokeLinecap="round">
+            <path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" />
+          </svg>
+        </div>
+      </div>
+
+      <div
+        style={{
+          marginTop: 8,
+          height: 68,
+          overflowY: "auto",
+          overflowX: "hidden",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          position: "relative",
+        }}
+      >
+        {stores.map((s, i) => {
+          const on = i === active;
+          return (
+            <div
+              key={s.name}
+              onClick={(event) => {
+                event.stopPropagation();
+                setActive(i);
+              }}
+              style={{
+                height: 34,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "0 4px",
+                borderTop: i === 0 ? "none" : "1px solid #F4F4F4",
+                background: on ? "#FFF8F4" : "transparent",
+                cursor: "pointer",
+                boxSizing: "border-box",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#111111", lineHeight: "16px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</div>
+                <div style={{ fontSize: 10, color: "#999999", lineHeight: "13px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.address}</div>
+              </div>
+              <span style={{ fontSize: 10, color: on ? ORANGE : "#999999", flexShrink: 0 }}>距你 {s.dist}</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ flexShrink: 0, display: "block" }}>
+                <path d="M11 1L5.2 11 4.6 6.9 1 5.6 11 1z" fill={ORANGE} />
+              </svg>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ marginTop: 6, fontSize: 10, color: "#BBBBBB" }}>上下滑动看全部门店 · 地图为示意</div>
+    </div>
+  );
+}
+
+/* 方形示意底图：324×324 街区网格（与 Figma 04 一致） */
+const SQ_CELLS = [
+  [3, 3, 58, 56], [3, 145, 58, 56], [3, 215, 58, 58], [3, 287, 58, 34],
+  [75, 3, 64, 56], [75, 73, 64, 58], [75, 145, 64, 56], [75, 215, 64, 58], [75, 287, 64, 34],
+  [153, 3, 64, 56], [153, 73, 64, 58], [153, 145, 64, 56], [153, 215, 64, 58], [153, 287, 64, 34],
+  [231, 3, 58, 56], [231, 145, 58, 56], [231, 215, 58, 58], [231, 287, 58, 34],
+  [303, 3, 18, 56], [303, 73, 18, 58], [303, 145, 18, 56], [303, 287, 18, 34],
+];
+
+function MapCanvasSquare({ stores, active, onPick }) {
+  return (
+    <div style={{ position: "absolute", inset: 0 }}>
+      <svg width="100%" height="100%" viewBox="0 0 324 324" preserveAspectRatio="none" aria-hidden="true">
+        <rect width="324" height="324" fill="#F0F1E9" />
+        {SQ_CELLS.map(([x, y, w, h], i) => (
+          <rect key={i} x={x} y={y} width={w} height={h} rx="3" fill={i % 3 === 0 ? "#E9EADF" : i % 3 === 1 ? "#E5E6DA" : "#ECEDE3"} />
+        ))}
+        <path d="M0 246 C58 234 96 258 154 250 C214 242 262 262 324 250 L324 286 C262 298 214 278 154 286 C96 294 58 270 0 282 Z" fill="#D7E6EE" />
+        <rect x="293" y="73" width="27" height="61" rx="4" fill="#DCECD3" />
+        <rect x="7" y="73" width="56" height="19" rx="4" fill="#DCEBD4" />
+        <rect x="229" y="145" width="61" height="24" rx="4" fill="#DCEBD4" />
+        {[68, 146, 224, 296].map((v) => (
+          <rect key={"v" + v} x={v - 4} y="0" width="8" height="324" fill="#FFFFFF" />
+        ))}
+        {[66, 138, 208, 280].map((h) => (
+          <rect key={"h" + h} x="0" y={h - 4} width="324" height="8" fill="#FFFFFF" />
+        ))}
+        <rect x="65.5" y="0" width="5" height="324" fill="#FFFFFF" />
+        <rect x="223.5" y="0" width="5" height="324" fill="#FFFFFF" />
+        <rect x="0" y="135.5" width="324" height="5" fill="#FFFFFF" />
+        <rect x="0" y="277.5" width="324" height="5" fill="#FFFFFF" />
+      </svg>
+      {stores.map((s, i) => {
+        const on = i === active;
+        return (
+          <div
+            key={s.name}
+            onClick={(event) => {
+              event.stopPropagation();
+              onPick(i);
+            }}
+            style={{ position: "absolute", left: `${s.x * 100}%`, top: `${s.y * 100}%`, transform: "translate(-50%,-50%)", cursor: "pointer", zIndex: on ? 3 : 2 }}
+          >
+            <div
+              style={{
+                width: on ? 22 : 15,
+                height: on ? 22 : 15,
+                borderRadius: on ? 11 : 8,
+                background: on ? ORANGE : "#5C5C5C",
+                border: "2px solid #FFFFFF",
+                boxShadow: on ? "0 2px 6px rgba(255,102,51,.45)" : "0 1px 3px rgba(0,0,0,.25)",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* 04 店铺页：与优惠券共用一张白卡（无独立外边距/底色） */
+function StoreMapInline({ brand = "gano", onOpenAll }) {
+  const data = STORE_MAP[brand];
+  const stores = data.stores;
+  const [active, setActive] = useState(0);
+  const [located, setLocated] = useState(true);
+  const nearest = [stores[active], ...[...stores].filter((s) => s !== stores[active]).sort((a, b) => parseFloat(a.dist) - parseFloat(b.dist))].slice(0, 2);
+
+  return (
+    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #F0F0F0", position: "relative" }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>适用门店</span>
+        <span
+          onClick={(event) => {
+            event.stopPropagation();
+            if (onOpenAll) onOpenAll();
+          }}
+          style={{ marginLeft: "auto", fontSize: 11, color: ORANGE, cursor: "pointer" }}
+        >
+          全部 ›
+        </span>
+      </div>
+
+      <div style={{ marginTop: 8, width: "100%", aspectRatio: "1 / 1", borderRadius: 12, overflow: "hidden", position: "relative", background: "#F1F2EC" }}>
+        <MapCanvasSquare stores={stores} active={active} onPick={setActive} />
+        {!located ? (
+          <div
+            onClick={(event) => {
+              event.stopPropagation();
+              setLocated(true);
+            }}
+            style={{ position: "absolute", left: 8, right: 8, top: 8, display: "flex", alignItems: "center", background: "#FFFFFF", borderRadius: 6, padding: "5px 8px", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,.12)" }}
+          >
+            <span style={{ fontSize: 10, color: "#666666", lineHeight: "14px" }}>开启定位，看离你最近的门店</span>
+            <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, color: ORANGE }}>去开启</span>
+          </div>
+        ) : null}
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            if (onOpenAll) onOpenAll();
+          }}
+          style={{ position: "absolute", left: "66%", top: "70%", transform: "translate(-50%,-50%)", height: 20, padding: "0 7px", borderRadius: 10, background: "#FFFFFF", boxShadow: "0 1px 4px rgba(0,0,0,.18)", fontSize: 10, fontWeight: 600, color: "#444444", display: "flex", alignItems: "center", cursor: "pointer" }}
+        >
+          +{Math.max(stores.length - 5, 1)}
+        </div>
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            if (onOpenAll) onOpenAll();
+          }}
+          title="展开全部门店"
+          style={{ position: "absolute", right: 8, bottom: 8, width: 22, height: 22, borderRadius: 11, background: "#FFFFFF", boxShadow: "0 1px 4px rgba(0,0,0,.18)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="2" strokeLinecap="round">
+            <path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" />
+          </svg>
+        </div>
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            setLocated(!located);
+          }}
+          title={located ? "关闭定位" : "开启定位"}
+          style={{ position: "absolute", right: 36, bottom: 8, width: 22, height: 22, borderRadius: 11, background: "#FFFFFF", boxShadow: "0 1px 4px rgba(0,0,0,.18)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={located ? ORANGE : "#888888"} strokeWidth="2">
+            <circle cx="12" cy="12" r="3.2" />
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" strokeLinecap="round" />
+          </svg>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 8, overflow: "hidden", borderRadius: 8 }}>
+        {nearest.map((s, i) => {
+          const on = i === active;
+          return (
+            <div
+              key={s.name}
+              onClick={(event) => {
+                event.stopPropagation();
+                setActive(i);
+              }}
+              style={{ height: 34, display: "flex", alignItems: "center", gap: 6, padding: "0 4px", borderTop: i === 0 ? "none" : "1px solid #F4F4F4", background: on ? "#FFF8F4" : "transparent", cursor: "pointer", boxSizing: "border-box" }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#111111", lineHeight: "16px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</div>
+                <div style={{ fontSize: 10, color: "#999999", lineHeight: "13px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.address}</div>
+              </div>
+              <span style={{ fontSize: 10, color: on ? ORANGE : "#999999", flexShrink: 0 }}>距你 {s.dist}</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ flexShrink: 0, display: "block" }}>
+                <path d="M11 1L5.2 11 4.6 6.9 1 5.6 11 1z" fill={ORANGE} />
+              </svg>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function StoreAllSheet({ brand = "gano", onClose }) {
+  const data = STORE_MAP[brand];
+  const [city, setCity] = useState("上海");
+  const list = data.stores.filter((s) => s.city === city);
+  return (
+    <div
+      onClick={(event) => {
+        event.stopPropagation();
+        if (onClose) onClose();
+      }}
+      style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 20, display: "flex", alignItems: "flex-end" }}
+    >
+      <div
+        onClick={(event) => event.stopPropagation()}
+        style={{ width: "100%", background: "#FFFFFF", borderTopLeftRadius: 12, borderTopRightRadius: 12, maxHeight: "72%", display: "flex", flexDirection: "column" }}
+      >
+        <div style={{ padding: "16px 16px 10px", display: "flex", alignItems: "center" }}>
+          <span style={{ fontSize: 16, fontWeight: 600, color: "#111111" }}>适用门店</span>
+          <span style={{ marginLeft: 6, fontSize: 11, color: "#999999" }}>{data.meta}</span>
+          <span onClick={onClose} style={{ marginLeft: "auto", fontSize: 15, color: "#999999", cursor: "pointer" }}>✕</span>
+        </div>
+        <div style={{ padding: "0 16px 8px", display: "flex", gap: 8 }}>
+          {["上海", "苏州"].map((c) => (
+            <span
+              key={c}
+              onClick={() => setCity(c)}
+              style={{
+                height: 26,
+                padding: "0 12px",
+                borderRadius: 13,
+                fontSize: 12,
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                background: c === city ? CHIP : "#F5F5F5",
+                color: c === city ? ORANGE : "#666666",
+              }}
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", padding: "0 16px 20px" }}>
+          {list.map((s) => (
+            <div key={s.name} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderTop: "1px solid #F3F3F3" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#111111" }}>{s.name}</div>
+                <div style={{ marginTop: 2, fontSize: 11, color: "#999999", lineHeight: "16px" }}>{s.address}</div>
+              </div>
+              <div style={{ marginLeft: 8, fontSize: 10, color: ORANGE, flexShrink: 0 }}>距你 {s.dist}</div>
+              <div style={{ width: 32, height: 32, marginLeft: 8, borderRadius: 16, background: CHIP, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinejoin="round">
+                  <path d="M7 3h3l1.5 4-2.2 1.3a12 12 0 0 0 5.4 5.4L16 11.5 20 13v3a2 2 0 0 1-2 2A15 15 0 0 1 5 5a2 2 0 0 1 2-2z" />
+                </svg>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Claim() {
   return (
     <div style={{ height: "100%", position: "relative", overflow: "hidden", background: "#F7F7F7", color: "#111111" }}>
@@ -325,6 +837,7 @@ function Claim() {
           <div style={{ fontSize: 13 }}><span style={{ fontSize: 12, color: "#999999" }}>有效期：</span>领券之日起三个月</div>
           <div style={{ marginTop: 6, fontSize: 13 }}><span style={{ fontSize: 12, color: "#999999" }}>适用：</span>GANO上海、苏州门店</div>
         </div>
+        <div style={{ height: 12 }} />
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTop: "1px solid #EEEEEE", padding: "8px 12px 12px" }}>
         <div style={{ height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>领取</div>
@@ -485,7 +998,7 @@ function ShopTabs({ active }) {
 
 function AllianceDrop() {
   return (
-    <div style={{ position: "relative", margin: "12px -12px 0", background: "#FFF4EE", borderRadius: 10, padding: "16px 20px 14px", textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+    <div style={{ position: "relative", margin: "12px 0 0", background: "#FFF4EE", borderRadius: 10, padding: "16px 20px 14px", textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
       <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, color: "#FF6633" }}>丽妍雅集会员专属礼遇</div>
       <div style={{ marginTop: 8, color: "#FF6633" }}>
         <span style={{ fontSize: 16, fontWeight: 600 }}>¥</span>
@@ -494,8 +1007,8 @@ function AllianceDrop() {
       <div style={{ marginTop: 4, fontSize: 15, fontWeight: 600, color: "#111111" }}>日本玫丽盼全球化护理一次</div>
       <div style={{ marginTop: 4, fontSize: 12, color: "#666666" }}>9店通用</div>
       <div style={{ position: "relative", height: 16, margin: "10px -20px 0" }}>
-        <div style={{ position: "absolute", left: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F6F6F6" }} />
-        <div style={{ position: "absolute", right: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#F6F6F6" }} />
+        <div style={{ position: "absolute", left: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#FFFFFF" }} />
+        <div style={{ position: "absolute", right: -8, top: 0, width: 16, height: 16, borderRadius: 8, background: "#FFFFFF" }} />
         <div style={{ position: "absolute", left: 14, right: 14, top: 7, borderTop: "1px dashed rgba(255,102,51,0.28)" }} />
       </div>
       <div style={{ margin: "10px auto 0", width: "72%", height: 40, borderRadius: 20, background: "#FF6633", color: "#FFFFFF", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>立即领取</div>
@@ -707,20 +1220,6 @@ function Feedback() {
           <div style={{ color: "#999999", fontSize: 12, marginTop: 6 }}>凯德晶萃店 · 刚做完</div>
         </div>
         <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
-          <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>本单人员</div>
-          {[
-            ["亮码人", "138****1024"],
-            ["扫码人", "138****6621"],
-            ["领取人", "138****6621"],
-            ["核销人", "186****3308"],
-          ].map(([k, v]) => (
-            <div key={k} style={{ display: "flex", justifyContent: "space-between", marginTop: 10 }}>
-              <span style={{ fontSize: 13, color: "#999999" }}>{k}</span>
-              <span style={{ fontSize: 14, color: "#333333" }}>{v}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ background: "#FFFFFF", borderRadius: 8, marginTop: 8, padding: 12 }}>
           <div style={{ color: "#111111", fontSize: 14, fontWeight: 600 }}>订单信息</div>
           <div style={{ marginTop: 10, fontSize: 15, fontWeight: 600, color: "#111111" }}>138****6621</div>
           <div style={{ marginTop: 2, fontSize: 12, color: "#999999" }}>券号 A8K29</div>
@@ -846,6 +1345,7 @@ function ClaimV35() {
           <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>每人限享 1 次，须一次使用完毕</div>
           <div style={{ fontSize: 13, lineHeight: "22px", color: "#333333" }}>请至少提前 3 天致电门店预约</div>
         </div>
+        <div style={{ height: 12 }} />
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, background: "#FFFFFF", borderTop: "1px solid #EEEEEE", padding: "8px 12px 12px" }}>
         <div style={{ height: 44, borderRadius: 22, background: "#FF6633", color: "#FFFFFF", textAlign: "center", lineHeight: "44px", fontSize: 16, fontWeight: 600 }}>领取</div>
@@ -1046,63 +1546,6 @@ function ShopPublic() {
   );
 }
 
-/** 数据明细 · 每日 · 四态 L2 门店行展开 L3 手机号·次数（27E） */
-function LogsDetail() {
-  const [open, setOpen] = useState("kade");
-  const stores = [
-    { id: "kade", name: "凯德晶萃店", count: "3次", phones: [["138****1024", "2次"], ["186****3308", "1次"]] },
-    { id: "raff", name: "来福士店", count: "2次", phones: [["139****8810", "2次"]] },
-  ];
-  return (
-    <Shell tab="数据" bg="#F7F7F7">
-      <div style={{ padding: 12 }}>
-        <div style={{ textAlign: "center", fontSize: 17, fontWeight: 600 }}>数据明细</div>
-        <div style={{ textAlign: "center", fontSize: 12, color: "#999999", marginTop: 2 }}>丽妍雅集</div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 28, marginTop: 12, fontSize: 14 }}>
-          <span style={{ color: "#FF6633", fontWeight: 600, borderBottom: "2px solid #FF6633", paddingBottom: 6 }}>每日</span>
-          <span style={{ color: "#999999", paddingBottom: 6 }}>按门店</span>
-        </div>
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-          {["近7天", "亮码", "全部门店"].map((c, i) => (
-            <span key={c} style={{ padding: "6px 10px", borderRadius: 16, border: `1px solid ${i === 1 ? "#FF6633" : "#DDDDDD"}`, fontSize: 12, color: i === 1 ? "#FF6633" : "#666666" }}>{c}</span>
-          ))}
-        </div>
-        <div style={{ marginTop: 12, background: "#FFFFFF", borderRadius: 8, overflow: "hidden" }}>
-          <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #F0F0F0" }}>
-            <span style={{ flex: 1, fontSize: 15, fontWeight: 600 }}>11月03日</span>
-            <span style={{ fontSize: 15, fontWeight: 600, color: "#FF6633" }}>6次</span>
-            <span style={{ marginLeft: 12 }}><ChevronDown size={12} color="#999999" /></span>
-          </div>
-          {stores.map((s) => {
-            const expanded = open === s.id;
-            return (
-              <div key={s.id}>
-                <div
-                  onClick={() => setOpen(expanded ? "" : s.id)}
-                  style={{ display: "flex", alignItems: "center", padding: "12px 16px", cursor: "pointer" }}
-                >
-                  <span style={{ flex: 1, fontSize: 14 }}>{s.name}</span>
-                  <span style={{ fontSize: 14, marginRight: 8 }}>{s.count}</span>
-                  <ChevronDown size={12} color="#999999" rotate={expanded ? 180 : -90} />
-                </div>
-                {expanded && s.phones.map(([p, c]) => (
-                  <div key={p} style={{ display: "flex", padding: "10px 16px 10px 32px", fontSize: 13, color: "#666666" }}>
-                    <span style={{ flex: 1 }}>{p}</span>
-                    <span style={{ color: "#333333" }}>{c}</span>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-        <div style={{ marginTop: 8, fontSize: 11, color: "#999999", lineHeight: "16px" }}>
-          L3：亮码=顾问号 · 扫码/领取=顾客号 · 被核销=核销员号（可点 › 进 12）
-        </div>
-      </div>
-    </Shell>
-  );
-}
-
 function Stats() {
   const funnel = (items) =>
     items.map((item) => (
@@ -1139,7 +1582,7 @@ function Stats() {
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>9</div><div style={{ fontSize: 12, color: "#999999" }}>发出</div></div>
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>4</div><div style={{ fontSize: 12, color: "#999999" }}>到GANO核销</div></div>
           </div>
-          {funnel([["亮码", 18], ["扫码", 11], ["领取", 9], ["被核销", 4]])}
+          {funnel([["亮码", 18], ["扫码", 11], ["领取", 9], ["核销", 4]])}
           {review("138****6621 · 日本玫丽盼", "GANO：头皮敏感，手法放轻了")}
         </div>
         <div style={{ marginTop: 8, background: "#FFFFFF", borderRadius: 8, padding: 12 }}>
@@ -1148,7 +1591,7 @@ function Stats() {
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>4</div><div style={{ fontSize: 12, color: "#999999" }}>发出</div></div>
             <div style={{ flex: 1 }}><div style={{ fontSize: 20, fontWeight: 600, color: "#FF6633" }}>2</div><div style={{ fontSize: 12, color: "#999999" }}>到本店核销</div></div>
           </div>
-          {funnel([["亮码", 7], ["扫码", 5], ["领取", 4], ["被核销", 2]])}
+          {funnel([["亮码", 7], ["扫码", 5], ["领取", 4], ["核销", 2]])}
           {review("紫镜嘭弾护理一次", "本店：肩颈放松了")}
         </div>
       </div>

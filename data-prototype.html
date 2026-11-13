@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>GANO × 丽妍 · 数据钻取 / 店长模式</title>
+<title>GANO × 丽妍 · 数据钻取</title>
 <style>
   @font-face{
     font-family:"Noto Sans SC";
@@ -56,7 +56,7 @@
 <body>
 <div class="page stage">
   <div class="hint">
-    <b>联盟对账</b>：点漏斗行进 11→12→13。<b>店长模式</b>：Hero 右侧切换 → 20–22；被核销可复用 12→13。真机自动全屏；桌面加 <b>?mobile=1</b>。
+    <b>联盟对账</b>：Hero 右侧选时间范围；点漏斗行进 11→12→13。真机自动全屏；桌面加 <b>?mobile=1</b>。
   </div>
   <div class="phone" id="root"></div>
 </div>
@@ -86,9 +86,8 @@ const KPI_GANO = "#2F54EB";
 
 const ASSET = "./assets/data-proto";
 const METRICS = ["亮码", "扫码", "领取", "被核销"];
-const MY_STORE = "西岸中环店";
 
-/* L3 号码：11/21 一律门店人（顾问/店员）；顾客号仅出现在 12 列表与 13 */
+/* L3 号码：11 一律门店人（顾问/店员）；顾客号仅出现在 12 列表与 13 */
 const DAY_DATA = {
   亮码: [
     { date: "11月03日", total: 6, amount: null, stores: [
@@ -244,88 +243,6 @@ const ORDER_DETAIL = {
     fields: [["来源门店", "丽妍雅集 · 来福士店"], ["核销门店", "GANO HAIR · 凯德晶萃店"], ["领券时间", "2026-11-02 10:05"], ["核销时间", "2026-11-02 15:22"], ["丽妍雅集档位", "V3–V5"]],
   },
 };
-
-const MG_KPI = [
-  { key: "亮码", value: "12", sub: "次" },
-  { key: "扫码", value: "8", sub: "次" },
-  { key: "领取", value: "6", sub: "人" },
-  { key: "被核销", value: "3", sub: "人 · ¥1440" },
-];
-const MG_FUNNEL_DAY = {
-  亮码: [
-    { date: "11月03日", total: 5, amount: null, staff: [["138****1024", 3], ["186****2209", 2]] },
-    { date: "11月02日", total: 4, amount: null, staff: [["138****1024", 2], ["150****9090", 2]] },
-  ],
-  扫码: [
-    { date: "11月03日", total: 3, amount: null, staff: [["138****1024", 2], ["186****2209", 1]] },
-    { date: "11月02日", total: 3, amount: null, staff: [["138****1024", 2], ["150****9090", 1]] },
-  ],
-  领取: [
-    { date: "11月03日", total: 2, amount: 0, staff: [["138****1024", 1], ["186****2209", 1]] },
-    { date: "11月02日", total: 2, amount: 0, staff: [["138****1024", 1], ["150****9090", 1]] },
-  ],
-  被核销: [
-    { date: "11月03日", total: 2, amount: 960, staff: [["186****3308", 2]] },
-    { date: "11月02日", total: 1, amount: 480, staff: [["186****3308", 1]] },
-  ],
-};
-const MG_FUNNEL_STAFF = {
-  亮码: [
-    { phone: "138****1024", count: 5, amount: null, days: [["11月03日", 3], ["11月02日", 2]] },
-    { phone: "186****2209", count: 2, amount: null, days: [["11月03日", 2]] },
-    { phone: "150****9090", count: 2, amount: null, days: [["11月02日", 2]] },
-  ],
-  扫码: [
-    { phone: "138****1024", count: 4, amount: null, days: [["11月03日", 2], ["11月02日", 2]] },
-    { phone: "186****2209", count: 1, amount: null, days: [["11月03日", 1]] },
-    { phone: "150****9090", count: 1, amount: null, days: [["11月02日", 1]] },
-  ],
-  领取: [
-    { phone: "138****1024", count: 2, amount: 0, days: [["11月03日", 1], ["11月02日", 1]] },
-    { phone: "186****2209", count: 1, amount: 0, days: [["11月03日", 1]] },
-    { phone: "150****9090", count: 1, amount: 0, days: [["11月02日", 1]] },
-  ],
-  被核销: [
-    { phone: "186****3308", count: 3, amount: 1440, days: [["11月03日", 2], ["11月02日", 1]] },
-  ],
-};
-const MG_STAFF_DETAIL = {
-  "138****1024": {
-    role: "亮码顾问",
-    kpi: [["亮码", "5次"], ["发券", "3人"], ["核销", "2人"], ["转化", "40%"]],
-    trend: [["11/01", 1], ["11/02", 2], ["11/03", 3]],
-    logs: [
-      { t: "11/03 14:06", act: "亮码 V6–V10", note: "会话 #A8K" },
-      { t: "11/03 11:18", act: "亮码 V6–V10", note: "会话 #B2M" },
-      { t: "11/02 16:40", act: "亮码 V3–V5", note: "会话 #C9P" },
-    ],
-  },
-  "186****2209": {
-    role: "亮码顾问",
-    kpi: [["亮码", "2次"], ["发券", "1人"], ["核销", "0人"], ["转化", "0%"]],
-    trend: [["11/01", 0], ["11/02", 0], ["11/03", 2]],
-    logs: [
-      { t: "11/03 16:02", act: "亮码 V3–V5", note: "会话 #D4N" },
-      { t: "11/03 10:40", act: "亮码 V3–V5", note: "会话 #E1Q" },
-    ],
-  },
-  "186****3308": {
-    role: "核销店员",
-    kpi: [["被核销", "3人"], ["金额", "¥1440"], ["满意", "2"], ["一般", "1"]],
-    trend: [["11/01", 0], ["11/02", 1], ["11/03", 2]],
-    logs: [
-      { t: "11/03 15:22", act: "核销完成", note: "订单 o1 · ¥480", orderId: "o1" },
-      { t: "11/03 14:06", act: "核销完成", note: "订单 o1 · ¥480", orderId: "o1" },
-      { t: "11/02 14:06", act: "核销完成", note: "订单 o3 · ¥480", orderId: "o3" },
-    ],
-  },
-};
-/* 今日员工表：发券=当日从其亮码领取人数；核销=当日核销对面领来券数 */
-const MG_TODAY_STAFF = [
-  { phone: "138****1024", issue: 2, redeem: 0 },
-  { phone: "186****2209", issue: 1, redeem: 0 },
-  { phone: "186****3308", issue: 0, redeem: 2 },
-];
 
 const TIME_OPTS = ["近7天", "近30天", "本月", "上月"];
 const STORE_OPTS = ["全部门店", "凯德晶萃店", "来福士店", "西岸中环店", "静安嘉里店"];
@@ -506,25 +423,6 @@ function useCopyToast() {
   return { toast, showCopied };
 }
 
-function ModeSwitch({ mode, onToggle }) {
-  const isMgr = mode === "manager";
-  return (
-    <button type="button" onClick={onToggle}
-      style={{
-        appearance: "none", border: `1px solid ${isMgr ? ORANGE : "rgba(255,96,2,.4)"}`,
-        background: isMgr ? ORANGE : "rgba(255,255,255,.92)",
-        color: isMgr ? "#fff" : ORANGE,
-        borderRadius: 16, height: 28, padding: "0 10px",
-        fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap",
-        display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0,
-        boxShadow: "0 2px 8px rgba(0,0,0,.06)",
-      }}>
-      {isMgr ? "联盟对账" : "店长模式"}
-      <Icon name="chevron-right.svg" size={10} color={isMgr ? "#FFFFFF" : ORANGE} />
-    </button>
-  );
-}
-
 function Sheet({ title, options, value, onPick, onClose }) {
   return (
     <>
@@ -543,6 +441,372 @@ function Sheet({ title, options, value, onPick, onClose }) {
             );
           })}
         </div>
+      </div>
+    </>
+  );
+}
+
+/* —— 10 时间范围（30R）—— */
+const RANGE_PRESETS = ["今天", "本周", "上周", "本月", "全部"];
+const RANGE_STORAGE_KEY = "alliance-stats-range-v1";
+const WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"];
+
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+function ymd(d) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+function parseYmd(s) {
+  const [y, m, d] = String(s || "").split("-").map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d);
+}
+function startOfDay(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function addDays(d, n) {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+}
+/** 周一为一周起点（Asia/Shanghai 本地日） */
+function startOfWeekMon(d) {
+  const x = startOfDay(d);
+  const dow = (x.getDay() + 6) % 7; // Mon=0
+  return addDays(x, -dow);
+}
+function fmtShort(s) {
+  const d = parseYmd(s);
+  if (!d) return s || "";
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+function rangeLabel(range) {
+  if (!range) return "全部";
+  if (range.preset === "custom" && range.start && range.end) {
+    return `${fmtShort(range.start)}–${fmtShort(range.end)}`;
+  }
+  return range.preset || "全部";
+}
+function defaultRange() {
+  return { preset: "全部" };
+}
+function loadSavedRange() {
+  try {
+    const raw = localStorage.getItem(RANGE_STORAGE_KEY);
+    if (!raw) return defaultRange();
+    const j = JSON.parse(raw);
+    if (j && RANGE_PRESETS.includes(j.preset)) return { preset: j.preset };
+    if (j && j.preset === "custom" && j.start && j.end) {
+      const a = parseYmd(j.start);
+      const b = parseYmd(j.end);
+      if (a && b) {
+        const start = a <= b ? j.start : j.end;
+        const end = a <= b ? j.end : j.start;
+        return { preset: "custom", start, end };
+      }
+    }
+  } catch (e) { /* ignore */ }
+  return defaultRange();
+}
+function saveRange(range) {
+  try {
+    localStorage.setItem(RANGE_STORAGE_KEY, JSON.stringify(range));
+  } catch (e) { /* ignore */ }
+}
+function rangeScale(range) {
+  if (!range) return 1;
+  if (range.preset === "今天") return 0.18;
+  if (range.preset === "本周") return 0.42;
+  if (range.preset === "上周") return 0.36;
+  if (range.preset === "本月") return 0.72;
+  if (range.preset === "全部") return 1;
+  if (range.preset === "custom" && range.start && range.end) {
+    const a = parseYmd(range.start);
+    const b = parseYmd(range.end);
+    if (!a || !b) return 0.5;
+    const days = Math.max(1, Math.round((b - a) / 86400000) + 1);
+    return Math.min(1, Math.max(0.12, days / 45));
+  }
+  return 1;
+}
+function scaleNum(n, s) {
+  return Math.max(0, Math.round(n * s));
+}
+
+function resolveRangeBounds(range, now = new Date()) {
+  const today = startOfDay(now);
+  if (!range || range.preset === "全部") return { start: null, end: null };
+  if (range.preset === "今天") return { start: ymd(today), end: ymd(today) };
+  if (range.preset === "本周") {
+    const s = startOfWeekMon(today);
+    return { start: ymd(s), end: ymd(addDays(s, 6)) };
+  }
+  if (range.preset === "上周") {
+    const s = addDays(startOfWeekMon(today), -7);
+    return { start: ymd(s), end: ymd(addDays(s, 6)) };
+  }
+  if (range.preset === "本月") {
+    const s = new Date(today.getFullYear(), today.getMonth(), 1);
+    const e = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    return { start: ymd(s), end: ymd(e) };
+  }
+  if (range.preset === "custom" && range.start && range.end) {
+    return { start: range.start, end: range.end };
+  }
+  return { start: null, end: null };
+}
+
+function fmtDayCn(s) {
+  const d = parseYmd(s);
+  if (!d) return "";
+  return `${d.getMonth() + 1}月${d.getDate()}日`;
+}
+
+function CalendarIcon({ size = 18, color = HERO_TITLE }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="16" rx="3" stroke={color} strokeWidth="2" />
+      <path d="M3 10.5h18" stroke={color} strokeWidth="2" />
+      <path d="M8 3v4.5M16 3v4.5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <rect x="7" y="13" width="3" height="3" rx="0.8" fill={color} />
+      <rect x="10.5" y="13" width="3" height="3" rx="0.8" fill={color} opacity="0.55" />
+      <rect x="14" y="13" width="3" height="3" rx="0.8" fill={color} opacity="0.35" />
+    </svg>
+  );
+}
+
+function RangeTrigger({ range, onClick }) {
+  return (
+    <button type="button" onClick={onClick} aria-label="选择时间范围"
+      style={{
+        appearance: "none",
+        border: "1px solid rgba(151,80,38,0.32)",
+        background: "rgba(255,255,255,0.95)",
+        color: HERO_TITLE,
+        borderRadius: 18, height: 34, padding: "0 10px 0 9px",
+        fontSize: 13, fontWeight: 650, cursor: "pointer", whiteSpace: "nowrap",
+        display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
+        maxWidth: 168,
+      }}>
+      <CalendarIcon size={18} color={ORANGE} />
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "0.01em" }}>{rangeLabel(range)}</span>
+      <Icon name="chevron-down.svg" size={11} color={HERO_TITLE} />
+    </button>
+  );
+}
+
+function MonthGrid({ view, start, end, onPickDay }) {
+  const year = view.getFullYear();
+  const month = view.getMonth();
+  const first = new Date(year, month, 1);
+  const lead = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < lead; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
+  while (cells.length % 7) cells.push(null);
+
+  const startT = start ? startOfDay(parseYmd(start)).getTime() : null;
+  const endT = end ? startOfDay(parseYmd(end)).getTime() : null;
+  const todayT = startOfDay(new Date()).getTime();
+  const sameDay = startT != null && endT != null && startT === endT;
+
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", marginBottom: 2 }}>
+        {WEEKDAYS.map((w) => (
+          <div key={w} style={{ textAlign: "center", fontSize: 12, color: MUTED, height: 30, lineHeight: "30px", fontWeight: 500 }}>{w}</div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", rowGap: 4 }}>
+        {cells.map((day, i) => {
+          if (!day) return <div key={`e${i}`} style={{ height: 40 }} />;
+          const t = startOfDay(day).getTime();
+          const key = ymd(day);
+          const isStart = startT != null && t === startT;
+          const isEnd = endT != null && t === endT;
+          const inMid = startT != null && endT != null && t > startT && t < endT;
+          const isToday = t === todayT;
+          const isEdge = isStart || isEnd;
+
+          let cellBg = "transparent";
+          if (inMid) cellBg = "rgba(255,96,2,0.12)";
+          if (isStart && endT != null && !sameDay) cellBg = "linear-gradient(90deg, transparent 50%, rgba(255,96,2,0.12) 50%)";
+          if (isEnd && startT != null && !sameDay) cellBg = "linear-gradient(90deg, rgba(255,96,2,0.12) 50%, transparent 50%)";
+          if (sameDay && isStart) cellBg = "transparent";
+
+          return (
+            <button key={key} type="button" onClick={() => onPickDay(key)}
+              style={{
+                appearance: "none", border: "none", background: cellBg, padding: 0,
+                height: 40, cursor: "pointer", position: "relative",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+              <span style={{
+                width: 36, height: 36, borderRadius: 18,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                background: isEdge ? ORANGE : "transparent",
+                color: isEdge ? "#fff" : INK,
+                fontWeight: isEdge || isToday ? 700 : 500,
+                fontSize: 15,
+                border: !isEdge && isToday ? `1.5px solid ${ORANGE}` : "1.5px solid transparent",
+                boxSizing: "border-box",
+              }}>
+                {day.getDate()}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RangeSheet({ value, onApply, onClose }) {
+  const initialBounds = resolveRangeBounds(value);
+  const [activePreset, setActivePreset] = useState(value.preset === "custom" ? null : value.preset);
+  const [draftStart, setDraftStart] = useState(initialBounds.start || "");
+  const [draftEnd, setDraftEnd] = useState(initialBounds.end || "");
+  const [view, setView] = useState(() => {
+    const base = initialBounds.start ? parseYmd(initialBounds.start) : new Date();
+    return new Date(base.getFullYear(), base.getMonth(), 1);
+  });
+
+  const canConfirm = !!draftStart && !!draftEnd;
+  const dirtyCustom = activePreset == null;
+
+  const pickPreset = (p) => {
+    onApply({ preset: p });
+    onClose();
+  };
+
+  const pickDay = (key) => {
+    setActivePreset(null);
+    if (!draftStart || (draftStart && draftEnd)) {
+      setDraftStart(key);
+      setDraftEnd("");
+      return;
+    }
+    const a = parseYmd(draftStart);
+    const b = parseYmd(key);
+    if (!a || !b) return;
+    if (b < a) {
+      setDraftStart(key);
+      setDraftEnd("");
+      return;
+    }
+    setDraftEnd(key);
+  };
+
+  const confirmCustom = () => {
+    if (!canConfirm) return;
+    onApply({ preset: "custom", start: draftStart, end: draftEnd });
+    onClose();
+  };
+
+  const row1 = ["今天", "本周", "上周"];
+  const row2 = ["本月", "全部"];
+
+  const chip = (opt) => {
+    const on = activePreset === opt;
+    return (
+      <button key={opt} type="button" onClick={() => pickPreset(opt)}
+        style={{
+          appearance: "none",
+          border: on ? `1.5px solid ${ORANGE}` : `1px solid ${LINE}`,
+          background: on ? ORANGE : PAPER,
+          color: on ? "#fff" : INK,
+          borderRadius: 18, height: 36, padding: "0 14px",
+          fontSize: 14, fontWeight: on ? 650 : 500, cursor: "pointer",
+          flex: "1 1 0",
+          minWidth: 0,
+        }}>
+        {opt}
+      </button>
+    );
+  };
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 40 }} />
+      <div className="proto-sheet" style={{
+        position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 41, background: PAPER,
+        borderTopLeftRadius: 16, borderTopRightRadius: 16,
+        padding: "10px 16px 18px", maxHeight: "86%", overflow: "auto",
+      }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: "#E5E5E5", margin: "0 auto 10px" }} />
+        <div style={{ fontSize: 17, fontWeight: 700, textAlign: "center", color: INK, letterSpacing: "0.02em" }}>选择时间范围</div>
+
+        <div style={{ marginTop: 14, display: "flex", gap: 8 }}>{row1.map(chip)}</div>
+        <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+          {row2.map(chip)}
+          <div style={{ flex: "1 1 0" }} />
+        </div>
+
+        <div style={{
+          marginTop: 16, paddingTop: 14, borderTop: `1px solid ${LINE}`,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))}
+              style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: 36, height: 36, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="chevron-left.svg" size={18} />
+            </button>
+            <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>{view.getFullYear()}年{view.getMonth() + 1}月</div>
+            <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1))}
+              style={{ appearance: "none", border: `1px solid ${LINE}`, background: PAGE, width: 36, height: 36, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="chevron-right.svg" size={18} />
+            </button>
+          </div>
+          <MonthGrid
+            view={view}
+            start={draftStart || null}
+            end={draftEnd || null}
+            onPickDay={pickDay}
+          />
+        </div>
+
+        <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            flex: 1, minWidth: 0, height: 48, borderRadius: 10, padding: "0 12px",
+            background: PAGE, border: `1px solid ${LINE}`,
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+          }}>
+            <span style={{
+              flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              fontSize: 14, fontWeight: draftStart ? 600 : 400,
+              color: draftStart ? INK : MUTED,
+            }}>
+              {draftStart ? fmtDayCn(draftStart) : "点击日历选择"}
+            </span>
+            <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: draftStart ? ORANGE : MUTED }}>起</span>
+          </div>
+          <div style={{ width: 20, height: 1, background: LINE, flexShrink: 0 }} />
+          <div style={{
+            flex: 1, minWidth: 0, height: 48, borderRadius: 10, padding: "0 12px",
+            background: PAGE, border: `1px solid ${LINE}`,
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+          }}>
+            <span style={{
+              flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              fontSize: 14, fontWeight: draftEnd ? 600 : 400,
+              color: draftEnd ? INK : MUTED,
+            }}>
+              {draftEnd ? fmtDayCn(draftEnd) : "点击日历选择"}
+            </span>
+            <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: draftEnd ? ORANGE : MUTED }}>止</span>
+          </div>
+        </div>
+
+        <button type="button" disabled={!dirtyCustom || !canConfirm} onClick={confirmCustom}
+          style={{
+            appearance: "none", border: "none", marginTop: 12, width: "100%", height: 48, borderRadius: 24,
+            background: dirtyCustom && canConfirm ? ORANGE : "#F0F0F0",
+            color: dirtyCustom && canConfirm ? "#fff" : MUTED,
+            fontSize: 16, fontWeight: 700, cursor: dirtyCustom && canConfirm ? "pointer" : "default",
+          }}>
+          完成
+        </button>
       </div>
     </>
   );
@@ -652,9 +916,36 @@ function FunnelRow({ label, value, max, onClick }) {
 }
 
 /* —— 10 两边账 —— */
-function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
-  const outRows = [["亮码", 18], ["扫码", 11], ["领取", 9], ["被核销", 4]];
-  const inRows = [["亮码", 7], ["扫码", 5], ["领取", 4], ["被核销", 2]];
+function StatsScreen({ onOpenLogs }) {
+  const [range, setRange] = useState(() => loadSavedRange());
+  const [rangeOpen, setRangeOpen] = useState(false);
+  const s = rangeScale(range);
+
+  const guestLi = scaleNum(2, Math.max(0.5, s));
+  const guestGa = scaleNum(4, Math.max(0.5, s));
+  const outIssue = scaleNum(9, s);
+  const outRedeem = scaleNum(4, s);
+  const inIssue = scaleNum(4, s);
+  const inRedeem = scaleNum(2, s);
+  const outRows = [
+    ["亮码", scaleNum(18, s)],
+    ["扫码", scaleNum(11, s)],
+    ["领取", scaleNum(9, s)],
+    ["被核销", scaleNum(4, s)],
+  ];
+  const inRows = [
+    ["亮码", scaleNum(7, s)],
+    ["扫码", scaleNum(5, s)],
+    ["领取", scaleNum(4, s)],
+    ["被核销", scaleNum(2, s)],
+  ];
+  const outMax = Math.max(1, ...outRows.map(([, n]) => n));
+  const inMax = Math.max(1, ...inRows.map(([, n]) => n));
+
+  const applyRange = (next) => {
+    setRange(next);
+    saveRange(next);
+  };
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
@@ -665,7 +956,6 @@ function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
         right={<NavCapsule />}
       />
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 100px" }}>
-        {/* Hero — ModeSwitch overlays right */}
         <div style={{ position: "relative", marginTop: 12 }}>
           <div style={{
             borderRadius: 12, overflow: "hidden",
@@ -680,15 +970,15 @@ function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
                 </div>
                 <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: HERO_TITLE, lineHeight: "28px" }}>丽妍雅集</div>
               </div>
-              <ModeSwitch mode={mode} onToggle={onToggleMode} />
+              <RangeTrigger range={range} onClick={() => setRangeOpen(true)} />
             </div>
             <div style={{ display: "flex", gap: 12, paddingTop: 16 }}>
               <div style={{ flex: 1, background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: KPI_LIYAN, lineHeight: "24px" }}>2</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: KPI_LIYAN, lineHeight: "24px" }}>{guestLi}</div>
                 <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>丽妍雅集 获客</div>
               </div>
               <div style={{ flex: 1, background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: KPI_GANO, lineHeight: "24px" }}>4</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: KPI_GANO, lineHeight: "24px" }}>{guestGa}</div>
                 <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>GANO 获客</div>
               </div>
             </div>
@@ -700,16 +990,16 @@ function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
             <div style={{ fontSize: 15, fontWeight: 600, color: INK }}>丽妍雅集 发出</div>
             <div style={{ display: "flex", paddingTop: 12 }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>9</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>{outIssue}</div>
                 <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>发出</div>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>4</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>{outRedeem}</div>
                 <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>到GANO核销</div>
               </div>
             </div>
             {outRows.map(([label, n]) => (
-              <FunnelRow key={label} label={label} value={n} max={18} onClick={() => onOpenLogs({ side: "发出", metric: label })} />
+              <FunnelRow key={label} label={label} value={n} max={outMax} onClick={() => onOpenLogs({ side: "发出", metric: label })} />
             ))}
           </Card>
         </div>
@@ -719,21 +1009,28 @@ function StatsScreen({ mode, onToggleMode, onOpenLogs }) {
             <div style={{ fontSize: 15, fontWeight: 600, color: INK }}>GANO 发来</div>
             <div style={{ display: "flex", paddingTop: 12 }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>4</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>{inIssue}</div>
                 <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>发出</div>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>2</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: ORANGE }}>{inRedeem}</div>
                 <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>到丽妍雅集核销</div>
               </div>
             </div>
             {inRows.map(([label, n]) => (
-              <FunnelRow key={label} label={label} value={n} max={7} onClick={() => onOpenLogs({ side: "发来", metric: label })} />
+              <FunnelRow key={label} label={label} value={n} max={inMax} onClick={() => onOpenLogs({ side: "发来", metric: label })} />
             ))}
           </Card>
         </div>
       </div>
       <TabBar active="数据统计" />
+      {rangeOpen ? (
+        <RangeSheet
+          value={range}
+          onApply={applyRange}
+          onClose={() => setRangeOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -1042,322 +1339,17 @@ function OrderDetailScreen({ orderId, onBack }) {
   );
 }
 
-/* —— 20 店长看板 —— */
-function ManagerHome({ mode, onToggleMode, onOpenDetail, onOpenStaff }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
-      <StatusBar />
-      <TitleBar
-        title="数据"
-        onBack={() => {}}
-        right={<NavCapsule />}
-      />
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 100px" }}>
-        <div style={{ marginTop: 12 }}>
-          <div style={{ borderRadius: 12, background: HERO_BG, border: `1px solid ${HERO_BORDER}`, padding: "18px 16px 16px" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, minHeight: 56 }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 12, color: HERO_TITLE }}>店长模式 · 本店</span>
-                  <Icon name="help.svg" size={14} />
-                </div>
-                <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: HERO_TITLE, lineHeight: "28px" }}>{MY_STORE}</div>
-                <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>近7天 · 按员工看</div>
-              </div>
-              <ModeSwitch mode={mode} onToggle={onToggleMode} />
-            </div>
-            <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {MG_KPI.map((k) => (
-                <button key={k.key} type="button" onClick={() => onOpenDetail(k.key)}
-                  style={{ appearance: "none", border: "1px solid rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 10px", textAlign: "left", cursor: "pointer" }}>
-                  <div style={{ fontSize: 11, color: MUTED }}>{k.key}</div>
-                  <div style={{ marginTop: 4, fontSize: 20, fontWeight: 700, color: ORANGE }}>{k.value}</div>
-                  <div style={{ marginTop: 2, fontSize: 11, color: MUTED }}>{k.sub}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <Card style={{ marginTop: 12, padding: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>转化情况</span>
-            <button type="button" onClick={() => onOpenDetail("被核销")} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer" }}>看明细</button>
-          </div>
-          <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-            {[["亮码→领取", "50%"], ["领取→核销", "50%"], ["亮码→核销", "25%"]].map(([l, v]) => (
-              <div key={l} style={{ flex: 1, background: PAGE, borderRadius: 8, padding: "10px 8px", textAlign: "center" }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>{v}</div>
-                <div style={{ marginTop: 4, fontSize: 11, color: MUTED }}>{l}</div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card style={{ marginTop: 12, padding: 16, marginBottom: 8 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: INK }}>今日</span>
-            <button type="button" onClick={() => onOpenDetail("被核销")} style={{ appearance: "none", border: "none", background: "transparent", color: ORANGE, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 2 }}>
-              看全部 <Icon name="chevron-right.svg" size={12} />
-            </button>
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", padding: "0 0 8px", borderBottom: `1px solid ${LINE}` }}>
-              <span style={{ flex: 1.4, fontSize: 12, color: MUTED }}>员工</span>
-              <span style={{ width: 56, textAlign: "right", fontSize: 12, color: MUTED }}>发券</span>
-              <span style={{ width: 56, textAlign: "right", fontSize: 12, color: MUTED }}>核销</span>
-            </div>
-            {MG_TODAY_STAFF.map((r, i) => (
-              <button key={r.phone} type="button" onClick={() => onOpenStaff(r.phone)}
-                style={{ appearance: "none", border: "none", borderTop: i ? `1px solid ${LINE}` : "none", background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 0", cursor: "pointer", textAlign: "left" }}>
-                <span style={{ flex: 1.4, fontSize: 14, color: INK }}>{r.phone}</span>
-                <span style={{ width: 56, textAlign: "right", fontSize: 14, fontWeight: 600, color: ORANGE }}>{r.issue}</span>
-                <span style={{ width: 56, textAlign: "right", fontSize: 14, fontWeight: 600, color: INK, marginRight: 8 }}>{r.redeem}</span>
-                <Icon name="chevron-right.svg" size={12} />
-              </button>
-            ))}
-          </div>
-        </Card>
-      </div>
-      <TabBar active="数据统计" />
-    </div>
-  );
-}
-
-/* —— 21 本店漏斗明细 —— */
-function ManagerDetail({ metric: initMetric, onBack, onOpenDay, onOpenStaff }) {
-  const [tab, setTab] = useState("按日");
-  const [metric, setMetric] = useState(initMetric || "被核销");
-  const [range, setRange] = useState("近7天");
-  const [sheet, setSheet] = useState(null);
-  const [openKey, setOpenKey] = useState("11月03日");
-  const unit = unitOf(metric);
-  const withAmt = showAmount(metric);
-  const clickable = metric === "被核销";
-  const days = MG_FUNNEL_DAY[metric] || [];
-  const staffs = MG_FUNNEL_STAFF[metric] || [];
-  const { toast, showCopied } = useCopyToast();
-
-  const buildMgrMarkdown = () => {
-    const lines = [];
-    lines.push(`# 本店明细 · ${MY_STORE}`);
-    lines.push(`筛选：${range} · ${metric} · ${tab}`);
-    lines.push("");
-    if (tab === "按日") {
-      days.forEach((day) => {
-        const amt = withAmt && day.amount != null ? ` · ${fmtAmt(day.amount)}` : "";
-        lines.push(`## ${day.date} · ${day.total}${unit}${amt}`);
-        (day.staff || []).forEach(([phone, n]) => {
-          lines.push(`- ${phone} · ${n}次`);
-        });
-        lines.push("");
-      });
-    } else {
-      staffs.forEach((s) => {
-        const amt = withAmt && s.amount != null ? ` · ${fmtAmt(s.amount)}` : "";
-        lines.push(`## ${s.phone} · ${s.count}${unit}${amt}`);
-        (s.days || []).forEach(([d, n]) => {
-          lines.push(`- ${d} · ${n}次`);
-        });
-        lines.push("");
-      });
-    }
-    return lines.join("\n").trim() + "\n";
-  };
-
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE, position: "relative" }}>
-      <StatusBar />
-      <TitleBar title="本店明细" subtitle={MY_STORE} onBack={onBack} onCopy={() => showCopied(buildMgrMarkdown())} />
-      <div style={{ display: "flex", justifyContent: "center", gap: 24, background: PAPER, borderBottom: `1px solid ${LINE}` }}>
-        {["按日", "按员工"].map((name) => {
-          const on = tab === name;
-          return (
-            <button key={name} type="button" onClick={() => setTab(name)}
-              style={{ appearance: "none", border: "none", background: "transparent", padding: "10px 0 12px", fontSize: 15, fontWeight: on ? 600 : 400, color: on ? ORANGE : MUTED, borderBottom: on ? `2px solid ${ORANGE}` : "2px solid transparent", cursor: "pointer" }}>
-              {name}
-            </button>
-          );
-        })}
-      </div>
-      <div style={{ display: "flex", gap: 8, padding: "10px 16px" }}>
-        <FilterChip label={range} onClick={() => setSheet("time")} />
-        <FilterChip label={metric} active onClick={() => setSheet("metric")} />
-      </div>
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 16px 16px" }}>
-        {tab === "按日" ? days.map((day, i) => {
-          const open = openKey === day.date;
-          return (
-            <div key={day.date} style={{ marginTop: i ? 10 : 0 }}>
-              <Card>
-                <button type="button" onClick={() => setOpenKey(open ? "" : day.date)}
-                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "flex-end", padding: "14px 16px", cursor: "pointer" }}>
-                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left", lineHeight: "22px" }}>{day.date}</span>
-                  <span style={{ width: 72, textAlign: "right", fontSize: 15, fontWeight: 700, color: ORANGE, lineHeight: "22px" }}>{day.total}{unit}</span>
-                  {withAmt ? <span style={{ width: 88, textAlign: "right", fontSize: 15, fontWeight: 700, lineHeight: "22px" }}>{fmtAmt(day.amount)}</span> : null}
-                  <span style={{ width: 20, paddingLeft: 8 }}><Icon name={open ? "chevron-up.svg" : "chevron-down.svg"} size={12} /></span>
-                </button>
-                {open ? day.staff.map(([phone, n]) => (
-                  <button key={phone} type="button"
-                    onClick={() => {
-                      if (clickable) onOpenDay({ date: day.date, shop: MY_STORE, clerk: phone });
-                      else onOpenStaff(phone);
-                    }}
-                    style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px 12px 32px", cursor: "pointer", textAlign: "left" }}>
-                    <span style={{ flex: 1, fontSize: 13, color: "#666" }}>{phone}</span>
-                    <span style={{ fontSize: 13, marginRight: 6 }}>{n}次</span>
-                    <Icon name="chevron-right.svg" size={12} />
-                  </button>
-                )) : null}
-              </Card>
-            </div>
-          );
-        }) : staffs.map((s, i) => {
-          const open = openKey === s.phone;
-          return (
-            <div key={s.phone} style={{ marginTop: i ? 10 : 0 }}>
-              <Card>
-                <button type="button" onClick={() => setOpenKey(open ? "" : s.phone)}
-                  style={{ appearance: "none", border: "none", background: "transparent", width: "100%", display: "flex", alignItems: "flex-end", padding: "14px 16px", cursor: "pointer" }}>
-                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, textAlign: "left", lineHeight: "22px" }}>{s.phone}</span>
-                  <span style={{ width: 72, textAlign: "right", fontSize: 15, fontWeight: 700, color: ORANGE, lineHeight: "22px" }}>{s.count}{unit}</span>
-                  {withAmt ? <span style={{ width: 88, textAlign: "right", fontSize: 15, fontWeight: 700, lineHeight: "22px" }}>{fmtAmt(s.amount)}</span> : null}
-                  <span style={{ width: 20, paddingLeft: 8 }}><Icon name={open ? "chevron-up.svg" : "chevron-down.svg"} size={12} /></span>
-                </button>
-                {open ? (
-                  <>
-                    {s.days.map(([d, n]) => (
-                      <button key={d} type="button"
-                        onClick={() => { if (clickable) onOpenDay({ date: d, shop: MY_STORE, clerk: s.phone }); }}
-                        style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", display: "flex", alignItems: "center", padding: "12px 16px 12px 32px", cursor: clickable ? "pointer" : "default", textAlign: "left" }}>
-                        <span style={{ flex: 1, fontSize: 13, color: "#666" }}>{d}</span>
-                        <span style={{ fontSize: 13, marginRight: clickable ? 6 : 0 }}>{n}次</span>
-                        {clickable ? <Icon name="chevron-right.svg" size={12} /> : null}
-                      </button>
-                    ))}
-                    <button type="button" onClick={() => onOpenStaff(s.phone)}
-                      style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: CHIP, width: "100%", padding: "12px 16px", fontSize: 13, color: ORANGE, fontWeight: 600, cursor: "pointer" }}>
-                      查看员工详情
-                    </button>
-                  </>
-                ) : null}
-              </Card>
-            </div>
-          );
-        })}
-      </div>
-      {sheet === "time" ? <Sheet title="选择时间范围" options={TIME_OPTS} value={range} onPick={(v) => { setRange(v); setSheet(null); }} onClose={() => setSheet(null)} /> : null}
-      {sheet === "metric" ? <Sheet title="选择漏斗态" options={METRICS} value={metric} onPick={(v) => { setMetric(v); setSheet(null); }} onClose={() => setSheet(null)} /> : null}
-      <Toast message={toast} />
-    </div>
-  );
-}
-
-/* —— 22 员工详情 —— */
-function ManagerStaff({ phone, onBack, onOpenOrder }) {
-  const d = MG_STAFF_DETAIL[phone] || MG_STAFF_DETAIL["138****1024"];
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: PAGE }}>
-      <StatusBar />
-      <TitleBar title="员工详情" subtitle={MY_STORE} onBack={onBack} />
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 16 }}>
-        <Card style={{ padding: 16 }}>
-          <div style={{ fontSize: 18, fontWeight: 600, color: INK }}>{phone}</div>
-          <div style={{ marginTop: 4, fontSize: 12, color: MUTED }}>{d.role} · 近7天</div>
-          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            {d.kpi.map(([k, v]) => (
-              <div key={k} style={{ background: PAGE, borderRadius: 8, padding: "10px 8px" }}>
-                <div style={{ fontSize: 11, color: MUTED }}>{k}</div>
-                <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: ORANGE }}>{v}</div>
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card style={{ marginTop: 12, padding: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>近3日趋势</div>
-          <div style={{ marginTop: 12, display: "flex", alignItems: "flex-end", gap: 16, height: 80 }}>
-            {d.trend.map(([lab, n]) => (
-              <div key={lab} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
-                <div style={{ width: "100%", maxWidth: 36, height: `${Math.max(12, n * 22)}px`, background: ORANGE, borderRadius: 4 }} />
-                <div style={{ marginTop: 6, fontSize: 11, color: MUTED }}>{lab}</div>
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card style={{ marginTop: 12, padding: "4px 16px 8px" }}>
-          <div style={{ padding: "12px 0 4px", fontSize: 14, fontWeight: 600 }}>操作流水</div>
-          {d.logs.map((log, i) => (
-            <button key={log.t + i} type="button"
-              onClick={() => { if (log.orderId) onOpenOrder(log.orderId); }}
-              style={{ appearance: "none", border: "none", borderTop: `1px solid ${LINE}`, background: "transparent", width: "100%", padding: "12px 0", display: "flex", alignItems: "center", cursor: log.orderId ? "pointer" : "default", textAlign: "left" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{log.act}</div>
-                <div style={{ marginTop: 2, fontSize: 12, color: MUTED }}>{log.t} · {log.note}</div>
-              </div>
-              {log.orderId ? <Icon name="chevron-right.svg" size={12} /> : null}
-            </button>
-          ))}
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function initialRoute() {
-  const q = new URLSearchParams(location.search);
-  const screen = q.get("screen");
-  if (screen === "mgrHome") return { mode: "manager", stack: [{ name: "mgrHome" }] };
-  if (screen === "mgrDetail") return { mode: "manager", stack: [{ name: "mgrDetail", metric: q.get("metric") || "被核销" }] };
-  if (screen === "mgrStaff") return { mode: "manager", stack: [{ name: "mgrStaff", phone: q.get("phone") || "138****1024" }] };
-  return { mode: "alliance", stack: [{ name: "stats" }] };
-}
-
 function App() {
-  const boot = initialRoute();
-  const [mode, setMode] = useState(boot.mode);
-  const [stack, setStack] = useState(boot.stack);
+  const [stack, setStack] = useState([{ name: "stats" }]);
   const top = stack[stack.length - 1];
   const push = (frame) => setStack((s) => [...s, frame]);
   const pop = () => setStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
 
-  const toggleMode = () => {
-    if (mode === "alliance") {
-      setMode("manager");
-      setStack([{ name: "mgrHome" }]);
-    } else {
-      setMode("alliance");
-      setStack([{ name: "stats" }]);
-    }
-  };
-
   if (top.name === "stats") {
-    return <StatsScreen mode={mode} onToggleMode={toggleMode} onOpenLogs={({ side, metric }) => push({ name: "logs", side, metric })} />;
+    return <StatsScreen onOpenLogs={({ side, metric }) => push({ name: "logs", side, metric })} />;
   }
   if (top.name === "logs") {
     return <LogsScreen side={top.side} metric={top.metric} onBack={pop} onOpenDay={(ctx) => push({ name: "day", ...ctx })} />;
-  }
-  if (top.name === "mgrHome") {
-    return (
-      <ManagerHome
-        mode={mode}
-        onToggleMode={toggleMode}
-        onOpenDetail={(metric) => push({ name: "mgrDetail", metric })}
-        onOpenStaff={(phone) => push({ name: "mgrStaff", phone })}
-      />
-    );
-  }
-  if (top.name === "mgrDetail") {
-    return (
-      <ManagerDetail
-        metric={top.metric}
-        onBack={pop}
-        onOpenDay={(ctx) => push({ name: "day", ...ctx })}
-        onOpenStaff={(phone) => push({ name: "mgrStaff", phone })}
-      />
-    );
-  }
-  if (top.name === "mgrStaff") {
-    return <ManagerStaff phone={top.phone} onBack={pop} onOpenOrder={(orderId) => push({ name: "order", orderId })} />;
   }
   if (top.name === "day") {
     return (

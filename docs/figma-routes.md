@@ -83,17 +83,6 @@ URL 规则：`https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id={node}
 | 11-漏斗·按门店 | 漏斗筛选 Sheet（按门店） | `437:296` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=437-296) |
 | 11-空态 | 数据空态 | `252:201` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=252-201) |
 
-## A 向 · 店长模式（数据模块内切换 · 仅店长）
-
-| 编号 | 名称 | node-id | 路由 |
-|------|------|---------|------|
-| 10m | 两边账 · 店长入口（未进店长模式） | `680:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=680-142) |
-| 20 | 店长看板 | `674:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=674-142) · 今日表点行 → 22；看全部 → 21 |
-| 21 | 本店明细 · 按日 · 被核销 | `673:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=673-142) · 标题右复制报表 |
-| 22 | 员工详情 | `672:142` | [打开](https://www.figma.com/design/gYtPZtAsGCSg3c2pUdtnGT?node-id=672-142) |
-
-Section：`A向 · 店长模式`（已删 23 本店排行）。可点原型：[data-prototype.html](../data-prototype.html)（`?screen=mgrHome|mgrDetail|mgrStaff`）
-
 ## B 向 · GANO → 丽妍购卡礼（关键帧）
 
 | 编号 | 名称 | node-id | 路由 |
@@ -111,6 +100,6 @@ Section：`A向 · 店长模式`（已删 23 本店排行）。可点原型：[d
 
 **不出稿**（系统效果或同壳态）：非顾问首页 · 无会话进店 · 一线无数据 Tab · 无合作空态 · Toast · 亮码轮换中 · 07「已失效」按钮态。
 
-**已删帧**：`08-已核销` · `08-过期券` · `09-写评价` · `09-看回写`（`89:2`）· 原店员评价 `88:2`。
+**已删帧**：`08-已核销` · `08-过期券` · `09-写评价` · `09-看回写`（`89:2`）· 原店员评价 `88:2` · **店长模式**（原 10m/20–22，node 如 `680:142`/`674:142`/`673:142`/`672:142`；稿内已无）。
 
 节点以 Figma 最新稿为准；若稿面改动，同步更新本表与 PRD。

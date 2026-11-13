@@ -237,18 +237,20 @@
 
     <main>
       <header class="hero" id="top">
-        <h1>剑琅美遇 · 联盟核销 PRD <span class="badge">v1.16</span></h1>
+        <h1>剑琅美遇 · 联盟核销 PRD <span class="badge">v1.27</span></h1>
         <p class="lead">L2 展开手机号 L3 · 被核销再点人进 12 · 本单人员 · 本文写职责、状态机、权限、统计口径与接口契约</p>
         <dl class="meta">
           <dt>产品</dt><dd>微信小程序「剑琅美遇」</dd>
-          <dt>版本</dt><dd>v1.22（2026-11-10：12 表头核销门店）</dd>
+          <dt>版本</dt><dd>v1.27（2026-11-13：10 时间范围筛选）</dd>
           <dt>读者</dt><dd>前端 / 后端 / 测试</dd>
           <dt>UI 源</dt><dd>Figma <code>gYtPZtAsGCSg3c2pUdtnGT</code>（①顾问 ②顾客 ③店员 ④异常 ⑤经营·对账与明细）</dd>
           <dt>原型</dt><dd><a href="../alliance-flow-A-storyboard-spec.html">alliance-flow-A-storyboard-spec.html</a></dd>
           <dt>Markdown</dt><dd><a href="./prd-剑琅美遇-联盟核销.md">prd-剑琅美遇-联盟核销.md</a>（完整契约以 MD 为准）</dd>
         </dl>
         <div class="callout" style="margin-top:16px">
-          <strong>v1.16：</strong>四态 L2 展开 L3 手机号·次数 · 被核销点人进 12/13 · 完整契约见 MD
+          <strong>v1.27：</strong>30R 屏 10 时间范围（大图标胶囊；Sheet=快捷胶囊 3+2 + 同屏月历；快捷即关 / 自定义点完成）；账号记忆；与 11 独立；待确认后导 Figma。<br />
+          <strong>v1.26：</strong>撤销店长模式（28M / 屏 20–22）；店长运营仍走 10→11→12→13；保留 29C 复制报表与 L2 polish。<br />
+          <strong>v1.25：</strong>工作人员禁领（29S）· <code>STAFF_CLAIM_FORBIDDEN</code> · 提示词见 <a href="./prompt-staff-claim-forbidden.md">prompt-staff-claim-forbidden.md</a>
         </div>
       </header>
 
@@ -635,7 +637,7 @@ flowchart TD
           <thead><tr><th>编号</th><th>名称</th><th>节点</th><th>职责</th></tr></thead>
           <tbody>
             <tr><td colspan="4"><em>09b 已删；10 无评价摘要；回写只读在 13</em></td></tr>
-            <tr><td>10</td><td>两边账</td><td><code>91:2</code></td><td>联盟对账 + 获客；漏斗数值 → 11</td></tr>
+            <tr><td>10</td><td>两边账</td><td><code>91:2</code></td><td>联盟对账 + 时间范围（30R）+ 获客；漏斗数值 → 11</td></tr>
             <tr><td>11-亮/扫/领</td><td>每日只读</td><td><code>169:17</code> / <code>418:142</code> / <code>418:425</code></td><td>不可进 12/13</td></tr>
             <tr><td>11</td><td>每日·核销</td><td><code>168:17</code></td><td>点<strong>店铺行</strong> → 12</td></tr>
             <tr><td>11c-亮/扫/领</td><td>按门店只读</td><td><code>433:152</code> / <code>433:247</code> / <code>433:342</code></td><td>日期+四态；店卡汇总；不可下钻</td></tr>
@@ -739,7 +741,7 @@ flowchart TD
         <div class="table-wrap"><table>
           <thead><tr><th>页</th><th>组件</th><th>内容 / 行为</th></tr></thead>
           <tbody>
-            <tr><td>10</td><td>Hero「联盟对账」+ 获客 + 发出/发来漏斗</td><td>获客只读；点漏斗→11；无评价列表</td></tr>
+            <tr><td>10</td><td>Hero「联盟对账」+ 时间范围（30R）+ 获客 + 发出/发来漏斗</td><td>时间：今天/本周/上周/本月/全部+自定义；账号记忆；与 11 独立；获客只读；点漏斗→11；无评价列表</td></tr>
             <tr><td>11</td><td>每日/按门店</td><td>四态；亮扫领只读；每日核销→12→13；按门店核销→13</td></tr>
             <tr><td>12</td><td>当日该店订单列表</td><td>手机脱敏·发券店·项目；点行→13</td></tr>
             <tr><td>13</td><td>订单明细</td><td>完整号；头像拨打</td></tr>
@@ -840,7 +842,7 @@ flowchart TD
           <strong>金额锁定：</strong>亮码/扫码无金额列；<strong>领取与核销均展示</strong>档位记账金额（领取非¥0）。<strong>A 向</strong>多项目取 <code>max</code>（V3–V5→218）。<strong>B 向</strong>满 10000 取 <code>sum</code>→<strong>1360</strong>（满 5000→980）；展示可分列，记账不拆两笔。
         </div>
         <h3>7.2 双边账</h3>
-        <p>店长/运营看联盟两侧全量。页面：Hero「联盟对账」+ 获客（16S）+ 发出/发来漏斗（无评价摘要列表）。</p>
+        <p>店长/运营看联盟两侧全量。页面：Hero「联盟对账」+ 时间范围（30R）+ 获客（16S）+ 发出/发来漏斗（无评价摘要列表）。</p>
         <h3>7.3 钻取路径（19D）</h3>
         <p>亮码/扫码/领取 → 11 每日或按门店<strong>只读</strong>。核销 → 每日点<strong>店铺行</strong> → 12 → 13；按门店点订单行 → 13。日界 Asia/Shanghai。Sheet 定稿见 MD §5.6「11 · 筛选 Sheet」。</p>
       </section>
@@ -993,7 +995,7 @@ flowchart TD
           <li><strong>07b</strong> 每 2s 轮询；核销后进 08e；星级含「还可以」；保存回 07；回写见 13</li>
           <li>店员写顾客星评 403；08a 可选服务备注；无 GET /reviews；无券列表</li>
           <li>V3–V5 金额 218；<strong>B 向</strong>满 10000 记账 1360（两项均享）；满 5000=980</li>
-          <li><strong>10</strong>：Hero「联盟对账」；获客 16S；无评价摘要列表</li>
+          <li><strong>10</strong>：Hero「联盟对账」+ 时间范围 30R；账号记忆；与 11 独立；获客 16S；无评价摘要列表</li>
           <li>USED 后重启首页为线上常规；已领未核仍可 07/07b；核销落团购·已使用（实付0，活动金额=档价）</li>
           <li>19D：每日/按门店四态；亮码扫码领取只读；每日核销店铺行→12→13；按门店核销订单行→13</li>
           <li>Sheet 无副文案；选中「已选」；时间四项；门店全部+列表；日期全部+日历；漏斗四态</li>
