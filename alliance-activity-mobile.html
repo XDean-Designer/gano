@@ -59,18 +59,31 @@
     flex:1 1 150px;min-height:48px;border:1px solid #d1d5db;border-radius:10px;
     background:#fff;padding:0 12px;font:inherit;font-size:17px;color:var(--ink);
   }
-  button.refresh-btn{
-    flex:0 0 auto;min-height:48px;padding:0 18px;border-radius:10px;
-    border:1px solid #111827;background:#111827;color:#fff;
-    font:inherit;font-size:16px;font-weight:700;cursor:pointer;
+
+  .update-time{
+    margin-top:12px;font-size:15px;font-weight:800;color:var(--ink);line-height:1.4;
+    letter-spacing:.01em;
   }
-  button.refresh-btn:disabled{opacity:.55;cursor:wait}
-  .live-status{
-    margin-top:10px;font-size:13px;color:var(--muted);line-height:1.4;min-height:18px;
+  .update-time .lab{font-weight:600;color:var(--muted);margin-right:6px}
+  .trend{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:14px 12px 12px;margin-bottom:14px;
   }
-  .live-status.ok{color:#166534}
-  .live-status.err{color:#b91c1c}
-  .live-status.busy{color:#92400e}
+  .trend-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .trend-title{margin:0;font-size:16px;font-weight:800}
+  .trend-legend{display:flex;gap:12px;font-size:12px;font-weight:600;color:var(--muted)}
+  .trend-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+  .trend-legend .liyan i{background:var(--liyan)}
+  .trend-legend .gano i{background:var(--gano)}
+  .trend-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .trend-tabs button{
+    flex:1 1 0;min-width:64px;min-height:40px;border:1px solid var(--line);border-radius:8px;
+    background:#f9fafb;color:var(--muted);font:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  }
+  .trend-tabs button.on{background:#111827;border-color:#111827;color:#fff}
+  .trend-canvas-wrap{position:relative;width:100%;height:200px}
+  .trend-canvas-wrap canvas{display:block;width:100%;height:100%}
+
 
   .section{margin-top:18px}
   .section-title{
@@ -186,10 +199,26 @@
     </div>
     <div class="controls">
       <input type="date" id="day" aria-label="统计日" />
-      <button type="button" class="refresh-btn" id="refreshBtn">立即刷新</button>
     </div>
-    <div class="live-status" id="liveStatus">准备中…</div>
+    <div class="update-time" id="updateTime"><span class="lab">数据更新</span>—</div>
   </header>
+
+  <section class="trend" id="trendPanel" aria-label="双边漏斗走势">
+    <div class="trend-head">
+      <h2 class="trend-title">数据走势</h2>
+      <div class="trend-legend">
+        <span class="liyan"><i></i>丽妍雅集</span>
+        <span class="gano"><i></i>GANO HAIR</span>
+      </div>
+    </div>
+    <div class="trend-tabs" id="trendTabs" role="tablist">
+      <button type="button" data-metric="light" class="on" role="tab" aria-selected="true">亮码</button>
+      <button type="button" data-metric="scan" role="tab" aria-selected="false">扫码</button>
+      <button type="button" data-metric="claim" role="tab" aria-selected="false">领取</button>
+      <button type="button" data-metric="redeem" role="tab" aria-selected="false">被核销</button>
+    </div>
+    <div class="trend-canvas-wrap"><canvas id="trendChart" width="640" height="220" aria-label="走势图"></canvas></div>
+  </section>
   <main id="report"><div class="empty">正在准备…</div></main>
 </div>
 
@@ -201,24 +230,16 @@
 (function () {
   const REPORT_START = "2026-11-11";
   const TZ = "Asia/Shanghai";
-  const LIVE_INTERVAL_MS = 10 * 60 * 1000;
-  const LIVE_TIMEOUT_MS = 45000;
   const LOGO = {
     liyan: "./assets/brand/logo-liyan.svg",
     gano: "./assets/brand/logo-gano.svg",
   };
   const BRAND = { liyan: "丽妍雅集", gano: "GANO HAIR" };
 
-  function liveApiUrl() {
-    if (location.protocol === "file:") return null;
-    return new URL("/api/alliance-live-snapshot", location.origin).href + "?t=" + Date.now();
-  }
-
   const $ = (id) => document.getElementById(id);
   const dayInput = $("day");
   const reportEl = $("report");
-  const liveStatus = $("liveStatus");
-  const refreshBtn = $("refreshBtn");
+  const updateTimeEl = $("updateTime");
 
   let state = {
     captureAt: null,
@@ -644,9 +665,172 @@
     return snapshotToData(JSON.parse(el.textContent));
   }
 
-  function setLiveStatus(text, kind) {
-    liveStatus.textContent = text;
-    liveStatus.className = "live-status" + (kind ? " " + kind : "");
+
+  let trendMetric = "light";
+
+  function enumerateDays(endDate) {
+    const out = [];
+    const [ys, ms, ds] = REPORT_START.split("-").map(Number);
+    const [ye, me, de] = String(endDate).split("-").map(Number);
+    const cur = new Date(ys, ms - 1, ds);
+    const end = new Date(ye, me - 1, de);
+    while (cur <= end) {
+      const y = cur.getFullYear();
+      const m = String(cur.getMonth() + 1).padStart(2, "0");
+      const d = String(cur.getDate()).padStart(2, "0");
+      out.push(y + "-" + m + "-" + d);
+      cur.setDate(cur.getDate() + 1);
+    }
+    return out;
+  }
+
+  function sumClicksByDay(rows, side, field) {
+    const bt = side === "liyan" ? "1" : "2";
+    const map = {};
+    (rows || []).forEach((r) => {
+      if (String(r.brandType) !== bt) return;
+      const day = String(r.date || "").slice(0, 10);
+      if (!day) return;
+      map[day] = (map[day] || 0) + (Number(r[field] ?? r.n) || 0);
+    });
+    return map;
+  }
+
+  function couponCountByDay(kind, includeVoid) {
+    const map = { liyan: {}, gano: {} };
+    (state.coupons || []).forEach((c) => {
+      if (!includeVoid && isVoid(c)) return;
+      const side = issueSideOf(c);
+      if (side !== "liyan" && side !== "gano") return;
+      const raw = kind === "claim" ? (c.claimTime || c.issueTime) : c.redeemTime;
+      const day = String(raw || "").slice(0, 10);
+      if (!day || day < REPORT_START) return;
+      if (kind === "redeem" && !raw) return;
+      map[side][day] = (map[side][day] || 0) + 1;
+    });
+    return map;
+  }
+
+  function buildTrendData(includeVoid) {
+    const end = nowInShanghai().date;
+    const dates = enumerateDays(end);
+    const by = state.clicksByDay || {};
+    const lightL = sumClicksByDay(by.light, "liyan", "lightCount");
+    const lightG = sumClicksByDay(by.light, "gano", "lightCount");
+    const scanL = sumClicksByDay(by.scan, "liyan", "scanCount");
+    const scanG = sumClicksByDay(by.scan, "gano", "scanCount");
+    const claim = couponCountByDay("claim", !!includeVoid);
+    const redeem = couponCountByDay("redeem", !!includeVoid);
+    const series = (a, b) => dates.map((d) => ({ date: d, liyan: a[d] || 0, gano: b[d] || 0 }));
+    return {
+      light: series(lightL, lightG),
+      scan: series(scanL, scanG),
+      claim: series(claim.liyan, claim.gano),
+      redeem: series(redeem.liyan, redeem.gano),
+    };
+  }
+
+  function drawTrendChart(metric, includeVoid) {
+    const canvas = document.getElementById("trendChart");
+    if (!canvas) return;
+    const data = buildTrendData(includeVoid)[metric] || [];
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cssW = canvas.clientWidth || 640;
+    const cssH = canvas.clientHeight || 200;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    const pad = { t: 16, r: 12, b: 28, l: 36 };
+    const w = cssW - pad.l - pad.r;
+    const h = cssH - pad.t - pad.b;
+    const maxV = Math.max(1, ...data.map((p) => Math.max(p.liyan, p.gano)));
+    const n = Math.max(1, data.length - 1);
+    const xAt = (i) => pad.l + (data.length <= 1 ? w / 2 : (i / n) * w);
+    const yAt = (v) => pad.t + h - (v / maxV) * h;
+
+    ctx.strokeStyle = "#e5e7eb";
+    ctx.lineWidth = 1;
+    for (let g = 0; g <= 4; g++) {
+      const y = pad.t + (h * g) / 4;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, y);
+      ctx.lineTo(pad.l + w, y);
+      ctx.stroke();
+      const val = Math.round(maxV * (1 - g / 4));
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "600 11px Noto Sans SC, sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(val), pad.l - 6, y);
+    }
+
+    function strokeSeries(key, color) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.4;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      data.forEach((p, i) => {
+        const x = xAt(i);
+        const y = yAt(p[key]);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      data.forEach((p, i) => {
+        const x = xAt(i);
+        const y = yAt(p[key]);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(x, y, 1.4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+    strokeSeries("liyan", "#C62828");
+    strokeSeries("gano", "#1565C0");
+
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "600 11px Noto Sans SC, sans-serif";
+    ctx.textBaseline = "top";
+    const labelEvery = data.length > 8 ? 2 : 1;
+    data.forEach((p, i) => {
+      if (i % labelEvery !== 0 && i !== data.length - 1) return;
+      const label = String(p.date).slice(5).replace("-", "/");
+      ctx.textAlign = i === 0 ? "left" : i === data.length - 1 ? "right" : "center";
+      ctx.fillText(label, xAt(i), pad.t + h + 8);
+    });
+  }
+
+  function bindTrendTabs(getIncludeVoid) {
+    const tabs = document.getElementById("trendTabs");
+    if (!tabs || tabs.dataset.bound === "1") return;
+    tabs.dataset.bound = "1";
+    tabs.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button[data-metric]");
+      if (!btn) return;
+      trendMetric = btn.getAttribute("data-metric") || "light";
+      tabs.querySelectorAll("button").forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      drawTrendChart(trendMetric, getIncludeVoid());
+    });
+    window.addEventListener("resize", () => {
+      drawTrendChart(trendMetric, getIncludeVoid());
+    });
+  }
+
+  function setUpdateTime(at) {
+    const t = String(at || "—");
+    updateTimeEl.innerHTML = '<span class="lab">数据更新</span>' + t;
   }
 
   function applyData(data) {
@@ -660,74 +844,28 @@
     state.clicksByDay = data.clicksByDay || { light: [], scan: [] };
     state.source = data.source || "—";
     state.captureAt = data.captureAt || nowInShanghai().label;
+    setUpdateTime(state.captureAt);
     render();
+    drawTrendChart(trendMetric, false);
   }
 
-  let liveTimer = null;
-  let liveBusy = false;
-
-  async function fetchLiveSnapshot() {
-    const url = liveApiUrl();
-    if (!url) throw new Error("请用本地服务打开本页（不要直接打开文件）");
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), LIVE_TIMEOUT_MS);
-    try {
-      const res = await fetch(url, { cache: "no-store", signal: ctrl.signal });
-      const raw = await res.json();
-      if (!res.ok || raw.ok === false) throw new Error((raw && raw.error) || ("HTTP " + res.status));
-      return snapshotToData(raw);
-    } catch (err) {
-      if (err && err.name === "AbortError") throw new Error("刷新超时");
-      throw err;
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  async function refreshLive(reason) {
-    if (liveBusy) {
-      setLiveStatus("正在刷新…", "busy");
-      return;
-    }
-    liveBusy = true;
-    refreshBtn.disabled = true;
-    setLiveStatus(reason === "auto" ? "定时刷新中…" : "刷新中…", "busy");
-    try {
-      applyData(await fetchLiveSnapshot());
-      const next = new Date(Date.now() + LIVE_INTERVAL_MS);
-      const hh = String(next.getHours()).padStart(2, "0");
-      const mm = String(next.getMinutes()).padStart(2, "0");
-      setLiveStatus(`已更新 · 下次约 ${hh}:${mm}`, "ok");
-    } catch (err) {
-      setLiveStatus("刷新失败（仍显示当前数据）", "err");
-    } finally {
-      liveBusy = false;
-      refreshBtn.disabled = false;
-    }
-  }
-
-  function startLivePolling() {
-    if (liveTimer) clearInterval(liveTimer);
-    liveTimer = setInterval(() => refreshLive("auto"), LIVE_INTERVAL_MS);
-  }
-
-  async function boot() {
+  function boot() {
     const now = nowInShanghai();
     dayInput.min = REPORT_START;
     dayInput.value = now.date < REPORT_START ? REPORT_START : now.date;
+    bindTrendTabs(() => false);
     try {
       applyData(loadEmbeddedSnapshot());
-      setLiveStatus("已加载本地快照", "ok");
     } catch (e) {
-      reportEl.innerHTML = `<div class="empty">加载失败</div>`;
-      setLiveStatus(String(e.message || e), "err");
+      reportEl.innerHTML = '<div class="empty">加载失败</div>';
+      setUpdateTime("—");
     }
-    await refreshLive("boot");
-    startLivePolling();
   }
 
-  dayInput.addEventListener("change", render);
-  refreshBtn.addEventListener("click", () => refreshLive("manual"));
+  dayInput.addEventListener("change", () => {
+    render();
+    drawTrendChart(trendMetric, false);
+  });
   boot();
 })();
 </script>
